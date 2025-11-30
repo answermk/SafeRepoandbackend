@@ -1,0 +1,498 @@
+{
+  "@@locale": "rw",
+  "appTitle": "Raporo y'Umutekano",
+  "@appTitle": {
+    "description": "Umutwe w'urubuga"
+  },
+  "welcome": "Murakaza neza",
+  "reportCrime": "Tanga Raporo",
+  "myReports": "Raporo Zanjye",
+  "messages": "Ubutumwa",
+  "profile": "Profayili",
+  "dashboard": "Ikibaho",
+  "emergency": "Ibyihutirwa",
+  "communityForum": "Inama y'Abaturage",
+  "watchGroups": "Amatsinda y'Abarezi",
+  "helpSupport": "Ubufasha",
+  "settings": "Igenamiterere",
+  "logout": "Sohoka",
+  "login": "Injira",
+  "signup": "Kwiyandikisha",
+  "email": "Imeyili",
+  "password": "Ijambobanga",
+  "forgotPassword": "Wibagiwe ijambobanga?",
+  "submit": "Ohereza",
+  "cancel": "Kureka",
+  "save": "Bika",
+  "delete": "Siba",
+  "edit": "Guhindura",
+  "search": "Shakisha",
+  "filter": "Akayunguruzo",
+  "sort": "Gutondekanya",
+  "loading": "Buri gushakisha...",
+  "error": "Ikosa",
+  "success": "Byagenze neza",
+  "noData": "Nta makuru aboneka",
+  "tryAgain": "Gerageza nanone",
+  "description": "Ibisobanuro",
+  "location": "Ahantu",
+  "anonymous": "Kitazwi",
+  "submitAnonymously": "Ohereza Utazwi",
+  "addEvidence": "Ongeraho Ibihamya",
+  "photo": "Ifoto",
+  "video": "Amashusho",
+  "audio": "Ijwi",
+  "continueButton": "Komeza",
+  "@continueButton": {
+    "description": "Inyandiko y'utubuto two gukomeza"
+  },
+  "back": "Inyuma",
+  "next": "Ibikurikira",
+  "previous": "Ibyabanje",
+  "close": "Funga",
+  "confirm": "Emeza",
+  "yes": "Yego",
+  "no": "Oya",
+  
+  "signIn": "Injira",
+  "logIntoYourAccount": "Injira mu konti yawe",
+  "rememberMe": "Wibuke?",
+  "noAccount": "Nta konti?",
+  "createAnAccount": "Kora Konti",
+  "fullName": "Amazina Yuzuye",
+  "emailAddress": "Aderesi ya Imeyili",
+  "confirmPassword": "Emeza Ijambobanga",
+  "registerAnonymously": "Kwiyandikisha Utazwi",
+  "enterFullName": "Andika Amazina Yuzuye",
+  "youremailGmailCom": "imeyiliyawe@gmail.com",
+  "testCredentials": "Amakuru yo Kugerageza",
+  "emailTestSafereportCom": "Imeyili: test@safereport.com",
+  "passwordSafeReport123": "Ijambobanga: SafeReport123",
+  
+  "goodMorning": "Mwiriwe, {userName}",
+  "@goodMorning": {
+    "description": "Kwakira hamwe n'amazina y'umukoresha",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "reportNow": "Tanga Raporo Nonaha",
+  "yourCommunitySafetyHub": "Ikigega cyawe\ncy'Umutekano w'Abaturage",
+  "communityStatus": "Imiterere y'Abaturage",
+  "thisWeek": "Iki Cyumweru",
+  "avgResponse": "Igihe cyo Gusubiza",
+  "safetyLevel": "Urwego rw'Umutekano",
+  "quickActions": "Ingamba zihuse",
+  "nearbyIncidents": "Ibyabaye hafi",
+  "nearbyIncidentsCount": "{count} hafi",
+  "@nearbyIncidentsCount": {
+    "description": "Umubare w'ibyabaye hafi",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAll": "Reba Byose",
+  "watchGroupInfo": "Itsinda ry'Abarezi",
+  "newAlerts": "{count} amakuru mashya",
+  "@newAlerts": {
+    "description": "Umubare w'amakuru mashya",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safetyEducation": "Kwigisha Umutekano",
+  "learnMore": "Menya Birenzeho",
+  
+  "selectIncidentType": "Hitamo Ubwoko bw'Ibyabaye",
+  "pleaseSelectAnIncidentType": "Nyamuneka hitamo ubwoko bw'ibyabaye",
+  "pleaseProvideADescription": "Nyamuneka tanga ibisobanuro",
+  "suspiciousPerson": "Umuntu Wibeshye",
+  "individualActingSuspiciously": "Umuntu ukora ibyibeshye",
+  "vehicleActivity": "Imikorere y'Imodoka",
+  "suspiciousVehicleBehavior": "Imikorere y'umodoka yibeshye",
+  "abandonedItem": "Ikintu Cyasigaye",
+  "unattendedSuspiciousItems": "Ibintu byibeshye bitarindirwa",
+  "theftBurglary": "Kwiba/Kwiba",
+  "propertyTheftOrBreakIn": "Kwiba ibintu cyangwa kwinjira mu nzu",
+  "vandalism": "Guhonyora",
+  "propertyDamageOrGraffiti": "Guhonyora ibintu cyangwa kwandika",
+  "drugActivity": "Imikorere y'Imiti",
+  "suspectedDrugRelatedBehavior": "Imikorere yibeshye ifitanye isano n'imiti",
+  "assaultViolence": "Gukubita/Intambara",
+  "physicalAltercationOrThreat": "Gukubana cyangwa gutera ubwoba",
+  "noiseDisturbance": "Guhangayika kw'Amajwi",
+  "excessiveNoiseComplaint": "Gukangarana kubera amajwi menshi",
+  "trespassing": "Kwinjira Ntibanze",
+  "unauthorizedEntry": "Kwinjira ntibanze",
+  "other": "Ibindi",
+  "otherIncidentType": "Ubwoko bw'ibyabaye bundi",
+  "describeTheIncident": "Sobanura ibyabaye",
+  "addPhotosVideosOrAudio": "Ongeraho Amashusho, Videwo cyangwa Amajwi",
+  "draftSaved": "Inyandiko yabikijwe",
+  "saving": "Bikijwe...",
+  "savedXMinutesAgo": "Yabikijwe iminota {minutes} ishize",
+  "@savedXMinutesAgo": {
+    "description": "Igihe inyandiko yabikijwe",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreDraft": "Subiza Inyandiko",
+  "youHaveAnUnsavedDraft": "Ufite inyandiko itabikijwe. Urashaka kuyisubiza?",
+  "restore": "Subiza",
+  "discard": "Kureka",
+  "continueToLocation": "Komeza ku Ahantu",
+  
+  "all": "Byose",
+  "active": "Bikora",
+  "resolved": "Byakemukiwe",
+  "submitted": "Byoherejwe",
+  "reviewing": "Buri gusuzuma",
+  "sortBy": "Tondekanya",
+  "date": "Itariki",
+  "status": "Imiterere",
+  "type": "Ubwoko",
+  "deleteReports": "Siba Amapororo",
+  "areYouSureYouWantToDelete": "Urazi neza ko ushaka gusiba amapororo {count}?",
+  "@areYouSureYouWantToDelete": {
+    "description": "Kwemeza gusiba",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsDeleted": "Amapororo yasibwe",
+  "noReportsSelected": "Nta pororo yatoranijwe",
+  "exportToPDF": "Kohereza mu PDF",
+  "shareReports": "Sangira Amapororo",
+  "mySafetyReports": "Amapororo Yanjye y'Umutekano",
+  
+  "accountInformation": "Amakuru ya Konti",
+  "name": "Izina",
+  "phone": "Telefoni",
+  "memberSince": "Umuryango kuva {date}",
+  "@memberSince": {
+    "description": "Itariki y'umuryango",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "myProfile": "Profayili Yanjye",
+  "accountSettings": "Igenamiterere ya Konti",
+  "changePassword": "Guhindura Ijambobanga",
+  "editProfile": "Guhindura Profayili",
+  "myImpact": "Ingaruka Zanjye",
+  "offlineQueue": "Urutonde rw'Inyandiko",
+  "accessibility": "Kugerwaho",
+  "language": "Ururimi",
+  
+  "accountSettingsTitle": "Igenamiterere ya Konti",
+  "manageYourPreferences": "Gucunga Ibyifuzo Byawe",
+  "securitySettings": "Igenamiterere y'Umutekano",
+  "lastChangedXDaysAgo": "Byahindutse iminsi {days} ishize",
+  "@lastChangedXDaysAgo": {
+    "description": "Igihe ijambobanga ryahindutse",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "update": "Gusubiramo",
+  "twoFactorAuthentication": "Kwemeza Kabiri",
+  "addExtraSecurityToYourAccount": "Ongeraho umutekano wongeweho ku konti yawe",
+  "biometricLogin": "Kwinjira mu Biometriki",
+  "useFingerprintOrFaceId": "Koresha iminwe cyangwa isura",
+  "notificationsPreferences": "Ibyifuzo by'Amakuru",
+  "pushNotifications": "Amakuru yo Gushyiraho",
+  "reportUpdatesAndAlerts": "Amakuru n'amakuru y'amapororo",
+  "emailUpdates": "Amakuru ya Imeyili",
+  "weeklyCommunitySummary": "Incamake y'icyumweru y'Abaturage",
+  "watchGroupAlerts": "Amakuru y'Amatsinda y'Abarezi",
+  "messagesFromYourGroups": "Ubutumwa buva mu matsinda yawe",
+  "privacySettings": "Igenamiterere y'Ibanga",
+  "defaultAnonymousMode": "Imiterere y'Umutazwi",
+  "alwaysSubmitReportsAnonymously": "Ohereza amapororo utazwi buri gihe",
+  "locationSharing": "Gusangira Ahantu",
+  "sharePreciseLocationWithReports": "Sangira ahantu hakwiye hamwe n'amapororo",
+  "anonymousReportingGuide": "Inzira yo Gutanga Raporo Utazwi",
+  "learnAboutPrivacyProtections": "Menya ibijyanye n'umutekano w'amabanga",
+  "languagePreferences": "Ibyifuzo by'Ururimi",
+  "appLanguage": "Ururimi rw'Urubuga",
+  "english": "Icyongereza",
+  "french": "Igifaransa",
+  "kinyarwanda": "Ikinyarwanda",
+  "swahili": "Igiswahili",
+  "spanish": "Icyesipanyoli",
+  "offlineReports": "Amapororo Atari mu Nterineti",
+  "manageReportsWhenOffline": "Gucunga amapororo igihe utari mu Nterineti",
+  
+  "currentPassword": "Ijambobanga Gikurikira",
+  "newPassword": "Ijambobanga Gishya",
+  "passwordStrength": "Imbaraga z'Ijambobanga",
+  "weak": "Ntacyo",
+  "medium": "Hagati",
+  "strong": "Cane",
+  "veryStrong": "Cane Cane",
+  "passwordRequirements": "Ibyifuzo by'Ijambobanga",
+  "atLeast8Characters": "Byibuze inyuguti 8",
+  "oneUppercaseLetter": "Inyuguti nkuru imwe",
+  "oneLowercaseLetter": "Inyuguti nto imwe",
+  "oneNumber": "Umubare umwe",
+  "oneSpecialCharacter": "Inyuguti idasanzwe imwe",
+  "passwordChangedSuccessfully": "Ijambobanga ryahinduwe neza!",
+  
+  "accessibilitySettings": "Igenamiterere y'Ubugenzuzi",
+  "customizeTheAppToMakeItEasierToUse": "Guhindura urubuga kugira ngo rugorore gukoreshwa",
+  "fontSize": "Ingano y'Inyandiko",
+  "adjustTextSize": "Guhindura ingano y'inyandiko kugira ngo isomeke neza",
+  "highContrastMode": "Imiterere y'Urugero Rukomeye",
+  "improveVisibilityWithHighContrast": "Kongera kureba hamwe n'amabara y'urugero rukomeye",
+  "textToSpeech": "Gusoma Inyandiko",
+  "readContentAloud": "Soma ibiri mu nyandiko",
+  "accessibilitySettingsSavedSuccessfully": "Igenamiterere y'ubugenzuzi byabikijwe neza!",
+  "errorSavingSettings": "Ikosa mu gukomeza igenamiterere: {error}",
+  "@errorSavingSettings": {
+    "description": "Ikosa mu gukomeza igenamiterere",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "helpSupportTitle": "Ubufasha",
+  "getAssistanceAndAnswers": "Kubona ubufasha n'ibisubizo",
+  "needHelp": "Ukeneye Ubufasha?",
+  "wereHereToAssistYou247": "Turimo kugufasha buri gihe",
+  "startLiveChat": "Tangira Ibiganiro",
+  "quickHelp": "Ubufasha Bwihuse",
+  "frequentlyAskedQuestions": "Ibibazo Byakunze Kubazwa",
+  "commonQuestionsAndAnswers": "Ibibazo n'ibisubizo byakunze",
+  "reportingGuidelines": "Amabwiriza yo Gutanga Raporo",
+  "bestPracticesForSafetyReporting": "Imikorere myiza yo gutanga raporo z'umutekano",
+  "communityGuidelines": "Amabwiriza y'Abaturage",
+  "rulesAndExpectations": "Amabwiriza n'ibyiringiro",
+  "contactOptions": "Uburyo bwo Kuvugana",
+  "emailSupport": "Ubufasha bwa Imeyili",
+  "supportSafereportCom": "support@saferreport.com",
+  "phoneSupport": "Ubufasha bwa Telefoni",
+  "call": "Hamagara",
+  "sendFeedback": "Ohereza Ibyifuzo",
+  "tellUsHowWeCanImprove": "Tubwire uko dushobora kongera...",
+  "submitFeedback": "Ohereza Ibyifuzo",
+  "couldNotOpenEmailClient": "Ntibyashoboye gufungura imeyili",
+  "couldNotMakePhoneCall": "Ntibyashoboye guhamagara: {error}",
+  "@couldNotMakePhoneCall": {
+    "description": "Ikosa mu guhamagara",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "emergencyMode": "Imiterere y'Ubwoba",
+  "helpIsOnTheWay": "Ubufasha buragiye.\nAhantu hawe buragiye gusangirwa n'abakoresha ubwoba.",
+  "policeETA": "Igihe Abapolisi bazaza",
+  "xToYMinutes": "iminota {min}-{max}",
+  "@xToYMinutes": {
+    "description": "Igihe cyo kugera",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "callNow": "HAMAGARA NONAHA",
+  "cancelEmergency": "Kureka Ubwoba",
+  "yourEmergencyContactsHaveBeenNotified": "Abantu bawe b'ubwoba baramenyeshejwe",
+  "selectEmergencyService": "Hitamo Serivisi y'Ubwoba",
+  "policeEmergency": "Ubwoba bw'Abapolisi",
+  "fireDepartment": "Abatwara Umuriro",
+  "ambulance": "Ambulansi",
+  "nonEmergencyPolice": "Abapolisi batari mu Bwoba",
+  
+  "communityForumTitle": "Inama y'Abaturage",
+  "discussLocalSafetys": "Ganira ku mutekano w'ahantu",
+  "popular": "Byakunze",
+  "recent": "Vuba",
+  "following": "Gukurikira",
+  "createNewPost": "Kora Inyandiko Nshya",
+  "recentPostsComingSoon": "Inyandiko z'ubu zizaza vuba...",
+  "followingPostsComingSoon": "Inyandiko zikurikira zizaza vuba...",
+  "bestHomeSecurityCameras2023": "Kamera z'umutekano z'ingoro ziza 2023?",
+  "neighborhoodPatrolTips": "Inama z'urugendo rw'umutekano",
+  "holidaySafetyAdvisory": "Inama y'Umutekano w'Icyumweru",
+  "comments": "Ibyifuzo",
+  "helpful": "Bifite Agaciro",
+  "hoursAgo": "amasaha {hours} ashize",
+  "@hoursAgo": {
+    "description": "Igihe cyashize mu masaha",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Ejo",
+  "daysAgo": "iminsi {days} ishize",
+  "@daysAgo": {
+    "description": "Igihe cyashize mu minsi",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "myWatchGroups": "Amatsinda Yanjye y'Abarezi",
+  "communitySafetyPartnerships": "Ubwiyunge bw'umutekano w'Abaturage",
+  "oakStreetResidential": "Akarere ka Oak Street",
+  "oakStreetNeighborhood": "Akarere ka Oak Street",
+  "downtownBusiness": "Ubucuruzi bw'Umujyi",
+  "businessDistrict": "Akarere k'Ubucuruzi",
+  "members": "Abanyamuryango",
+  "alerts": "Amakuru",
+  "coverage": "Gufata",
+  "schedule": "Gahunda",
+  "monFri9AM5PM": "Ku wa Mbere-Ku wa Gatanu 9:00-17:00",
+  "businessHours": "Amasaha y'Ubucuruzi",
+  "viewMessages": "Reba Ubutumwa",
+  "viewDetails": "Reba Ibisobanuro",
+  "findMoreGroups": "Shakisha Amatsinda Menshi",
+  "discoverAndJoinWatchGroups": "Gushakisha no kwinjira mu matsinda y'abarezi mu karere kawe",
+  "browseGroups": "Gushakisha Amatsinda",
+  "yourImpact": "Ingaruka Zawe",
+  "contributionsToCommunitySafety": "Inkunga zawe ku mutekano w'Abaturage",
+  "reportsSubmitted": "Amapororo Yoherejwe",
+  "watchGroupsJoined": "Amatsinda y'Abarezi Winyujijemo",
+  "helpfulResponses": "Ibisubizo Bifite Agaciro",
+  
+  "notificationsTitle": "Amakuru",
+  "enableNotifications": "Gufungura Amakuru",
+  "stayInformedAboutImportantUpdates": "Komeza kumenya amakuru n'amakuru y'ibanze",
+  "enable": "Fungura",
+  "skip": "Simbuka",
+  
+  "messagesTitle": "Ubutumwa",
+  "yourCommunications": "Ubutumwa bwawe",
+  "reportCommunications": "Ubutumwa bw'Amapororo",
+  "watchGroups": "Amatsinda y'Abarezi",
+  "directContact": "Kuvugana",
+  "officer": "Ofisiye",
+  "newMessage": "Ubutumwa Bwihashye",
+  "viewAllMessages": "Reba Ubutumwa Bwose",
+  "joinDiscussion": "Injira mu Biganiro",
+  
+  "anonymousReporting": "Gutanga Raporo Utazwi",
+  "whatIsHidden": "Ibyihishe",
+  "whatIsShared": "Ibyasangijwe",
+  "benefits": "Inyungu",
+  "legalProtection": "Umutekano w'amategeko",
+  "faq": "IBIBAZO BYAKUNZE KUBAZWA",
+  
+  "appLanguageTitle": "Ururimi rw'Urubuga",
+  "selectYourPreferredLanguage": "Hitamo ururimi wifuza:",
+  "saveLanguage": "Bika Ururimi",
+  
+  "nearbyIncidentsTitle": "Ibyabaye Hafi",
+  "mapView": "Reba Ikarti",
+  "radius": "Ubugari",
+  "timeFilter": "Akayunguruzo k'Igihe",
+  "km": "km",
+  "h": "h",
+  "minAgo": "iminota {minutes} ishize",
+  "@minAgo": {
+    "description": "Igihe cyashize mu minota",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hourAgo": "isaha {hours} ishize",
+  "@hourAgo": {
+    "description": "Igihe cyashize mu saha",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoPlural": "amasaha {hours} ashize",
+  "@hoursAgoPlural": {
+    "description": "Igihe cyashize mu masaha",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "distance": "Intera",
+  "severity": "Ubukana",
+  "low": "Ntacyo",
+  "medium": "Hagati",
+  "high": "Cane",
+  
+  "safeReport": "SafeReport",
+  "aRealTimeCrimePreventionPlatform": "Urubuga rwo Kwirinda Ubucuruzi mu Gihugu rukoresha ikoranabuhanga rikomeye kugira ngo rukure ibyago no kuyitabira vuba, rufasha abaturage kuguma batari mu kaga hakoreshejwe amakuru n'ingamba zihuse.",
+  "getStarted": "Tangira",
+  
+  "loginSuccessful": "Winjiriye neza! Murakaza neza kuri SafeReport",
+  "invalidEmailOrPassword": "Imeyili cyangwa ijambobanga si byo. Gerageza amakuru yo kugerageza.",
+  "pleaseEnterBothEmailAndPassword": "Nyamuneka andika imeyili n'ijambobanga",
+  "connectionError": "Ikosa mu guhuza: {error}",
+  "@connectionError": {
+    "description": "Ubutumwa bw'ikosa mu guhuza",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "accountCreatedSuccessfully": "Konti yakozwe neza! Nyamuneka winjire.",
+  
+  "unknown": "Kitazwi",
+  "photosAdded": "{count} ifoto yongeweho",
+  "@photosAdded": {
+    "description": "Umubare w'amashusho yongeweho",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "videosAdded": "{count} videwo yongeweho",
+  "@videosAdded": {
+    "description": "Umubare w'amashusho yongeweho",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audiosAdded": "{count} amajwi yongeweho",
+  "@audiosAdded": {
+    "description": "Umubare w'amajwi yongeweho",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

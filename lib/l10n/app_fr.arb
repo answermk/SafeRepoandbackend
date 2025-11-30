@@ -1,0 +1,498 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Rapport Sécuritaire",
+  "@appTitle": {
+    "description": "Le titre de l'application"
+  },
+  "welcome": "Bienvenue",
+  "reportCrime": "Signaler un Crime",
+  "myReports": "Mes Rapports",
+  "messages": "Messages",
+  "profile": "Profil",
+  "dashboard": "Tableau de Bord",
+  "emergency": "Urgence",
+  "communityForum": "Forum Communautaire",
+  "watchGroups": "Groupes de Surveillance",
+  "helpSupport": "Aide & Support",
+  "settings": "Paramètres",
+  "logout": "Déconnexion",
+  "login": "Connexion",
+  "signup": "S'inscrire",
+  "email": "E-mail",
+  "password": "Mot de passe",
+  "forgotPassword": "Mot de passe oublié?",
+  "submit": "Soumettre",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "search": "Rechercher",
+  "filter": "Filtrer",
+  "sort": "Trier",
+  "loading": "Chargement...",
+  "error": "Erreur",
+  "success": "Succès",
+  "noData": "Aucune donnée disponible",
+  "tryAgain": "Réessayer",
+  "description": "Description",
+  "location": "Emplacement",
+  "anonymous": "Anonyme",
+  "submitAnonymously": "Soumettre anonymement",
+  "addEvidence": "Ajouter des Preuves",
+  "photo": "Photo",
+  "video": "Vidéo",
+  "audio": "Audio",
+  "continueButton": "Continuer",
+  "@continueButton": {
+    "description": "Texte du bouton continuer"
+  },
+  "back": "Retour",
+  "next": "Suivant",
+  "previous": "Précédent",
+  "close": "Fermer",
+  "confirm": "Confirmer",
+  "yes": "Oui",
+  "no": "Non",
+  
+  "signIn": "Se connecter",
+  "logIntoYourAccount": "Connectez-vous à votre compte",
+  "rememberMe": "Se souvenir de moi?",
+  "noAccount": "Pas de compte?",
+  "createAnAccount": "Créer un compte",
+  "fullName": "Nom complet",
+  "emailAddress": "Adresse e-mail",
+  "confirmPassword": "Confirmer le mot de passe",
+  "registerAnonymously": "S'inscrire anonymement",
+  "enterFullName": "Entrer le nom complet",
+  "youremailGmailCom": "votreemail@gmail.com",
+  "testCredentials": "Identifiants de test",
+  "emailTestSafereportCom": "E-mail: test@safereport.com",
+  "passwordSafeReport123": "Mot de passe: SafeReport123",
+  
+  "goodMorning": "Bonjour, {userName}",
+  "@goodMorning": {
+    "description": "Salutation avec le nom d'utilisateur",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "reportNow": "Signaler maintenant",
+  "yourCommunitySafetyHub": "Votre Centre de\nSécurité Communautaire",
+  "communityStatus": "Statut de la Communauté",
+  "thisWeek": "Cette Semaine",
+  "avgResponse": "Temps de Réponse Moyen",
+  "safetyLevel": "Niveau de Sécurité",
+  "quickActions": "Actions Rapides",
+  "nearbyIncidents": "Incidents à Proximité",
+  "nearbyIncidentsCount": "{count} à proximité",
+  "@nearbyIncidentsCount": {
+    "description": "Nombre d'incidents à proximité",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAll": "Voir tout",
+  "watchGroupInfo": "Groupe de Surveillance",
+  "newAlerts": "{count} nouvelles alertes",
+  "@newAlerts": {
+    "description": "Nombre de nouvelles alertes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safetyEducation": "Éducation à la Sécurité",
+  "learnMore": "En savoir plus",
+  
+  "selectIncidentType": "Sélectionner le Type d'Incident",
+  "pleaseSelectAnIncidentType": "Veuillez sélectionner un type d'incident",
+  "pleaseProvideADescription": "Veuillez fournir une description",
+  "suspiciousPerson": "Personne Suspecte",
+  "individualActingSuspiciously": "Individu agissant de manière suspecte",
+  "vehicleActivity": "Activité Véhiculaire",
+  "suspiciousVehicleBehavior": "Comportement suspect de véhicule",
+  "abandonedItem": "Objet Abandonné",
+  "unattendedSuspiciousItems": "Objets suspects non surveillés",
+  "theftBurglary": "Vol/Cambriolage",
+  "propertyTheftOrBreakIn": "Vol de propriété ou effraction",
+  "vandalism": "Vandalisme",
+  "propertyDamageOrGraffiti": "Dommages à la propriété ou graffitis",
+  "drugActivity": "Activité de Drogue",
+  "suspectedDrugRelatedBehavior": "Comportement suspect lié à la drogue",
+  "assaultViolence": "Agression/Violence",
+  "physicalAltercationOrThreat": "Altercation physique ou menace",
+  "noiseDisturbance": "Nuisance Sonore",
+  "excessiveNoiseComplaint": "Plainte pour bruit excessif",
+  "trespassing": "Intrusion",
+  "unauthorizedEntry": "Entrée non autorisée",
+  "other": "Autre",
+  "otherIncidentType": "Autre type d'incident",
+  "describeTheIncident": "Décrire l'incident",
+  "addPhotosVideosOrAudio": "Ajouter des Photos, Vidéos ou Audio",
+  "draftSaved": "Brouillon enregistré",
+  "saving": "Enregistrement...",
+  "savedXMinutesAgo": "Enregistré il y a {minutes} minutes",
+  "@savedXMinutesAgo": {
+    "description": "Temps d'enregistrement du brouillon",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreDraft": "Restaurer le Brouillon",
+  "youHaveAnUnsavedDraft": "Vous avez un brouillon non enregistré. Souhaitez-vous le restaurer?",
+  "restore": "Restaurer",
+  "discard": "Ignorer",
+  "continueToLocation": "Continuer vers l'Emplacement",
+  
+  "all": "Tous",
+  "active": "Actif",
+  "resolved": "Résolu",
+  "submitted": "Soumis",
+  "reviewing": "En cours d'examen",
+  "sortBy": "Trier par",
+  "date": "Date",
+  "status": "Statut",
+  "type": "Type",
+  "deleteReports": "Supprimer les Rapports",
+  "areYouSureYouWantToDelete": "Êtes-vous sûr de vouloir supprimer {count} rapport(s)?",
+  "@areYouSureYouWantToDelete": {
+    "description": "Confirmation de suppression",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsDeleted": "Rapports supprimés",
+  "noReportsSelected": "Aucun rapport sélectionné",
+  "exportToPDF": "Exporter en PDF",
+  "shareReports": "Partager les Rapports",
+  "mySafetyReports": "Mes Rapports de Sécurité",
+  
+  "accountInformation": "Informations du Compte",
+  "name": "Nom",
+  "phone": "Téléphone",
+  "memberSince": "Membre depuis {date}",
+  "@memberSince": {
+    "description": "Date d'adhésion",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "myProfile": "Mon Profil",
+  "accountSettings": "Paramètres du Compte",
+  "changePassword": "Changer le Mot de Passe",
+  "editProfile": "Modifier le Profil",
+  "myImpact": "Mon Impact",
+  "offlineQueue": "File d'Attente Hors Ligne",
+  "accessibility": "Accessibilité",
+  "language": "Langue",
+  
+  "accountSettingsTitle": "Paramètres du Compte",
+  "manageYourPreferences": "Gérer vos préférences",
+  "securitySettings": "Paramètres de Sécurité",
+  "lastChangedXDaysAgo": "Dernière modification il y a {days} jours",
+  "@lastChangedXDaysAgo": {
+    "description": "Dernière modification du mot de passe",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "update": "Mettre à jour",
+  "twoFactorAuthentication": "Authentification à Deux Facteurs",
+  "addExtraSecurityToYourAccount": "Ajouter une sécurité supplémentaire à votre compte",
+  "biometricLogin": "Connexion Biométrique",
+  "useFingerprintOrFaceId": "Utiliser l'empreinte digitale ou la reconnaissance faciale",
+  "notificationsPreferences": "Préférences de Notifications",
+  "pushNotifications": "Notifications Push",
+  "reportUpdatesAndAlerts": "Mises à jour et alertes de rapports",
+  "emailUpdates": "Mises à jour par E-mail",
+  "weeklyCommunitySummary": "Résumé hebdomadaire de la communauté",
+  "watchGroupAlerts": "Alertes des Groupes de Surveillance",
+  "messagesFromYourGroups": "Messages de vos groupes",
+  "privacySettings": "Paramètres de Confidentialité",
+  "defaultAnonymousMode": "Mode Anonyme par Défaut",
+  "alwaysSubmitReportsAnonymously": "Toujours soumettre les rapports anonymement",
+  "locationSharing": "Partage de Localisation",
+  "sharePreciseLocationWithReports": "Partager l'emplacement précis avec les rapports",
+  "anonymousReportingGuide": "Guide de Signalement Anonyme",
+  "learnAboutPrivacyProtections": "En savoir plus sur les protections de confidentialité",
+  "languagePreferences": "Préférences de Langue",
+  "appLanguage": "Langue de l'Application",
+  "english": "Anglais",
+  "french": "Français",
+  "kinyarwanda": "Kinyarwanda",
+  "swahili": "Swahili",
+  "spanish": "Espagnol",
+  "offlineReports": "Rapports Hors Ligne",
+  "manageReportsWhenOffline": "Gérer les rapports hors ligne",
+  
+  "currentPassword": "Mot de Passe Actuel",
+  "newPassword": "Nouveau Mot de Passe",
+  "passwordStrength": "Force du Mot de Passe",
+  "weak": "Faible",
+  "medium": "Moyen",
+  "strong": "Fort",
+  "veryStrong": "Très Fort",
+  "passwordRequirements": "Exigences du Mot de Passe",
+  "atLeast8Characters": "Au moins 8 caractères",
+  "oneUppercaseLetter": "Une lettre majuscule",
+  "oneLowercaseLetter": "Une lettre minuscule",
+  "oneNumber": "Un chiffre",
+  "oneSpecialCharacter": "Un caractère spécial",
+  "passwordChangedSuccessfully": "Mot de passe modifié avec succès!",
+  
+  "accessibilitySettings": "Paramètres d'Accessibilité",
+  "customizeTheAppToMakeItEasierToUse": "Personnaliser l'application pour la rendre plus facile à utiliser",
+  "fontSize": "Taille de Police",
+  "adjustTextSize": "Ajuster la taille du texte pour une meilleure lisibilité",
+  "highContrastMode": "Mode Contraste Élevé",
+  "improveVisibilityWithHighContrast": "Améliorer la visibilité avec des couleurs à contraste élevé",
+  "textToSpeech": "Synthèse Vocale",
+  "readContentAloud": "Lire le contenu à voix haute",
+  "accessibilitySettingsSavedSuccessfully": "Paramètres d'accessibilité enregistrés avec succès!",
+  "errorSavingSettings": "Erreur lors de l'enregistrement des paramètres: {error}",
+  "@errorSavingSettings": {
+    "description": "Erreur lors de l'enregistrement des paramètres",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "helpSupportTitle": "Aide & Support",
+  "getAssistanceAndAnswers": "Obtenir de l'aide et des réponses",
+  "needHelp": "Besoin d'Aide?",
+  "wereHereToAssistYou247": "Nous sommes là pour vous aider 24h/24 et 7j/7",
+  "startLiveChat": "Démarrer le Chat en Direct",
+  "quickHelp": "Aide Rapide",
+  "frequentlyAskedQuestions": "Questions Fréquemment Posées",
+  "commonQuestionsAndAnswers": "Questions et réponses courantes",
+  "reportingGuidelines": "Directives de Signalement",
+  "bestPracticesForSafetyReporting": "Meilleures pratiques pour le signalement de sécurité",
+  "communityGuidelines": "Directives Communautaires",
+  "rulesAndExpectations": "Règles et attentes",
+  "contactOptions": "Options de Contact",
+  "emailSupport": "Support par E-mail",
+  "supportSafereportCom": "support@saferreport.com",
+  "phoneSupport": "Support Téléphonique",
+  "call": "Appeler",
+  "sendFeedback": "Envoyer des Commentaires",
+  "tellUsHowWeCanImprove": "Dites-nous comment nous pouvons améliorer ......",
+  "submitFeedback": "Soumettre les Commentaires",
+  "couldNotOpenEmailClient": "Impossible d'ouvrir le client e-mail",
+  "couldNotMakePhoneCall": "Impossible de passer un appel téléphonique: {error}",
+  "@couldNotMakePhoneCall": {
+    "description": "Erreur d'appel téléphonique",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "emergencyMode": "Mode Urgence",
+  "helpIsOnTheWay": "L'aide est en route.\nVotre localisation est partagée avec les services d'urgence.",
+  "policeETA": "Temps d'Arrivée de la Police",
+  "xToYMinutes": "{min}-{max} minutes",
+  "@xToYMinutes": {
+    "description": "Plage de temps d'arrivée",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "callNow": "APPELER MAINTENANT",
+  "cancelEmergency": "Annuler l'Urgence",
+  "yourEmergencyContactsHaveBeenNotified": "Vos contacts d'urgence ont été notifiés",
+  "selectEmergencyService": "Sélectionner le Service d'Urgence",
+  "policeEmergency": "Urgence Police",
+  "fireDepartment": "Pompiers",
+  "ambulance": "Ambulance",
+  "nonEmergencyPolice": "Police Non-Urgente",
+  
+  "communityForumTitle": "Forum Communautaire",
+  "discussLocalSafetys": "Discuter de la sécurité locale",
+  "popular": "Populaire",
+  "recent": "Récent",
+  "following": "Suivi",
+  "createNewPost": "Créer un Nouveau Message",
+  "recentPostsComingSoon": "Messages récents à venir...",
+  "followingPostsComingSoon": "Messages suivis à venir...",
+  "bestHomeSecurityCameras2023": "Meilleures caméras de sécurité domestique 2023?",
+  "neighborhoodPatrolTips": "Conseils de patrouille de quartier",
+  "holidaySafetyAdvisory": "Avis de Sécurité des Vacances",
+  "comments": "Commentaires",
+  "helpful": "Utile",
+  "hoursAgo": "il y a {hours} heures",
+  "@hoursAgo": {
+    "description": "Il y a des heures",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Hier",
+  "daysAgo": "il y a {days} jours",
+  "@daysAgo": {
+    "description": "Il y a des jours",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "myWatchGroups": "Mes Groupes de Surveillance",
+  "communitySafetyPartnerships": "Partenariats de sécurité communautaire",
+  "oakStreetResidential": "Résidentiel Oak Street",
+  "oakStreetNeighborhood": "Quartier Oak Street",
+  "downtownBusiness": "Affaires du Centre-Ville",
+  "businessDistrict": "Quartier des Affaires",
+  "members": "Membres",
+  "alerts": "Alertes",
+  "coverage": "Couverture",
+  "schedule": "Horaire",
+  "monFri9AM5PM": "Lun-Ven 9h-17h",
+  "businessHours": "Heures d'ouverture",
+  "viewMessages": "Voir les Messages",
+  "viewDetails": "Voir les Détails",
+  "findMoreGroups": "Trouver Plus de Groupes",
+  "discoverAndJoinWatchGroups": "Découvrir et rejoindre des groupes de surveillance dans votre région",
+  "browseGroups": "Parcourir les Groupes",
+  "yourImpact": "Votre Impact",
+  "contributionsToCommunitySafety": "Vos contributions à la sécurité communautaire",
+  "reportsSubmitted": "Rapports Soumis",
+  "watchGroupsJoined": "Groupes de Surveillance Rejoints",
+  "helpfulResponses": "Réponses Utiles",
+  
+  "notificationsTitle": "Notifications",
+  "enableNotifications": "Activer les Notifications",
+  "stayInformedAboutImportantUpdates": "Restez informé des mises à jour et alertes importantes",
+  "enable": "Activer",
+  "skip": "Ignorer",
+  
+  "messagesTitle": "Messages",
+  "yourCommunications": "Vos communications",
+  "reportCommunications": "Communications de Rapports",
+  "watchGroups": "Groupes de Surveillance",
+  "directContact": "Contact Direct",
+  "officer": "Officier",
+  "newMessage": "Nouveau Message",
+  "viewAllMessages": "Voir Tous les Messages",
+  "joinDiscussion": "Rejoindre la Discussion",
+  
+  "anonymousReporting": "Signalement Anonyme",
+  "whatIsHidden": "Ce qui est Caché",
+  "whatIsShared": "Ce qui est Partagé",
+  "benefits": "Avantages",
+  "legalProtection": "Protection Légale",
+  "faq": "FAQ",
+  
+  "appLanguageTitle": "Langue de l'Application",
+  "selectYourPreferredLanguage": "Sélectionnez votre langue préférée:",
+  "saveLanguage": "Enregistrer la Langue",
+  
+  "nearbyIncidentsTitle": "Incidents à Proximité",
+  "mapView": "Vue Carte",
+  "radius": "Rayon",
+  "timeFilter": "Filtre Temporel",
+  "km": "km",
+  "h": "h",
+  "minAgo": "il y a {minutes} min",
+  "@minAgo": {
+    "description": "Il y a des minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hourAgo": "il y a {hours} heure",
+  "@hourAgo": {
+    "description": "Il y a une heure",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoPlural": "il y a {hours} heures",
+  "@hoursAgoPlural": {
+    "description": "Il y a des heures",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "distance": "Distance",
+  "severity": "Gravité",
+  "low": "Faible",
+  "medium": "Moyen",
+  "high": "Élevé",
+  
+  "safeReport": "SafeReport",
+  "aRealTimeCrimePreventionPlatform": "Une Plateforme de Prévention de la Criminalité en Temps Réel utilise une technologie intelligente pour détecter et répondre à la criminalité instantanément, aidant à garder les communautés en sécurité grâce à des alertes rapides et des actions basées sur les données.",
+  "getStarted": "Commencer",
+  
+  "loginSuccessful": "Connexion réussie! Bienvenue sur SafeReport",
+  "invalidEmailOrPassword": "E-mail ou mot de passe invalide. Essayez les identifiants d'exemple.",
+  "pleaseEnterBothEmailAndPassword": "Veuillez entrer l'e-mail et le mot de passe",
+  "connectionError": "Erreur de connexion: {error}",
+  "@connectionError": {
+    "description": "Message d'erreur de connexion",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "accountCreatedSuccessfully": "Compte créé avec succès! Veuillez vous connecter.",
+  
+  "unknown": "Inconnu",
+  "photosAdded": "{count} photo(s) ajoutée(s)",
+  "@photosAdded": {
+    "description": "Nombre de photos ajoutées",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "videosAdded": "{count} vidéo(s) ajoutée(s)",
+  "@videosAdded": {
+    "description": "Nombre de vidéos ajoutées",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audiosAdded": "{count} audio(s) ajouté(s)",
+  "@audiosAdded": {
+    "description": "Nombre d'audios ajoutés",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

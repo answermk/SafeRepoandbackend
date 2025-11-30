@@ -1,0 +1,499 @@
+{
+  "@@locale": "en",
+  "appTitle": "Safe Report",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "welcome": "Welcome",
+  "reportCrime": "Report Crime",
+  "myReports": "My Reports",
+  "messages": "Messages",
+  "profile": "Profile",
+  "dashboard": "Dashboard",
+  "emergency": "Emergency",
+  "communityForum": "Community Forum",
+  "watchGroups": "Watch Groups",
+  "helpSupport": "Help & Support",
+  "settings": "Settings",
+  "logout": "Logout",
+  "login": "Login",
+  "signup": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "forgotPassword": "Forgot Password?",
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "noData": "No data available",
+  "tryAgain": "Try Again",
+  "description": "Description",
+  "location": "Location",
+  "anonymous": "Anonymous",
+  "submitAnonymously": "Submit Anonymously",
+  "addEvidence": "Add Evidence",
+  "photo": "Photo",
+  "video": "Video",
+  "audio": "Audio",
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button text"
+  },
+  "back": "Back",
+  "next": "Next",
+  "previous": "Previous",
+  "close": "Close",
+  "confirm": "Confirm",
+  "yes": "Yes",
+  "no": "No",
+  
+  "signIn": "Sign In",
+  "logIntoYourAccount": "Log Into your account",
+  "rememberMe": "Remember me?",
+  "noAccount": "No Account?",
+  "createAnAccount": "Create an Account",
+  "fullName": "Full Name",
+  "emailAddress": "Email Address",
+  "confirmPassword": "Confirm Password",
+  "registerAnonymously": "Register Anonymously",
+  "enterFullName": "Enter Full Name",
+  "youremailGmailCom": "youremail@gmail.com",
+  "testCredentials": "Test Credentials",
+  "emailTestSafereportCom": "Email: test@safereport.com",
+  "passwordSafeReport123": "Password: SafeReport123",
+  
+  "goodMorning": "Good Morning, {userName}",
+  "@goodMorning": {
+    "description": "Greeting with user name",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "reportNow": "Report Now",
+  "yourCommunitySafetyHub": "Your Community\nSafety Hub",
+  "communityStatus": "Community Status",
+  "thisWeek": "This Week",
+  "avgResponse": "Avg Response",
+  "safetyLevel": "Safety Level",
+  "quickActions": "Quick Actions",
+  "nearbyIncidents": "Nearby Incidents",
+  "nearbyIncidentsCount": "{count} nearby",
+  "@nearbyIncidentsCount": {
+    "description": "Nearby incidents count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAll": "View All",
+  "watchGroupInfo": "Watch Group",
+  "newAlerts": "{count} new alerts",
+  "@newAlerts": {
+    "description": "New alerts count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "safetyEducation": "Safety Education",
+  "learnMore": "Learn More",
+  
+  "selectIncidentType": "Select Incident Type",
+  "pleaseSelectAnIncidentType": "Please select an incident type",
+  "pleaseProvideADescription": "Please provide a description",
+  "suspiciousPerson": "Suspicious Person",
+  "individualActingSuspiciously": "Individual acting suspiciously",
+  "vehicleActivity": "Vehicle Activity",
+  "suspiciousVehicleBehavior": "Suspicious vehicle behavior",
+  "abandonedItem": "Abandoned Item",
+  "unattendedSuspiciousItems": "Unattended suspicious items",
+  "theftBurglary": "Theft/Burglary",
+  "propertyTheftOrBreakIn": "Property theft or break-in",
+  "vandalism": "Vandalism",
+  "propertyDamageOrGraffiti": "Property damage or graffiti",
+  "drugActivity": "Drug Activity",
+  "suspectedDrugRelatedBehavior": "Suspected drug-related behavior",
+  "assaultViolence": "Assault/Violence",
+  "physicalAltercationOrThreat": "Physical altercation or threat",
+  "noiseDisturbance": "Noise Disturbance",
+  "excessiveNoiseComplaint": "Excessive noise complaint",
+  "trespassing": "Trespassing",
+  "unauthorizedEntry": "Unauthorized entry",
+  "other": "Other",
+  "otherIncidentType": "Other incident type",
+  "describeTheIncident": "Describe the incident",
+  "addPhotosVideosOrAudio": "Add Photos, Videos, or Audio",
+  "draftSaved": "Draft saved",
+  "saving": "Saving...",
+  "savedXMinutesAgo": "Saved {minutes} minutes ago",
+  "@savedXMinutesAgo": {
+    "description": "Draft saved time",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreDraft": "Restore Draft",
+  "youHaveAnUnsavedDraft": "You have an unsaved draft. Would you like to restore it?",
+  "restore": "Restore",
+  "discard": "Discard",
+  "continueToLocation": "Continue to Location",
+  
+  "all": "All",
+  "active": "Active",
+  "resolved": "Resolved",
+  "submitted": "Submitted",
+  "reviewing": "Reviewing",
+  "sortBy": "Sort By",
+  "date": "Date",
+  "status": "Status",
+  "type": "Type",
+  "deleteReports": "Delete Reports",
+  "areYouSureYouWantToDelete": "Are you sure you want to delete {count} report(s)?",
+  "@areYouSureYouWantToDelete": {
+    "description": "Delete confirmation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsDeleted": "Reports deleted",
+  "noReportsSelected": "No reports selected",
+  "exportToPDF": "Export to PDF",
+  "shareReports": "Share Reports",
+  "mySafetyReports": "My Safety Reports",
+  
+  "accountInformation": "Account Information",
+  "name": "Name",
+  "phone": "Phone",
+  "memberSince": "Member since {date}",
+  "@memberSince": {
+    "description": "Member since date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "myProfile": "My Profile",
+  "accountSettings": "Account Settings",
+  "changePassword": "Change Password",
+  "editProfile": "Edit Profile",
+  "myImpact": "My Impact",
+  "offlineQueue": "Offline Queue",
+  "accessibility": "Accessibility",
+  "language": "Language",
+  
+  "accountSettingsTitle": "Account Settings",
+  "manageYourPreferences": "Manage your preferences",
+  "securitySettings": "Security Settings",
+  "lastChangedXDaysAgo": "Last changed {days} days ago",
+  "@lastChangedXDaysAgo": {
+    "description": "Password last changed",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "update": "Update",
+  "twoFactorAuthentication": "Two-Factor Authentication",
+  "addExtraSecurityToYourAccount": "Add extra security to your account",
+  "biometricLogin": "Biometric Login",
+  "useFingerprintOrFaceId": "Use fingerprint or face ID",
+  "notificationsPreferences": "Notifications Preferences",
+  "pushNotifications": "Push Notifications",
+  "reportUpdatesAndAlerts": "Report updates and alerts",
+  "emailUpdates": "Email Updates",
+  "weeklyCommunitySummary": "Weekly community summary",
+  "watchGroupAlerts": "Watch Group Alerts",
+  "messagesFromYourGroups": "Messages from your groups",
+  "privacySettings": "Privacy Settings",
+  "defaultAnonymousMode": "Default Anonymous Mode",
+  "alwaysSubmitReportsAnonymously": "Always submit reports anonymously",
+  "locationSharing": "Location Sharing",
+  "sharePreciseLocationWithReports": "Share precise location with reports",
+  "anonymousReportingGuide": "Anonymous Reporting Guide",
+  "learnAboutPrivacyProtections": "Learn about privacy protections",
+  "languagePreferences": "Language Preferences",
+  "appLanguage": "App Language",
+  "english": "English",
+  "french": "French",
+  "kinyarwanda": "Kinyarwanda",
+  "swahili": "Swahili",
+  "spanish": "Spanish",
+  "offlineReports": "Offline Reports",
+  "manageReportsWhenOffline": "Manage reports when offline",
+  
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "passwordStrength": "Password Strength",
+  "weak": "Weak",
+  "medium": "Medium",
+  "strong": "Strong",
+  "veryStrong": "Very Strong",
+  "passwordRequirements": "Password Requirements",
+  "atLeast8Characters": "At least 8 characters",
+  "oneUppercaseLetter": "One uppercase letter",
+  "oneLowercaseLetter": "One lowercase letter",
+  "oneNumber": "One number",
+  "oneSpecialCharacter": "One special character",
+  "passwordChangedSuccessfully": "Password changed successfully!",
+  
+  "accessibilitySettings": "Accessibility Settings",
+  "customizeTheAppToMakeItEasierToUse": "Customize the app to make it easier to use",
+  "fontSize": "Font Size",
+  "adjustTextSize": "Adjust text size for better readability",
+  "highContrastMode": "High Contrast Mode",
+  "improveVisibilityWithHighContrast": "Improve visibility with high contrast colors",
+  "textToSpeech": "Text-to-Speech",
+  "readContentAloud": "Read content aloud",
+  "accessibilitySettingsSavedSuccessfully": "Accessibility settings saved successfully!",
+  "errorSavingSettings": "Error saving settings: {error}",
+  "@errorSavingSettings": {
+    "description": "Error saving settings",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "helpSupportTitle": "Help & Support",
+  "getAssistanceAndAnswers": "Get assistance and answers",
+  "needHelp": "Need Help?",
+  "wereHereToAssistYou247": "We're here to assist you 24/7",
+  "startLiveChat": "Start Live Chat",
+  "quickHelp": "Quick Help",
+  "frequentlyAskedQuestions": "Frequently Asked Questions",
+  "commonQuestionsAndAnswers": "Common questions and answers",
+  "reportingGuidelines": "Reporting Guidelines",
+  "bestPracticesForSafetyReporting": "Best practices for safety reporting",
+  "communityGuidelines": "Community Guidelines",
+  "rulesAndExpectations": "Rules and expectations",
+  "contactOptions": "Contact Options",
+  "emailSupport": "Email Support",
+  "supportSafereportCom": "support@saferreport.com",
+  "email": "Email",
+  "phoneSupport": "Phone Support",
+  "call": "Call",
+  "sendFeedback": "Send Feedback",
+  "tellUsHowWeCanImprove": "Tell us how we can improve ......",
+  "submitFeedback": "Submit Feedback",
+  "couldNotOpenEmailClient": "Could not open email client",
+  "couldNotMakePhoneCall": "Could not make phone call: {error}",
+  "@couldNotMakePhoneCall": {
+    "description": "Phone call error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "emergencyMode": "Emergency Mode",
+  "helpIsOnTheWay": "Help is on the way.\nYour location is being shared with emergency services.",
+  "policeETA": "Police ETA",
+  "xToYMinutes": "{min}-{max} minutes",
+  "@xToYMinutes": {
+    "description": "ETA range",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "callNow": "CALL NOW",
+  "cancelEmergency": "Cancel Emergency",
+  "yourEmergencyContactsHaveBeenNotified": "Your emergency contacts have been notified",
+  "selectEmergencyService": "Select Emergency Service",
+  "policeEmergency": "Police Emergency",
+  "fireDepartment": "Fire Department",
+  "ambulance": "Ambulance",
+  "nonEmergencyPolice": "Non-Emergency Police",
+  
+  "communityForumTitle": "Community Forum",
+  "discussLocalSafetys": "Discuss local safetys",
+  "popular": "Popular",
+  "recent": "Recent",
+  "following": "Following",
+  "createNewPost": "Create New Post",
+  "recentPostsComingSoon": "Recent posts coming soon...",
+  "followingPostsComingSoon": "Following posts coming soon...",
+  "bestHomeSecurityCameras2023": "Best home security cameras 2023?",
+  "neighborhoodPatrolTips": "Neighborhood patrol tips",
+  "holidaySafetyAdvisory": "Holiday Safety Advisory",
+  "comments": "Comments",
+  "helpful": "Helpful",
+  "hoursAgo": "{hours} hrs ago",
+  "@hoursAgo": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Yesterday",
+  "daysAgo": "{days} days ago",
+  "@daysAgo": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "myWatchGroups": "My Watch Groups",
+  "communitySafetyPartnerships": "Community safety partnerships",
+  "oakStreetResidential": "Oak Street Residential",
+  "oakStreetNeighborhood": "Oak Street Neighborhood",
+  "downtownBusiness": "Downtown Business",
+  "businessDistrict": "Business District",
+  "members": "Members",
+  "alerts": "Alerts",
+  "coverage": "Coverage",
+  "schedule": "Schedule",
+  "monFri9AM5PM": "Mon-Fri 9AM-5PM",
+  "businessHours": "Business hours",
+  "viewMessages": "View Messages",
+  "viewDetails": "View Details",
+  "findMoreGroups": "Find More Groups",
+  "discoverAndJoinWatchGroups": "Discover and join watch groups in your area",
+  "browseGroups": "Browse Groups",
+  "yourImpact": "Your Impact",
+  "contributionsToCommunitySafety": "Your contributions to community safety",
+  "reportsSubmitted": "Reports Submitted",
+  "watchGroupsJoined": "Watch Groups Joined",
+  "helpfulResponses": "Helpful Responses",
+  
+  "notificationsTitle": "Notifications",
+  "enableNotifications": "Enable Notifications",
+  "stayInformedAboutImportantUpdates": "Stay informed about important updates and alerts",
+  "enable": "Enable",
+  "skip": "Skip",
+  
+  "messagesTitle": "Messages",
+  "yourCommunications": "Your communications",
+  "reportCommunications": "Report Communications",
+  "watchGroups": "Watch Groups",
+  "directContact": "Direct Contact",
+  "officer": "Officer",
+  "newMessage": "New Message",
+  "viewAllMessages": "View All Messages",
+  "joinDiscussion": "Join Discussion",
+  
+  "anonymousReporting": "Anonymous Reporting",
+  "whatIsHidden": "What is Hidden",
+  "whatIsShared": "What is Shared",
+  "benefits": "Benefits",
+  "legalProtection": "Legal Protection",
+  "faq": "FAQ",
+  
+  "appLanguageTitle": "App Language",
+  "selectYourPreferredLanguage": "Select your preferred language:",
+  "saveLanguage": "Save Language",
+  
+  "nearbyIncidentsTitle": "Nearby Incidents",
+  "mapView": "Map View",
+  "radius": "Radius",
+  "timeFilter": "Time Filter",
+  "km": "km",
+  "h": "h",
+  "minAgo": "{minutes} min ago",
+  "@minAgo": {
+    "description": "Minutes ago",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hourAgo": "{hours} hour ago",
+  "@hourAgo": {
+    "description": "Hour ago",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoPlural": "{hours} hours ago",
+  "@hoursAgoPlural": {
+    "description": "Hours ago",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "distance": "Distance",
+  "severity": "Severity",
+  "low": "Low",
+  "medium": "Medium",
+  "high": "High",
+  
+  "safeReport": "SafeReport",
+  "aRealTimeCrimePreventionPlatform": "A Real-Time Crime Prevention Platform uses smart technology to detect and respond to crime instantly, helping keep communities safe through quick alerts and data-driven actions.",
+  "getStarted": "Get Started",
+  
+  "loginSuccessful": "Login successful! Welcome to SafeReport",
+  "invalidEmailOrPassword": "Invalid email or password. Try sample credentials.",
+  "pleaseEnterBothEmailAndPassword": "Please enter both email and password",
+  "connectionError": "Connection error: {error}",
+  "@connectionError": {
+    "description": "Connection error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "accountCreatedSuccessfully": "Account created successfully! Please sign in.",
+  
+  "unknown": "Unknown",
+  "photosAdded": "{count} photo(s) added",
+  "@photosAdded": {
+    "description": "Photos added count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "videosAdded": "{count} video(s) added",
+  "@videosAdded": {
+    "description": "Videos added count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audiosAdded": "{count} audio(s) added",
+  "@audiosAdded": {
+    "description": "Audios added count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}
