@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'check_email_screen.dart';
 
@@ -19,12 +20,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Future<void> _handleSendResetLink() async {
-    // Handle send reset link - backend functionality
-    print('Send Reset Link button pressed');
-    print('Email: ${_emailController.text}');
-
-    // TODO: Implement actual password reset logic with backend
-    // For now, simulate sending reset link
+    final email = _emailController.text.trim();
+    
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email address'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     // Show loading indicator
     showDialog(
@@ -35,19 +41,39 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ),
     );
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final result = await AuthService.forgotPassword(email);
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
 
-    // Close loading dialog
-    Navigator.of(context).pop();
-
-    // Navigate to check email screen after successful request
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const CheckEmailScreen(),
-      ),
-    );
+      if (result['success'] == true) {
+        // Navigate to check email screen with email
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CheckEmailScreen(email: email),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? 'Failed to send reset code'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

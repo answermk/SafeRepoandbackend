@@ -91,6 +91,13 @@ public class UserServiceImpl implements UserService {
         }
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+            user.setPasswordChangedAt(java.time.Instant.now());
+        }
+        if (request.getAnonymousMode() != null) {
+            user.setAnonymousMode(request.getAnonymousMode());
+        }
+        if (request.getLocationSharing() != null) {
+            user.setLocationSharing(request.getLocationSharing());
         }
         
         user = userRepository.save(user);
@@ -131,6 +138,13 @@ public class UserServiceImpl implements UserService {
         }
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+            user.setPasswordChangedAt(java.time.Instant.now());
+        }
+        if (request.getAnonymousMode() != null) {
+            user.setAnonymousMode(request.getAnonymousMode());
+        }
+        if (request.getLocationSharing() != null) {
+            user.setLocationSharing(request.getLocationSharing());
         }
         
         user = userRepository.save(user);
@@ -175,16 +189,52 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO registerCivilian(SignupRequest request) {
+        // Check if email already exists
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already registered. Please use a different email or sign in.");
+        }
+        
+        // Check if username already exists (if provided)
+        if (request.getUsername() != null && !request.getUsername().trim().isEmpty()) {
+            if (userRepository.existsByUsername(request.getUsername())) {
+                throw new IllegalArgumentException("Username already taken. Please choose a different username.");
+            }
+        }
+        
+        // Auto-generate username from email if not provided
+        String finalUsername = request.getUsername();
+        if (finalUsername == null || finalUsername.trim().isEmpty()) {
+            finalUsername = request.getEmail().split("@")[0]; // Use part before @
+            // Ensure username is unique
+            String baseUsername = finalUsername;
+            int counter = 1;
+            while (userRepository.existsByUsername(finalUsername)) {
+                finalUsername = baseUsername + counter;
+                counter++;
+            }
+        }
+        
         User user = User.builder()
             .fullName(request.getFullName())
             .email(request.getEmail())
             .phoneNumber(request.getPhoneNumber())
-            .username(request.getUsername())
+            .username(finalUsername)
             .passwordHash(passwordEncoder.encode(request.getPassword()))
             .role(UserRole.CIVILIAN)
+            .enabled(true)
+            .isActive(true)
             .build();
         user = userRepository.save(user);
-        emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+        
+        // Try to send welcome email, but don't fail if email service is down
+        try {
+            emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+        } catch (Exception e) {
+            log.warn("⚠️ Warning: Failed to send welcome email to {}: {}. User registration continues.", 
+                    user.getEmail(), e.getMessage());
+            // Continue anyway - user was created successfully
+        }
+        
         return userMapper.toDto(user);
     }
 
@@ -210,7 +260,7 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional
-    public void changePassword(UUID userId, ChangePasswordRequest request) {
+    public void changePassword(UUID userId, UpdatePasswordRequest request) {
         log.info("Changing password for user {}", userId);
         
         // Validate new password and confirmation match
@@ -237,8 +287,21 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("New password must be at least 8 characters long");
         }
         
-        // Update password
+        // Check if password was changed within last 30 days (except for password reset flow)
+        if (user.getPasswordChangedAt() != null) {
+            java.time.Instant thirtyDaysAgo = java.time.Instant.now().minusSeconds(30L * 24 * 60 * 60);
+            if (user.getPasswordChangedAt().isAfter(thirtyDaysAgo)) {
+                long daysSinceChange = java.time.Duration.between(user.getPasswordChangedAt(), java.time.Instant.now()).toDays();
+                throw new IllegalArgumentException(
+                    String.format("Password can only be changed once every 30 days. Last changed %d days ago. Please wait %d more days.",
+                        daysSinceChange, 30 - daysSinceChange)
+                );
+            }
+        }
+        
+        // Update password and set change timestamp
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        user.setPasswordChangedAt(java.time.Instant.now());
         userRepository.save(user);
         
         log.info("Password changed successfully for user {}", userId);

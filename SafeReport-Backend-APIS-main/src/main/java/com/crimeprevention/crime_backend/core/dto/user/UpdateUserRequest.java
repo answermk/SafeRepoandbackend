@@ -15,4 +15,6 @@ public class UpdateUserRequest {
     private String password;
     private UserRole role;
     private Boolean isActive;  // Added to support block/unblock functionality
+    private Boolean anonymousMode;  // Privacy setting: default anonymous reporting
+    private Boolean locationSharing;  // Privacy setting: share location with reports
 }

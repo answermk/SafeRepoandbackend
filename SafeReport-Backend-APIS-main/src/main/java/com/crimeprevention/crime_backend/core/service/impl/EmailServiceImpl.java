@@ -12,17 +12,25 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
+    @Autowired(required = false)
     private JavaMailSender mailSender;
     
-    @Value("${app.email.from}")
+    @Value("${app.email.from:}")
     private String fromEmail;
     
-    @Value("${app.email.from-name}")
+    @Value("${app.email.from-name:Crime Prevention System}")
     private String fromName;
+    
+    @Value("${app.email.enabled:false}")
+    private boolean emailEnabled;
 
     @Override
     public void sendPasswordResetEmail(String to, String resetLink, String userName) {
+        if (!emailEnabled || mailSender == null) {
+            log.warn("⚠️ Email service is disabled. Password reset email not sent to {}. Reset link: {}", to, resetLink);
+            throw new RuntimeException("Email service is not configured. Please contact administrator.");
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -39,16 +47,56 @@ public class EmailServiceImpl implements EmailService {
             );
             
             mailSender.send(message);
-            log.info("📧 Real password reset email sent to {} for user {}", to, userName);
+            log.info("📧 Password reset email sent to {} for user {}", to, userName);
             
         } catch (Exception e) {
             log.error("Failed to send password reset email to {}: {}", to, e.getMessage());
+            log.warn("⚠️ Password reset email failed. User may need to use alternative method.");
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
+
+    @Override
+    public void sendPasswordResetCode(String to, String code, String userName) {
+        if (!emailEnabled || mailSender == null) {
+            log.warn("⚠️ Email service is disabled. Password reset code not sent to {}.", to);
+            log.info("🔑 DEVELOPMENT MODE: Password reset code for {} is: {}", to, code);
+            log.warn("⚠️ In production, email service must be configured for password reset to work.");
+            throw new RuntimeException("Email service is not configured. Please contact administrator.");
+        }
+        
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(to);
+            message.setSubject("Password Reset Code - Crime Prevention System");
+            message.setText(
+                "Hello " + userName + ",\n\n" +
+                "You have requested a password reset for your account.\n\n" +
+                "Your verification code is: " + code + "\n\n" +
+                "Enter this code in the app to reset your password.\n\n" +
+                "This code will expire in 15 minutes.\n\n" +
+                "If you didn't request this, please ignore this email.\n\n" +
+                "Best regards,\nCrime Prevention Team"
+            );
+            
+            mailSender.send(message);
+            log.info("📧 Password reset code sent to {} for user {}", to, userName);
+            
+        } catch (Exception e) {
+            log.error("Failed to send password reset code to {}: {}", to, e.getMessage());
+            log.warn("⚠️ Password reset code failed. User may need to use alternative method.");
             throw new RuntimeException("Failed to send email", e);
         }
     }
 
     @Override
     public void sendWelcomeEmail(String to, String userName) {
+        if (!emailEnabled || mailSender == null) {
+            log.debug("📧 Email service is disabled. Welcome email not sent to {}. User registration continues.", to);
+            return; // Don't throw - registration should succeed even without email
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -67,16 +115,22 @@ public class EmailServiceImpl implements EmailService {
             );
             
             mailSender.send(message);
-            log.info("📧 Real welcome email sent to {} for user {}", to, userName);
+            log.info("📧 Welcome email sent to {} for user {}", to, userName);
             
         } catch (Exception e) {
             log.error("Failed to send welcome email to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send email", e);
+            log.warn("⚠️ User registration will continue despite email failure. Check email configuration if needed.");
+            // Don't throw exception - email failure shouldn't block user registration
         }
     }
 
     @Override
     public void sendAccountUpdateEmail(String to, String userName, String updateType) {
+        if (!emailEnabled || mailSender == null) {
+            log.debug("📧 Email service is disabled. Account update email not sent to {}.", to);
+            return;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -92,16 +146,21 @@ public class EmailServiceImpl implements EmailService {
             );
             
             mailSender.send(message);
-            log.info("📧 Real account update email sent to {} for user {}: {}", to, userName, updateType);
+            log.info("📧 Account update email sent to {} for user {}: {}", to, userName, updateType);
             
         } catch (Exception e) {
             log.error("Failed to send account update email to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send email", e);
+            // Don't throw exception - email failure shouldn't block account updates
         }
     }
 
     @Override
     public void sendPasswordChangeEmail(String to, String userName) {
+        if (!emailEnabled || mailSender == null) {
+            log.debug("📧 Email service is disabled. Password change email not sent to {}.", to);
+            return;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -115,16 +174,21 @@ public class EmailServiceImpl implements EmailService {
             );
             
             mailSender.send(message);
-            log.info("📧 Real password change email sent to {} for user {}", to, userName);
+            log.info("📧 Password change email sent to {} for user {}", to, userName);
             
         } catch (Exception e) {
             log.error("Failed to send password change email to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send email", e);
+            // Don't throw exception - email failure shouldn't block password changes
         }
     }
 
     @Override
     public void sendNewsNotification(String to, String userName, String newsTitle, String newsContent) {
+        if (!emailEnabled || mailSender == null) {
+            log.debug("📧 Email service is disabled. News notification email not sent to {}.", to);
+            return;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -140,11 +204,11 @@ public class EmailServiceImpl implements EmailService {
             );
             
             mailSender.send(message);
-            log.info("📧 Real news notification email sent to {} for user {}: {}", to, userName, newsTitle);
+            log.info("📧 News notification email sent to {} for user {}: {}", to, userName, newsTitle);
             
         } catch (Exception e) {
             log.error("Failed to send news notification email to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send email", e);
+            // Don't throw exception - email failure shouldn't block notifications
         }
     }
 } 

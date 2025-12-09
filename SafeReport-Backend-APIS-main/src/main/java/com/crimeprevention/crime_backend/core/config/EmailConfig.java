@@ -1,6 +1,8 @@
 package com.crimeprevention.crime_backend.core.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,22 +11,37 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
+@Slf4j
 public class EmailConfig {
 
-    @Value("${spring.mail.host}")
+    @Value("${spring.mail.host:smtp.gmail.com}")
     private String host;
 
-    @Value("${spring.mail.port}")
+    @Value("${spring.mail.port:587}")
     private int port;
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:}")
     private String username;
 
-    @Value("${spring.mail.password}")
+    @Value("${spring.mail.password:}")
     private String password;
 
+    @Value("${app.email.enabled:false}")
+    private boolean emailEnabled;
+
     @Bean
+    @ConditionalOnProperty(name = "app.email.enabled", havingValue = "true", matchIfMissing = false)
     public JavaMailSender javaMailSender() {
+        // Validate email configuration
+        if (username == null || username.trim().isEmpty()) {
+            log.warn("⚠️ Email is enabled but EMAIL_USERNAME is not set. Email sending will fail.");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            log.warn("⚠️ Email is enabled but EMAIL_PASSWORD is not set. Email sending will fail.");
+        }
+
+        log.info("📧 Email service is ENABLED. SMTP Host: {}, Port: {}, Username: {}", host, port, username);
+        
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);
@@ -36,8 +53,11 @@ public class EmailConfig {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.starttls.required", "true");
-        props.put("mail.debug", "true"); // Enable for debugging
+        props.put("mail.debug", "false"); // Set to true for debugging email issues
 
         return mailSender;
     }
+
+    // Note: If email is disabled, no JavaMailSender bean will be created
+    // EmailServiceImpl will handle null mailSender gracefully
 } 

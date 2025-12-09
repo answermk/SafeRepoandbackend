@@ -14,6 +14,40 @@ class ReportService {
     return await TokenManager.getToken();
   }
   
+  /// Maps frontend incident types to backend CrimeType enum values
+  static String _mapIncidentTypeToCrimeType(String incidentType) {
+    // Convert to lowercase for case-insensitive matching
+    final lowerType = incidentType.toLowerCase().replaceAll('_', '_');
+    
+    // Map frontend incident types to backend CrimeType enum
+    final Map<String, String> typeMapping = {
+      'suspicious_person': 'OTHER', // Backend doesn't have SUSPICIOUS_PERSON
+      'vehicle_activity': 'TRAFFIC_VIOLATION',
+      'abandoned_item': 'OTHER',
+      'theft': 'THEFT',
+      'vandalism': 'VANDALISM',
+      'drug_activity': 'DRUG_OFFENSE',
+      'assault': 'ASSAULT',
+      'noise': 'PUBLIC_DISORDER',
+      'trespassing': 'TRESPASSING',
+      'other': 'OTHER',
+      'burglary': 'BURGLARY',
+      'robbery': 'ROBBERY',
+      'fraud': 'FRAUD',
+      'cybercrime': 'CYBERCRIME',
+      'domestic_violence': 'DOMESTIC_VIOLENCE',
+      'sexual_assault': 'SEXUAL_ASSAULT',
+      'harassment': 'HARASSMENT',
+      'weapon_offense': 'WEAPON_OFFENSE',
+      'arson': 'ARSON',
+      'murder': 'MURDER',
+      'kidnapping': 'KIDNAPPING',
+    };
+    
+    // Return mapped type or default to OTHER
+    return typeMapping[lowerType] ?? 'OTHER';
+  }
+  
   /// Create a new report
   /// Backend: POST /api/reports
   /// Supports both JSON (no files) and multipart/form-data (with files)
@@ -35,6 +69,12 @@ class ReportService {
       
       // If no files, use JSON request
       if (mediaFiles == null || mediaFiles.isEmpty) {
+        // Map incidentType to title (use incidentType as title for now)
+        final title = incidentType.replaceAll('_', ' ').split(' ').map((word) => 
+          word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)
+        ).join(' ');
+        
+        // Send location coordinates directly to backend
         final response = await http.post(
           Uri.parse('${AppConfig.apiBaseUrl}/reports'),
           headers: {
@@ -42,13 +82,13 @@ class ReportService {
             'Authorization': 'Bearer $token',
           },
           body: jsonEncode({
-            'incidentType': incidentType,
+            'title': title,
             'description': description,
             'latitude': latitude,
             'longitude': longitude,
             if (address != null) 'address': address,
+            'crimeType': _mapIncidentTypeToCrimeType(incidentType), // Map to backend enum
             'isAnonymous': isAnonymous,
-            if (priority != null) 'priority': priority,
           }),
         );
         
@@ -69,26 +109,57 @@ class ReportService {
       var request = http.MultipartRequest('POST', Uri.parse('${AppConfig.apiBaseUrl}/reports'));
       request.headers['Authorization'] = 'Bearer $token';
       
-      // Add JSON data as a part
-      request.fields['request'] = jsonEncode({
-        'incidentType': incidentType,
+      // Map incidentType to title (use incidentType as title for now)
+      final title = incidentType.replaceAll('_', ' ').split(' ').map((word) => 
+        word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)
+      ).join(' ');
+      
+      // Create JSON request body
+      final requestJson = jsonEncode({
+        'title': title,
         'description': description,
         'latitude': latitude,
         'longitude': longitude,
         if (address != null) 'address': address,
+        'crimeType': _mapIncidentTypeToCrimeType(incidentType), // Map to backend enum
         'isAnonymous': isAnonymous,
-        if (priority != null) 'priority': priority,
       });
       
-      // Add files
+      // Add JSON data as a multipart part with proper content type
+      // Spring Boot's @RequestPart expects the part to have Content-Type: application/json
+      final jsonBytes = utf8.encode(requestJson);
+      final jsonPart = http.MultipartFile.fromBytes(
+        'request',
+        jsonBytes,
+        filename: 'request.json',
+        contentType: http.MediaType('application', 'json'),
+      );
+      request.files.add(jsonPart);
+      
+      // Add evidence files
       for (var file in mediaFiles) {
         var fileStream = http.ByteStream(file.openRead());
         var length = await file.length();
+        
+        // Determine content type from file extension
+        final fileExtension = path.extension(file.path).toLowerCase();
+        String? contentType;
+        if (['.jpg', '.jpeg'].contains(fileExtension)) {
+          contentType = 'image/jpeg';
+        } else if (fileExtension == '.png') {
+          contentType = 'image/png';
+        } else if (['.mp4', '.mov'].contains(fileExtension)) {
+          contentType = 'video/mp4';
+        } else if (fileExtension == '.pdf') {
+          contentType = 'application/pdf';
+        }
+        
         var multipartFile = http.MultipartFile(
           'files',
           fileStream,
           length,
           filename: path.basename(file.path),
+          contentType: contentType != null ? http.MediaType.parse(contentType) : null,
         );
         request.files.add(multipartFile);
       }

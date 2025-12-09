@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import '../services/token_manager.dart';
+import '../services/community_service.dart';
 import 'emergency_mode_screen.dart';
 import 'report_crime_screen.dart';
 import 'my_watch_groups_screen.dart';
@@ -21,22 +24,123 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
   // These will be populated from backend
-  String userName = "Answer";
-  String thisWeekReports = "12 reports";
-  String avgResponse = "8 minutes";
-  String safetyLevel = "Good";
+  String userName = "User";
+  String thisWeekReports = "Loading...";
+  String avgResponse = "Loading...";
+  String safetyLevel = "Loading...";
   String watchGroupInfo = "Oak Street Watch • 2 new alerts";
   int nearbyIncidentsCount = 5; // NEW
+  bool isLoadingCommunityStatus = true;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadCommunityStatus();
   }
 
   Future<void> _loadUserData() async {
     print('Loading user data from backend...');
-    // TODO: Implement backend calls
+    // Load username from stored token
+    final username = await TokenManager.getUsername();
+    if (username != null && username.isNotEmpty) {
+      setState(() {
+        userName = username;
+      });
+    }
+  }
+
+  Future<void> _loadCommunityStatus() async {
+    try {
+      setState(() {
+        isLoadingCommunityStatus = true;
+      });
+
+      // Get user's current location
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Use default location (Kigali) if location services are disabled
+        _fetchCommunityStatus(-1.9441, 30.0619);
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Use default location if permission denied
+          _fetchCommunityStatus(-1.9441, 30.0619);
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        // Use default location if permission permanently denied
+        _fetchCommunityStatus(-1.9441, 30.0619);
+        return;
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+
+      _fetchCommunityStatus(position.latitude, position.longitude);
+    } catch (e) {
+      print('Error getting location: $e');
+      // Use default location on error
+      _fetchCommunityStatus(-1.9441, 30.0619);
+    }
+  }
+
+  Future<void> _fetchCommunityStatus(double latitude, double longitude) async {
+    try {
+      final result = await CommunityService.getCommunityStatus(
+        latitude: latitude,
+        longitude: longitude,
+        radiusKm: 5.0, // 5km radius
+      );
+
+      if (result['success'] == true && result['data'] != null) {
+        final data = result['data'] as Map<String, dynamic>;
+        setState(() {
+          final weekCount = data['thisWeekReports'] ?? 0;
+          thisWeekReports = '$weekCount ${weekCount == 1 ? 'report' : 'reports'}';
+          avgResponse = data['avgResponse'] ?? 'N/A';
+          safetyLevel = data['safetyLevel'] ?? 'Unknown';
+          isLoadingCommunityStatus = false;
+        });
+      } else {
+        setState(() {
+          thisWeekReports = '0 reports';
+          avgResponse = 'N/A';
+          safetyLevel = 'Unknown';
+          isLoadingCommunityStatus = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching community status: $e');
+      setState(() {
+        thisWeekReports = 'Error';
+        avgResponse = 'Error';
+        safetyLevel = 'Error';
+        isLoadingCommunityStatus = false;
+      });
+    }
+  }
+
+  /// Get greeting based on time of day
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening';
+    } else {
+      return 'Good Evening'; // Night time (21:00 - 04:59)
+    }
   }
 
   @override
@@ -154,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           const SizedBox(height: 15),
           Text(
-            'Good Morning, $userName',
+            '${_getGreeting()}, $userName',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -244,7 +348,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 12),
             _buildStatusItem('Avg Response', avgResponse, const Color(0xFF3B82F6)),
             const SizedBox(height: 12),
-            _buildStatusItem('Safety Level', safetyLevel, const Color(0xFF10B981)),
+            _buildStatusItem('Safety Level', safetyLevel, _getSafetyLevelColor(safetyLevel)),
             const SizedBox(height: 15),
             Container(
               padding: const EdgeInsets.all(8),
@@ -286,16 +390,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: valueColor,
-          ),
-        ),
+        isLoadingCommunityStatus && value == 'Loading...'
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(valueColor),
+                ),
+              )
+            : Text(
+                value,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: valueColor,
+                ),
+              ),
       ],
     );
+  }
+
+  Color _getSafetyLevelColor(String level) {
+    switch (level.toLowerCase()) {
+      case 'excellent':
+        return const Color(0xFF10B981); // Green
+      case 'good':
+        return const Color(0xFF3B82F6); // Blue
+      case 'moderate':
+        return const Color(0xFFFFA500); // Orange
+      case 'caution':
+        return const Color(0xFFFF9800); // Dark Orange
+      case 'high risk':
+        return const Color(0xFFDC2626); // Red
+      default:
+        return Colors.grey;
+    }
   }
 
   // ENHANCED - Added My Impact card

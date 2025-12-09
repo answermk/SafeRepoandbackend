@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import '../widgets/map_picker_widget.dart';
+import '../services/location_service.dart';
 import 'review_report_screen.dart';
 
 class LocationScreen extends StatefulWidget {
@@ -11,15 +15,18 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  bool isLocationDetected = true;
+  bool isLocationDetected = false;
   bool sendLocationDirectly = true;
   final TextEditingController addressController = TextEditingController();
+  bool _isLoadingLocation = false;
+  bool _isLoadingAddress = false;
 
   // Location data
-  String detectedLocation = "123 Main Street, Downtown";
+  String detectedLocation = "";
   String locationAccuracy = "±5 meters";
   double? selectedLatitude;
   double? selectedLongitude;
+  String _locationSource = "none"; // "map", "manual", "gps"
 
   @override
   void initState() {
@@ -28,20 +35,166 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    // TODO: Implement actual location detection
-    print('Getting current location...');
+    setState(() {
+      _isLoadingLocation = true;
+    });
 
-    // Simulate location detection
-    // final location = await LocationService.getCurrentLocation();
-    // setState(() {
-    //   detectedLocation = location.address;
-    //   locationAccuracy = "±${location.accuracy.toInt()} meters";
-    //   selectedLatitude = location.latitude;
-    //   selectedLongitude = location.longitude;
-    // });
+    try {
+      // Request location permissions
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          selectedLatitude = -1.9441; // Default to Kigali coordinates
+          selectedLongitude = 30.0619;
+          _isLoadingLocation = false;
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            selectedLatitude = -1.9441; // Default to Kigali coordinates
+            selectedLongitude = 30.0619;
+            _isLoadingLocation = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          selectedLatitude = -1.9441; // Default to Kigali coordinates
+          selectedLongitude = 30.0619;
+          _isLoadingLocation = false;
+        });
+        return;
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        selectedLatitude = position.latitude;
+        selectedLongitude = position.longitude;
+        locationAccuracy = "±${position.accuracy.toInt()} meters";
+        _isLoadingLocation = false;
+      });
+
+      // Reverse geocode to get address
+      await _reverseGeocode(selectedLatitude!, selectedLongitude!);
+    } catch (e) {
+      print('Error getting location: $e');
+      setState(() {
+        selectedLatitude = -1.9441; // Default to Kigali coordinates
+        selectedLongitude = 30.0619;
+        _isLoadingLocation = false;
+      });
+    }
+  }
+
+  Future<void> _reverseGeocode(double lat, double lng) async {
+    setState(() {
+      _isLoadingAddress = true;
+    });
+
+    try {
+      // Use geocoding package for reverse geocoding
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+      
+      if (placemarks.isNotEmpty) {
+        final place = placemarks[0];
+        final address = _formatAddress(place, lat, lng);
+        
+        setState(() {
+          detectedLocation = address;
+          isLocationDetected = true;
+          _isLoadingAddress = false;
+        });
+      } else {
+        setState(() {
+          detectedLocation = "$lat, $lng";
+          isLocationDetected = true;
+          _isLoadingAddress = false;
+        });
+      }
+    } catch (e) {
+      print('Error reverse geocoding: $e');
+      setState(() {
+        detectedLocation = "$lat, $lng";
+        isLocationDetected = true;
+        _isLoadingAddress = false;
+      });
+    }
+  }
+
+  String _formatAddress(Placemark place, double lat, double lng) {
+    final parts = <String>[];
+    if (place.street != null && place.street!.isNotEmpty) {
+      parts.add(place.street!);
+    }
+    if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+      parts.add(place.subLocality!);
+    }
+    if (place.locality != null && place.locality!.isNotEmpty) {
+      parts.add(place.locality!);
+    }
+    if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+      parts.add(place.administrativeArea!);
+    }
+    if (place.country != null && place.country!.isNotEmpty) {
+      parts.add(place.country!);
+    }
+    
+    // If no address parts found, return coordinates as fallback
+    return parts.isNotEmpty ? parts.join(', ') : "$lat, $lng";
+  }
+
+  void _onMapLocationSelected(double lat, double lng) {
+    setState(() {
+      selectedLatitude = lat;
+      selectedLongitude = lng;
+      _locationSource = "map";
+      addressController.clear(); // Clear manual input when map is used
+    });
+    
+    // Reverse geocode the selected location
+    _reverseGeocode(lat, lng);
+  }
+
+  void _onManualAddressChanged(String value) {
+    if (value.trim().isNotEmpty) {
+      setState(() {
+        _locationSource = "manual";
+        detectedLocation = value;
+        isLocationDetected = true;
+        // Clear map coordinates when manual input is used
+        selectedLatitude = null;
+        selectedLongitude = null;
+      });
+    } else {
+      setState(() {
+        if (_locationSource == "manual") {
+          isLocationDetected = false;
+          _locationSource = "none";
+        }
+      });
+    }
   }
 
   Future<Map<String, dynamic>> _saveLocationData() async {
+    // Validate that at least one location method is used
+    final hasMapLocation = _locationSource == "map" && selectedLatitude != null && selectedLongitude != null;
+    final hasManualLocation = _locationSource == "manual" && addressController.text.trim().isNotEmpty;
+    
+    if (!hasMapLocation && !hasManualLocation) {
+      throw Exception('Please select a location on the map or enter an address manually');
+    }
+
     // Prepare location data for backend
     final locationData = {
       'detectedLocation': detectedLocation,
@@ -50,13 +203,11 @@ class _LocationScreenState extends State<LocationScreen> {
       'latitude': selectedLatitude,
       'longitude': selectedLongitude,
       'accuracy': locationAccuracy,
+      'locationSource': _locationSource,
       'timestamp': DateTime.now().toIso8601String(),
     };
 
     print('Saving location data to backend: $locationData');
-
-    // TODO: Save to backend
-    // await ReportService.updateReportLocation(widget.reportData['id'], locationData);
 
     // Merge location data with report data
     final completeReportData = {
@@ -68,16 +219,41 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Future<void> _handleReviewSubmit() async {
-    final completeReportData = await _saveLocationData();
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReviewReportScreen(
-          reportData: completeReportData,
+    // Validate location
+    final hasMapLocation = _locationSource == "map" && selectedLatitude != null && selectedLongitude != null;
+    final hasManualLocation = _locationSource == "manual" && addressController.text.trim().isNotEmpty;
+    
+    if (!hasMapLocation && !hasManualLocation) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a location on the map or enter an address manually'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
         ),
-      ),
-    );
+      );
+      return;
+    }
+
+    try {
+      final completeReportData = await _saveLocationData();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReviewReportScreen(
+            reportData: completeReportData,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   @override
@@ -162,45 +338,27 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Widget _buildMapContainer() {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Stack(
-          children: [
-            // Map background - using a real map-like design
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E8),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: CustomPaint(
-                painter: MapPainter(),
-                size: const Size(double.infinity, 200),
-              ),
-            ),
-            // Location pin
-            const Center(
-              child: Icon(
-                Icons.location_on,
-                color: Color(0xFFEF4444),
-                size: 40,
-              ),
-            ),
-          ],
+    if (_isLoadingLocation) {
+      return Container(
+        height: 300,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.grey[100],
         ),
-      ),
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF36599F),
+          ),
+        ),
+      );
+    }
+
+    return MapPickerWidget(
+      initialLatitude: selectedLatitude,
+      initialLongitude: selectedLongitude,
+      onLocationSelected: _onMapLocationSelected,
+      height: 400, // Increased height for better visibility
     );
   }
 
@@ -216,27 +374,31 @@ class _LocationScreenState extends State<LocationScreen> {
           ),
         ),
         const SizedBox(width: 10),
-        const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Interactive Map View',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Interactive Map View',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              'Tap to place pin',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-                fontWeight: FontWeight.w400,
+              const SizedBox(height: 2),
+              Text(
+                _locationSource == "map" 
+                    ? 'Location selected on map' 
+                    : 'Tap on map to select location',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _locationSource == "map" ? const Color(0xFF10B981) : Colors.grey,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -282,15 +444,26 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  // Display selected location from map or manual input
-                  addressController.text.isNotEmpty ? addressController.text : detectedLocation,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                _isLoadingAddress
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFF36599F),
+                        ),
+                      )
+                    : Text(
+                        // Display selected location from map or manual input
+                        _locationSource == "manual" && addressController.text.isNotEmpty
+                            ? addressController.text
+                            : (detectedLocation.isNotEmpty ? detectedLocation : "No location selected"),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isLocationDetected ? Colors.black87 : Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                 const SizedBox(height: 4),
                 Text(
                   'Accuracy: $locationAccuracy',
@@ -312,12 +485,41 @@ class _LocationScreenState extends State<LocationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Manual Address (Optional)',
+        Row(
+          children: [
+            const Text(
+              'OR Enter Address Manually',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF36599F),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _locationSource == "manual" ? const Color(0xFF10B981) : Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _locationSource == "manual" ? 'Active' : 'Optional',
+                style: TextStyle(
+                  color: _locationSource == "manual" ? Colors.white : Colors.grey[700],
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'If you prefer, type the address instead of selecting on map',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF36599F),
+            fontSize: 12,
+            color: Colors.grey[600],
+            fontStyle: FontStyle.italic,
           ),
         ),
         const SizedBox(height: 12),
@@ -335,7 +537,7 @@ class _LocationScreenState extends State<LocationScreen> {
           child: TextField(
             controller: addressController,
             decoration: InputDecoration(
-              hintText: 'Enter specific address or landmark',
+              hintText: 'Enter specific address or landmark (e.g., "KG 123 St, Kigali")',
               hintStyle: TextStyle(
                 color: Colors.grey[400],
                 fontSize: 14,
@@ -344,24 +546,26 @@ class _LocationScreenState extends State<LocationScreen> {
               fillColor: Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(
+                  color: _locationSource == "manual" ? const Color(0xFF10B981) : Colors.grey[200]!,
+                  width: _locationSource == "manual" ? 2 : 1,
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(
+                  color: _locationSource == "manual" ? const Color(0xFF10B981) : Colors.grey[200]!,
+                  width: _locationSource == "manual" ? 2 : 1,
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF36599F)),
+                borderSide: const BorderSide(color: Color(0xFF36599F), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              prefixIcon: const Icon(Icons.edit_location_alt, color: Color(0xFF36599F)),
             ),
-            onChanged: (value) {
-              setState(() {
-                // Update location display when manual address is entered
-              });
-              // TODO: Auto-save to backend as user types
-            },
+            onChanged: _onManualAddressChanged,
           ),
         ),
       ],
@@ -455,65 +659,4 @@ class _LocationScreenState extends State<LocationScreen> {
       ),
     );
   }
-}
-
-class MapPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    // Draw roads/streets
-    paint.color = const Color(0xFFBDBDBD);
-
-    // Horizontal roads
-    canvas.drawLine(
-      Offset(0, size.height * 0.3),
-      Offset(size.width, size.height * 0.3),
-      paint,
-    );
-
-    canvas.drawLine(
-      Offset(0, size.height * 0.7),
-      Offset(size.width, size.height * 0.7),
-      paint,
-    );
-
-    // Vertical roads
-    canvas.drawLine(
-      Offset(size.width * 0.3, 0),
-      Offset(size.width * 0.3, size.height),
-      paint,
-    );
-
-    canvas.drawLine(
-      Offset(size.width * 0.7, 0),
-      Offset(size.width * 0.7, size.height),
-      paint,
-    );
-
-    // Draw some buildings (green squares)
-    final buildingPaint = Paint()
-      ..color = const Color(0xFF81C784)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.1, size.height * 0.1, 40, 30),
-      buildingPaint,
-    );
-
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.6, size.height * 0.15, 35, 25),
-      buildingPaint,
-    );
-
-    canvas.drawRect(
-      Rect.fromLTWH(size.width * 0.15, size.height * 0.75, 30, 20),
-      buildingPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

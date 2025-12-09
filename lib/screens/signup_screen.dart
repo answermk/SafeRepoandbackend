@@ -14,6 +14,8 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -26,6 +28,8 @@ class _SignupScreenState extends State<SignupScreen> {
   void dispose() {
     _fullNameController.dispose();
     _emailController.dispose();
+    _phoneNumberController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -39,6 +43,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
     final fullName = _fullNameController.text.trim();
     final email = _emailController.text.trim();
+    final phoneNumber = _phoneNumberController.text.trim();
+    final username = _usernameController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
@@ -60,11 +66,18 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
+      // Auto-generate username from email if not provided
+      final finalUsername = username.isEmpty 
+          ? email.split('@')[0] // Use part before @ as username
+          : username;
+      
       // Call backend API
       final result = await AuthService.register(
         email: email,
         password: password,
         fullName: fullName,
+        phoneNumber: phoneNumber,
+        username: finalUsername,
       );
 
       if (mounted) {
@@ -168,6 +181,43 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintText: 'youremail@gmail.com',
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Phone Number field
+                  _buildInputField(
+                    label: 'Phone Number',
+                    controller: _phoneNumberController,
+                    hintText: '+250 788 123 456',
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Phone number is required';
+                      }
+                      return Validators.phone(value);
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Username field (optional)
+                  _buildInputField(
+                    label: 'Username (Optional)',
+                    controller: _usernameController,
+                    hintText: 'Leave empty to auto-generate from email',
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value != null && value.trim().isNotEmpty) {
+                        if (value.length < 3) {
+                          return 'Username must be at least 3 characters';
+                        }
+                        if (value.length > 50) {
+                          return 'Username must be less than 50 characters';
+                        }
+                      }
+                      return null;
+                    },
                   ),
 
                   const SizedBox(height: 20),

@@ -36,6 +36,10 @@ public class Officer extends User {
     private boolean backupRequested = false;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "latitude", column = @Column(name = "latitude", nullable = true)),
+        @AttributeOverride(name = "longitude", column = @Column(name = "longitude", nullable = true))
+    })
     private Location location;
 
     @Embeddable
@@ -44,7 +48,7 @@ public class Officer extends User {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Location {
-        private double latitude;
-        private double longitude;
+        private Double latitude;
+        private Double longitude;
     }
 }

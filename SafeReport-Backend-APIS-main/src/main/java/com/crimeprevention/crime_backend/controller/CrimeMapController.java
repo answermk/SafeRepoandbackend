@@ -112,12 +112,13 @@ public class CrimeMapController {
     public ResponseEntity<List<LiveIncidentResponse>> getLiveIncidentsInArea(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
-            @RequestParam Double radiusKm) {
+            @RequestParam Double radiusKm,
+            @RequestParam(defaultValue = "7d") String timeRange) {
         
-        log.info("Fetching live incidents in area: lat={}, lng={}, radius={}km", latitude, longitude, radiusKm);
+        log.info("Fetching live incidents in area: lat={}, lng={}, radius={}km, timeRange={}", latitude, longitude, radiusKm, timeRange);
         
         try {
-            List<LiveIncidentResponse> incidents = crimeMapService.getLiveIncidentsInArea(latitude, longitude, radiusKm);
+            List<LiveIncidentResponse> incidents = crimeMapService.getLiveIncidentsInArea(latitude, longitude, radiusKm, timeRange);
             return ResponseEntity.ok(incidents);
         } catch (Exception e) {
             log.error("Error fetching live incidents in area", e);

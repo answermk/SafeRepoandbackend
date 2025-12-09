@@ -52,8 +52,8 @@ class AuthService {
     required String email,
     required String password,
     required String fullName,
-    String? phone,
-    String? location,
+    required String phoneNumber,
+    String? username,
   }) async {
     try {
       final response = await http.post(
@@ -65,20 +65,38 @@ class AuthService {
           'email': email,
           'password': password,
           'fullName': fullName,
-          if (phone != null) 'phone': phone,
-          if (location != null) 'location': location,
+          'phoneNumber': phoneNumber,
+          if (username != null && username.isNotEmpty) 'username': username,
         }),
       );
       
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return {
           'success': true,
-          'message': response.body, // "User registered successfully"
+          'message': 'Account created successfully! Please sign in.',
         };
       } else {
+        // Parse error message from backend
+        String errorMessage = 'Failed to create account';
+        try {
+          final errorBody = response.body;
+          if (errorBody.isNotEmpty) {
+            // Try to parse as JSON first
+            try {
+              final errorJson = jsonDecode(errorBody);
+              errorMessage = errorJson['message'] ?? errorJson['error'] ?? errorBody;
+            } catch (e) {
+              // If not JSON, use body as is
+              errorMessage = errorBody;
+            }
+          }
+        } catch (e) {
+          errorMessage = 'Failed to create account. Please try again.';
+        }
+        
         return {
           'success': false,
-          'error': response.body,
+          'error': errorMessage,
         };
       }
     } catch (e) {
@@ -122,7 +140,85 @@ class AuthService {
     }
   }
   
-  /// Reset password
+  /// Verify 6-digit code
+  /// Backend: POST /api/auth/verify-code
+  static Future<Map<String, dynamic>> verifyCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/auth/verify-code'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'code': code,
+        }),
+      );
+      
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': response.body,
+        };
+      } else {
+        return {
+          'success': false,
+          'error': response.body,
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'Connection error: ${e.toString()}',
+      };
+    }
+  }
+
+  /// Change password using email and code
+  /// Backend: POST /api/auth/change-password
+  static Future<Map<String, dynamic>> changePassword({
+    required String email,
+    required String code,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/auth/change-password'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'code': code,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        }),
+      );
+      
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': response.body,
+        };
+      } else {
+        return {
+          'success': false,
+          'error': response.body,
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'Connection error: ${e.toString()}',
+      };
+    }
+  }
+
+  /// Reset password (legacy - using token)
   /// Backend: POST /api/auth/reset-password
   static Future<Map<String, dynamic>> resetPassword({
     required String token,

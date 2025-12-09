@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'services/api_client.dart';
 import 'utils/language_controller.dart';
 import 'controllers/language_controller_state.dart';
+import 'providers/app_settings_provider.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/onboarding_screen_1.dart';
 import 'screens/onboarding_screen_2.dart';
@@ -83,10 +84,13 @@ class _SafeReportAppState extends State<SafeReportApp> {
   Widget build(BuildContext context) {
     // API client is initialized lazily when first accessed via ApiClient.dio
     
-    return ChangeNotifierProvider(
-      create: (_) => LanguageControllerState(),
-      child: Consumer<LanguageControllerState>(
-        builder: (context, languageState, _) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LanguageControllerState()),
+        ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+      ],
+      child: Consumer2<LanguageControllerState, AppSettingsProvider>(
+        builder: (context, languageState, appSettings, _) {
           // Update locale when language state changes
           if (languageState.currentLocale != _locale) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -98,48 +102,29 @@ class _SafeReportAppState extends State<SafeReportApp> {
             });
           }
 
+          // Use app settings for locale and theme
+          final currentLocale = appSettings.locale;
+          final themeData = appSettings.getThemeData();
+
           return MaterialApp(
             title: 'SafeReport',
             debugShowCheckedModeBanner: false,
             // Localization support
-            locale: _locale,
+            locale: currentLocale,
             localizationsDelegates: LanguageController.getLocalizationDelegates(),
             supportedLocales: LanguageController.getSupportedLocales(),
-            theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: const Color(0xFF36599F),
-        fontFamily: 'Roboto',
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF36599F),
-          primary: const Color(0xFF36599F),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF36599F),
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: false,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF36599F),
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF36599F), width: 2),
-          ),
-        ),
-      ),
+            theme: themeData,
+            darkTheme: appSettings.isDarkMode ? themeData : null,
+            themeMode: appSettings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            builder: (context, child) {
+              // Apply font scaling globally
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(appSettings.fontScale),
+                ),
+                child: child!,
+              );
+            },
       // Start with Welcome Screen instead of OnboardingFlow
       home: const WelcomeScreen(),
 
@@ -153,7 +138,8 @@ class _SafeReportAppState extends State<SafeReportApp> {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/check-email': (context) => const CheckEmailScreen(),
+        // Note: /check-email route is not used directly - email is passed via navigation
+        // '/check-email': (context) => const CheckEmailScreen(email: ''),
         '/notifications': (context) => const NotificationsScreen(),
         '/location-services': (context) => const LocationServicesScreen(),
         '/privacy-data': (context) => const PrivacyDataScreen(),

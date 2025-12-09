@@ -46,6 +46,17 @@ public class User extends AbstractAuditEntity {
     @Builder.Default
     private boolean isActive = true;
 
+    @Column(name = "anonymous_mode")
+    @Builder.Default
+    private Boolean anonymousMode = false;
+
+    @Column(name = "location_sharing")
+    @Builder.Default
+    private Boolean locationSharing = true; // Always on by default
+
+    @Column(name = "password_changed_at")
+    private java.time.Instant passwordChangedAt;
+
     // Password encoding should be handled at service layer
     public void encodePassword(String rawPassword) {
         this.passwordHash = new BCryptPasswordEncoder().encode(rawPassword);

@@ -1,9 +1,170 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
+import '../services/emergency_service.dart';
 import 'dashboard_screen.dart';
 
-class EmergencyModeScreen extends StatelessWidget {
+class EmergencyModeScreen extends StatefulWidget {
   const EmergencyModeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<EmergencyModeScreen> createState() => _EmergencyModeScreenState();
+}
+
+class _EmergencyModeScreenState extends State<EmergencyModeScreen> {
+  String? _emergencyId;
+  int _etaMin = 4;
+  int _etaMax = 6;
+  bool _isLoading = true;
+  bool _isRequesting = false;
+  double _latitude = -1.9441; // Default: Kigali
+  double _longitude = 30.0619;
+  
+  @override
+  void initState() {
+    super.initState();
+    _initializeEmergency();
+  }
+  
+  Future<void> _initializeEmergency() async {
+    try {
+      // Get user's current location
+      await _getCurrentLocation();
+      
+      // Get initial ETA
+      await _fetchETA();
+      
+      // Create emergency request
+      await _createEmergencyRequest();
+      
+      // Start periodic ETA updates
+      _startETAUpdates();
+    } catch (e) {
+      print('Error initializing emergency: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+  
+  Future<void> _getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return; // Use default location
+      }
+      
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return; // Use default location
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        return; // Use default location
+      }
+      
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
+      setState(() {
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      });
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+  
+  Future<void> _fetchETA() async {
+    try {
+      final result = await EmergencyService.getPoliceETA(
+        latitude: _latitude,
+        longitude: _longitude,
+      );
+      
+      if (result['success'] == true && result['data'] != null) {
+        final data = result['data'] as Map<String, dynamic>;
+        setState(() {
+          _etaMin = data['etaMin'] ?? 4;
+          _etaMax = data['etaMax'] ?? 6;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching ETA: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+  
+  Future<void> _createEmergencyRequest() async {
+    if (_isRequesting) return;
+    
+    setState(() {
+      _isRequesting = true;
+    });
+    
+    try {
+      final result = await EmergencyService.createEmergencyRequest(
+        latitude: _latitude,
+        longitude: _longitude,
+        emergencyType: 'POLICE',
+        description: 'Emergency assistance requested',
+      );
+      
+      if (result['success'] == true && result['data'] != null) {
+        final data = result['data'] as Map<String, dynamic>;
+        setState(() {
+          _emergencyId = data['emergencyId'];
+          _etaMin = data['etaMin'] ?? _etaMin;
+          _etaMax = data['etaMax'] ?? _etaMax;
+        });
+      }
+    } catch (e) {
+      print('Error creating emergency request: $e');
+    } finally {
+      setState(() {
+        _isRequesting = false;
+      });
+    }
+  }
+  
+  void _startETAUpdates() {
+    // Update ETA every 30 seconds
+    Future.delayed(const Duration(seconds: 30), () {
+      if (mounted && _emergencyId != null) {
+        _updateEmergencyStatus();
+        _startETAUpdates(); // Schedule next update
+      }
+    });
+  }
+  
+  Future<void> _updateEmergencyStatus() async {
+    if (_emergencyId == null) return;
+    
+    try {
+      final result = await EmergencyService.getEmergencyStatus(_emergencyId!);
+      
+      if (result['success'] == true && result['data'] != null) {
+        final data = result['data'] as Map<String, dynamic>;
+        setState(() {
+          _etaMin = data['etaMin'] ?? _etaMin;
+          _etaMax = data['etaMax'] ?? _etaMax;
+        });
+      }
+    } catch (e) {
+      print('Error updating emergency status: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +200,27 @@ class EmergencyModeScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('Police ETA', style: TextStyle(color: Colors.white, fontSize: 16)),
-                    SizedBox(width: 16),
-                    Text('4-6 minutes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                  children: [
+                    const Text('Police ETA', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    const SizedBox(width: 16),
+                    _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            '$_etaMin-$_etaMax minutes',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
-                  value: 0.7,
+                  value: _isLoading ? null : (1.0 - (_etaMin / 20.0).clamp(0.0, 1.0)),
                   backgroundColor: Colors.white24,
                   color: Colors.white,
                   minHeight: 6,

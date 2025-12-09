@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:safereport_mobo/screens/offline_reports_queue_screen.dart';
+import '../providers/app_settings_provider.dart';
+import '../services/language_service.dart';
+import '../services/user_service.dart';
+import '../services/token_manager.dart';
+import '../controllers/language_controller_state.dart';
 import 'anonymous_reporting_info_screen.dart';
 //import 'offline_reports_queue_screen.dart';
 import 'my_impact_screen.dart';
@@ -20,8 +26,96 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool emailUpdates = true;
   bool watchGroupAlerts = true;
   bool anonymousMode = false;
-  bool locationSharing = false;
+  bool locationSharing = true; // Always on by default
   String appLanguage = 'English';
+  bool _isLoadingPrivacy = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+    _loadPrivacySettings();
+  }
+  
+  Future<void> _loadLanguage() async {
+    final languageCode = await LanguageService.getSavedLanguage();
+    setState(() {
+      appLanguage = LanguageService.getLanguageName(languageCode);
+    });
+  }
+  
+  Future<void> _loadPrivacySettings() async {
+    try {
+      final userId = await TokenManager.getUserId();
+      if (userId == null) return;
+      
+      final result = await UserService.getUserProfile(userId);
+      if (result['success'] == true && result['data'] != null) {
+        final userData = result['data'] as Map<String, dynamic>;
+        setState(() {
+          anonymousMode = userData['anonymousMode'] ?? false;
+          locationSharing = userData['locationSharing'] ?? true; // Default to true
+        });
+      }
+    } catch (e) {
+      print('Error loading privacy settings: $e');
+    }
+  }
+  
+  Future<void> _savePrivacySettings() async {
+    setState(() {
+      _isLoadingPrivacy = true;
+    });
+    
+    try {
+      final userId = await TokenManager.getUserId();
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User ID not found'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
+      final result = await UserService.updateUserProfile(
+        userId: userId,
+        anonymousMode: anonymousMode,
+        locationSharing: locationSharing,
+      );
+      
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Privacy settings saved successfully'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? 'Failed to save privacy settings'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingPrivacy = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,20 +158,36 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Change Password', style: TextStyle(fontWeight: FontWeight.bold)),
-                          SizedBox(height: 2),
-                          Text('Last changed 30 days ago', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        ],
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: _getPasswordChangeInfo(),
+                        builder: (context, snapshot) {
+                          final daysSinceChange = snapshot.data?['days'] ?? 0;
+                          final lastChanged = snapshot.data?['lastChanged'];
+                          
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Change Password', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 2),
+                              Text(
+                                lastChanged != null 
+                                    ? 'Last changed $daysSinceChange days ago'
+                                    : 'Never changed',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: daysSinceChange < 30 ? Colors.orange : Colors.grey,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ChangePasswordScreen(),
+                              builder: (context) => const ChangePasswordScreen.forSettings(),
                             ),
                           );
                         },
@@ -158,15 +268,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     subtitle: const Text('Always submit reports anonymously'),
                     value: anonymousMode,
                     activeColor: const Color(0xFF36599F),
-                    onChanged: (val) => setState(() => anonymousMode = val),
+                    onChanged: _isLoadingPrivacy ? null : (val) {
+                      setState(() => anonymousMode = val);
+                      _savePrivacySettings();
+                    },
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Location Sharing', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Share precise location with reports'),
+                    subtitle: const Text('Share precise location with reports (Always enabled)'),
                     value: locationSharing,
                     activeColor: const Color(0xFF36599F),
-                    onChanged: (val) => setState(() => locationSharing = val),
+                    onChanged: null, // Always enabled, cannot be disabled
+                    secondary: const Icon(Icons.location_on, color: Color(0xFF36599F)),
                   ),
                   const Divider(),
                   ListTile(
@@ -193,29 +307,55 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             _buildSection(
               icon: Icons.language,
               title: 'Language Preferences',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('App Language', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    value: appLanguage,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+              child: Consumer<AppSettingsProvider>(
+                builder: (context, appSettings, _) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('App Language', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        value: appLanguage,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        items: LanguageService.getAllLanguages().entries.map((entry) {
+                          return DropdownMenuItem<String>(
+                            value: entry.value,
+                            child: Text(entry.value),
+                          );
+                        }).toList(),
+                        onChanged: (val) async {
+                          if (val != null) {
+                            final languageCode = LanguageService.getLanguageCode(val);
+                            if (languageCode != null) {
+                              setState(() => appLanguage = val);
+                              await appSettings.setLanguage(languageCode);
+                              
+                              // Also update LanguageControllerState to trigger app rebuild
+                              final languageState = Provider.of<LanguageControllerState>(context, listen: false);
+                              languageState.changeLanguage(languageCode);
+                              
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Language changed to $val'),
+                                    backgroundColor: Colors.green,
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            }
+                          }
+                        },
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'English', child: Text('English')),
-                      DropdownMenuItem(value: 'Spanish', child: Text('Spanish')),
-                      DropdownMenuItem(value: 'French', child: Text('French')),
-                      DropdownMenuItem(value: 'Kinyarwanda', child: Text('Kinyarwanda')),
                     ],
-                    onChanged: (val) => setState(() => appLanguage = val ?? 'English'),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16),
@@ -418,8 +558,44 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
 
+  Future<Map<String, dynamic>> _getPasswordChangeInfo() async {
+    try {
+      final userId = await TokenManager.getUserId();
+      if (userId == null) {
+        return {'days': 0, 'canChange': true, 'lastChanged': null};
+      }
+      
+      final result = await UserService.getUserProfile(userId);
+      if (result['success'] == true && result['data'] != null) {
+        final userData = result['data'] as Map<String, dynamic>;
+        final passwordChangedAt = userData['passwordChangedAt'];
+        
+        if (passwordChangedAt == null) {
+          return {'days': 0, 'canChange': true, 'lastChanged': null};
+        }
+        
+        final changedDate = DateTime.parse(passwordChangedAt);
+        final now = DateTime.now();
+        final difference = now.difference(changedDate);
+        final daysSinceChange = difference.inDays;
+        final canChange = daysSinceChange >= 30;
+        
+        return {
+          'days': daysSinceChange,
+          'canChange': canChange,
+          'lastChanged': changedDate,
+        };
+      }
+    } catch (e) {
+      print('Error getting password change info: $e');
+    }
+    
+    return {'days': 0, 'canChange': true, 'lastChanged': null};
+  }
+
   void _saveSettings() {
-    // TODO: Implement backend save logic
+    // Privacy settings are saved automatically when toggled
+    // Other settings can be saved here if needed
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Settings saved successfully'),

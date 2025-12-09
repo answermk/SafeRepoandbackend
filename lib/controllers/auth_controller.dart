@@ -64,8 +64,8 @@ class AuthController extends ChangeNotifier {
     required String email,
     required String password,
     required String fullName,
-    String? phone,
-    String? location,
+    required String phoneNumber,
+    String? username,
   }) async {
     _isLoading = true;
     _error = null;
@@ -76,8 +76,8 @@ class AuthController extends ChangeNotifier {
         email: email,
         password: password,
         fullName: fullName,
-        phone: phone,
-        location: location,
+        phoneNumber: phoneNumber,
+        username: username,
       );
 
       if (result['success'] == true) {

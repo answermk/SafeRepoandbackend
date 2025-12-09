@@ -48,12 +48,25 @@ public class DataInitializer implements ApplicationRunner {
 	private void initializeAdminUser() {
 		final String adminEmail = "ced@admin.com";
 		if (userRepository.existsByEmail(adminEmail)) {
-			// Ensure existing admin user is enabled
+			// Ensure existing admin user is enabled and has default values for new fields
 			userRepository.findByEmail(adminEmail).ifPresent(user -> {
+				boolean needsUpdate = false;
 				if (!user.isEnabled()) {
 					user.setEnabled(true);
+					needsUpdate = true;
+				}
+				// Set default values for new fields if they are null
+				if (user.getAnonymousMode() == null) {
+					user.setAnonymousMode(false);
+					needsUpdate = true;
+				}
+				if (user.getLocationSharing() == null) {
+					user.setLocationSharing(true);
+					needsUpdate = true;
+				}
+				if (needsUpdate) {
 					userRepository.save(user);
-					System.out.println("✅ Enabled existing admin user: " + adminEmail);
+					System.out.println("✅ Updated existing admin user: " + adminEmail);
 				}
 			});
 			return;
@@ -68,6 +81,8 @@ public class DataInitializer implements ApplicationRunner {
 				.role(UserRole.ADMIN)
 				.enabled(true)  // Explicitly set enabled to true
 				.isActive(true)  // Explicitly set isActive to true
+				.anonymousMode(false)  // Explicitly set anonymousMode
+				.locationSharing(true)  // Explicitly set locationSharing
 				.build();
 
 		userRepository.save(admin);
@@ -92,6 +107,8 @@ public class DataInitializer implements ApplicationRunner {
 					.role(UserRole.ADMIN)
 					.enabled(true)  // Explicitly set enabled to true
 					.isActive(true)  // Explicitly set isActive to true
+					.anonymousMode(false)  // Explicitly set anonymousMode
+					.locationSharing(true)  // Explicitly set locationSharing
 					.build();
 				return userRepository.save(newAdmin);
 			});
@@ -106,6 +123,8 @@ public class DataInitializer implements ApplicationRunner {
 					.phoneNumber("0781234567")
 					.passwordHash(passwordEncoder.encode("password123"))
 					.role(UserRole.CIVILIAN)
+					.anonymousMode(false)  // Explicitly set anonymousMode
+					.locationSharing(true)  // Explicitly set locationSharing
 					.build();
 				return userRepository.save(newCivilian);
 			});

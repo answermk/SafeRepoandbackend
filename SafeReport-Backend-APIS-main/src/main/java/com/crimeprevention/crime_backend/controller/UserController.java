@@ -110,7 +110,7 @@ public class UserController {
 	@PutMapping("/{id}/change-password")
 	public ResponseEntity<?> changePassword(
 			@PathVariable("id") UUID userId,
-			@Valid @RequestBody com.crimeprevention.crime_backend.core.dto.user.ChangePasswordRequest request) {
+			@Valid @RequestBody com.crimeprevention.crime_backend.core.dto.user.UpdatePasswordRequest request) {
 		try {
 			userService.changePassword(userId, request);
 			Map<String, String> response = new HashMap<>();

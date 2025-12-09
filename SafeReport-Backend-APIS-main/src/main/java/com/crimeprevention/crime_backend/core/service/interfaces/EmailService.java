@@ -4,6 +4,8 @@ public interface EmailService {
     
     void sendPasswordResetEmail(String to, String resetLink, String userName);
     
+    void sendPasswordResetCode(String to, String code, String userName);
+    
     void sendWelcomeEmail(String to, String userName);
     
     void sendAccountUpdateEmail(String to, String userName, String updateType);

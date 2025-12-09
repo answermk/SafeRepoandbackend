@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../services/user_service.dart';
+import '../services/token_manager.dart';
+import '../services/auth_service.dart';
 import 'dashboard_screen.dart';
 import 'my_reports_screen.dart';
 import 'messages_screen.dart';
@@ -19,11 +22,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int _selectedIndex = 3; // For bottom navigation
 
   // These will be populated from backend
-  String userName = "Jan Dkak"; // TODO: Get from backend/database
-  String memberSince = "Member since Jan 2023"; // TODO: Get from backend
-  String userEmail = "jan@example.com"; // TODO: Get from backend
-  String userPhone = "+1 (555) 123-4567"; // TODO: Get from backend
-  String userLocation = "Oak Street Neighborhood"; // TODO: Get from backend
+  String userName = "User";
+  String memberSince = "Member";
+  String userEmail = "";
+  String userPhone = "";
+  Map<String, dynamic>? _userData;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -31,67 +35,167 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserProfile();
   }
 
-  Future<void> _loadUserProfile() async {
-    // TODO: Implement backend call to load user profile
-    print('Loading user profile from backend...');
+  /// Format "Member since" with relative time or absolute year
+  String _formatMemberSince(dynamic createdAt) {
+    if (createdAt == null) return "Member";
+    
+    try {
+      final createdDate = DateTime.parse(createdAt.toString());
+      final now = DateTime.now();
+      final difference = now.difference(createdDate);
+      
+      // Less than 1 hour
+      if (difference.inHours < 1) {
+        final minutes = difference.inMinutes;
+        return minutes <= 1 ? "Member since just now" : "Member since $minutes minutes ago";
+      }
+      // Less than 24 hours
+      else if (difference.inHours < 24) {
+        final hours = difference.inHours;
+        return "Member since $hours ${hours == 1 ? 'hour' : 'hours'} ago";
+      }
+      // Less than 30 days
+      else if (difference.inDays < 30) {
+        final days = difference.inDays;
+        return "Member since $days ${days == 1 ? 'day' : 'days'} ago";
+      }
+      // Less than 12 months
+      else if (difference.inDays < 365) {
+        final months = (difference.inDays / 30).floor();
+        return "Member since $months ${months == 1 ? 'month' : 'months'} ago";
+      }
+      // More than 1 year - show year only
+      else {
+        return "Member since ${createdDate.year}";
+      }
+    } catch (e) {
+      return "Member";
+    }
+  }
 
-    // Simulate API call
-    // final userData = await UserService.getCurrentUser();
-    // setState(() {
-    //   userName = userData.name;
-    //   memberSince = 'Member since ${userData.createdDate}';
-    //   userEmail = userData.email;
-    //   userPhone = userData.phone;
-    //   userLocation = userData.location;
-    // });
+  Future<void> _loadUserProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Get user ID from token
+      final userId = await TokenManager.getUserId();
+      if (userId == null) {
+        // Try to get username and email from token as fallback
+        final username = await TokenManager.getUsername();
+        final email = await TokenManager.getEmail();
+        
+        setState(() {
+          userName = username ?? "User";
+          userEmail = email ?? "";
+          memberSince = "Member";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Fetch user profile from backend
+      final result = await UserService.getUserProfile(userId);
+      
+      if (result['success'] == true && result['data'] != null) {
+        final userData = result['data'] as Map<String, dynamic>;
+        
+        // Format "Member since" date with relative or absolute time
+        String formattedMemberSince = _formatMemberSince(userData['createdAt']);
+        
+        setState(() {
+          _userData = userData;
+          // Prioritize fullName over username
+          userName = userData['fullName']?.toString().trim().isNotEmpty == true 
+              ? userData['fullName'] 
+              : (userData['username'] ?? "User");
+          userEmail = userData['email'] ?? "";
+          userPhone = userData['phoneNumber']?.toString().trim().isNotEmpty == true 
+              ? userData['phoneNumber'] 
+              : "Not provided";
+          memberSince = formattedMemberSince;
+          _isLoading = false;
+        });
+      } else {
+        // Fallback to token data
+        final username = await TokenManager.getUsername();
+        final email = await TokenManager.getEmail();
+        
+        setState(() {
+          userName = username ?? "User";
+          userEmail = email ?? "";
+          memberSince = "Member";
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading user profile: $e');
+      // Fallback to token data
+      final username = await TokenManager.getUsername();
+      final email = await TokenManager.getEmail();
+      
+      setState(() {
+        userName = username ?? "User";
+        userEmail = email ?? "";
+        memberSince = "Member";
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _handleLogout() async {
-    // TODO: Implement backend logout functionality
-    print('Logging out user...');
-
     // Show confirmation dialog
-    showDialog(
+    final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-
-              // Show loading
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF36599F)),
-                ),
-              );
-
-              // Simulate logout API call
-              await Future.delayed(const Duration(seconds: 1));
-
-              // TODO: Clear user session, tokens, etc.
-              // await UserService.logout();
-
-              // Close loading and navigate to login
-              Navigator.of(context).pop();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    (route) => false,
-              );
-            },
+            onPressed: () => Navigator.pop(context, true),
             child: const Text('Logout', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
+    );
+
+    if (shouldLogout != true) {
+      return; // User cancelled
+    }
+
+    // Show loading indicator
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF36599F)),
+      ),
+    );
+
+    try {
+      // Call logout service (this will clear tokens)
+      await AuthService.logout();
+    } catch (e) {
+      print('Error during logout: $e');
+      // Continue with logout even if API call fails
+    }
+
+    // Close loading dialog
+    if (!mounted) return;
+    Navigator.of(context).pop();
+
+    // Navigate to login screen and clear all previous routes
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false, // Remove all previous routes
     );
   }
 
@@ -100,34 +204,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
-              children: [
-                _buildHeader(),
-                Positioned(
-                  top: 120, // Position to overlap blue header
-                  child: _buildProfileCard(),
-                ),
-              ],
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 100), // Space for overlapping card
-                    _buildAccountInfoCard(),
-                    const SizedBox(height: 30),
-                    _buildActionButtons(),
-                    const SizedBox(height: 100), // Space for bottom nav
-                  ],
-                ),
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: Color(0xFF36599F)),
+              )
+            : Column(
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.topCenter,
+                    children: [
+                      _buildHeader(),
+                      Positioned(
+                        top: 120, // Position to overlap blue header
+                        child: _buildProfileCard(),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 100), // Space for overlapping card
+                          _buildAccountInfoCard(),
+                          const SizedBox(height: 30),
+                          _buildActionButtons(),
+                          const SizedBox(height: 100), // Space for bottom nav
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
       bottomNavigationBar: _buildBottomNavigation(),
     );
@@ -212,6 +320,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildAccountInfoCard() {
+    // Get username from backend data if available
+    final username = _userData?['username']?.toString() ?? "";
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 30),
       padding: const EdgeInsets.all(25),
@@ -238,29 +349,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          _buildInfoRow('Name', userName),
+          _buildInfoRow('Full Name', userName),
+          if (username.isNotEmpty) ...[
+            const SizedBox(height: 15),
+            _buildInfoRow('Username', username),
+          ],
           const SizedBox(height: 15),
           _buildInfoRow('Email', userEmail, isEmail: true),
           const SizedBox(height: 15),
-          _buildInfoRow('Phone', userPhone),
-          const SizedBox(height: 15),
-          _buildInfoRow('Location', userLocation),
+          _buildInfoRow('Phone Number', userPhone, isRequired: true),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {bool isEmail = false}) {
+  Widget _buildInfoRow(String label, String value, {bool isEmail = false, bool isRequired = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 15,
-            color: Colors.black87,
-          ),
+        Row(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: Colors.black87,
+              ),
+            ),
+            if (isRequired) ...[
+              const SizedBox(width: 4),
+              const Text(
+                '*',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 4),
         isEmail
@@ -374,13 +502,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: double.infinity,
             height: 50,
             child: OutlinedButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const ProfileEditScreen(),
                   ),
                 );
+                // Refresh profile if changes were saved
+                if (result == true) {
+                  _loadUserProfile();
+                }
               },
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF36599F), width: 1.5),
@@ -407,7 +539,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ChangePasswordScreen(),
+                    builder: (context) => const ChangePasswordScreen.forSettings(),
                   ),
                 );
               },

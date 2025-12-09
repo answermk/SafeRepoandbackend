@@ -115,17 +115,33 @@ public class CrimeMapServiceImpl implements CrimeMapService {
     
     @Override
     public List<LiveIncidentResponse> getLiveIncidentsInArea(
-            Double latitude, Double longitude, Double radiusKm) {
-        log.info("Fetching live incidents in area: lat={}, lng={}, radius={}km", latitude, longitude, radiusKm);
+            Double latitude, Double longitude, Double radiusKm, String timeRange) {
+        log.info("Fetching live incidents in area: lat={}, lng={}, radius={}km, timeRange={}", latitude, longitude, radiusKm, timeRange);
         
         try {
-            // Get all recent reports and filter by distance
-            List<LiveIncidentResponse> allIncidents = getLiveIncidents();
+            // Parse time range
+            Instant startDate = parseTimeRangeInstant(timeRange);
+            Instant endDate = Instant.now();
             
-            return allIncidents.stream()
-                    .filter(incident -> isWithinRadius(
-                            incident.getLatitude(), incident.getLongitude(),
-                            latitude, longitude, radiusKm))
+            // Get reports within time range
+            List<Report> reports = reportRepository.findByDateRange(startDate, endDate);
+            
+            // Filter by distance and convert to LiveIncidentResponse
+            return reports.stream()
+                    .filter(report -> {
+                        if (report.getLocation() == null || 
+                            report.getLocation().getLatitude() == null || 
+                            report.getLocation().getLongitude() == null) {
+                            return false;
+                        }
+                        double distance = calculateDistance(
+                            latitude, longitude,
+                            report.getLocation().getLatitude(),
+                            report.getLocation().getLongitude()
+                        );
+                        return distance <= radiusKm;
+                    })
+                    .map(this::convertToLiveIncident)
                     .collect(Collectors.toList());
                     
         } catch (Exception e) {
@@ -134,14 +150,60 @@ public class CrimeMapServiceImpl implements CrimeMapService {
         }
     }
     
+    /**
+     * Parse time range string to Instant
+     */
+    private Instant parseTimeRangeInstant(String timeRange) {
+        if (timeRange == null || timeRange.isEmpty()) {
+            return Instant.now().minusSeconds(7 * 24 * 3600); // Default: 7 days
+        }
+        
+        timeRange = timeRange.toLowerCase().trim();
+        Instant now = Instant.now();
+        
+        if (timeRange.equals("1h") || timeRange.equals("1hour")) {
+            return now.minusSeconds(3600);
+        } else if (timeRange.equals("24h") || timeRange.equals("1d") || timeRange.equals("1day")) {
+            return now.minusSeconds(24 * 3600);
+        } else if (timeRange.equals("7d") || timeRange.equals("week")) {
+            return now.minusSeconds(7 * 24 * 3600);
+        } else if (timeRange.equals("30d") || timeRange.equals("month")) {
+            return now.minusSeconds(30L * 24 * 3600);
+        } else if (timeRange.equals("1y") || timeRange.equals("year")) {
+            return now.minusSeconds(365L * 24 * 3600);
+        } else {
+            // Default to 7 days
+            return now.minusSeconds(7 * 24 * 3600);
+        }
+    }
+    
+    /**
+     * Calculate distance between two coordinates using Haversine formula
+     * Returns distance in kilometers
+     */
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Earth's radius in kilometers
+        
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        
+        return R * c;
+    }
+    
     @Override
     public CrimeMapResponse.MapStatistics getAreaStatistics(
             Double latitude, Double longitude, Double radiusKm) {
         log.info("Generating area statistics for: lat={}, lng={}, radius={}km", latitude, longitude, radiusKm);
         
         try {
-            // Get incidents in area
-            List<LiveIncidentResponse> incidents = getLiveIncidentsInArea(latitude, longitude, radiusKm);
+            // Get incidents in area (default to 7 days)
+            List<LiveIncidentResponse> incidents = getLiveIncidentsInArea(latitude, longitude, radiusKm, "7d");
             
             return generateStatisticsFromIncidents(incidents);
             
@@ -390,22 +452,49 @@ public class CrimeMapServiceImpl implements CrimeMapService {
     }
     
     private LiveIncidentResponse convertToLiveIncident(Report report) {
+        // Get actual location coordinates
+        Double latitude = -1.9441; // Default: Kigali
+        Double longitude = 30.0619;
+        String locationAddress = "Unknown";
+        
+        if (report.getLocation() != null) {
+            if (report.getLocation().getLatitude() != null) {
+                latitude = report.getLocation().getLatitude();
+            }
+            if (report.getLocation().getLongitude() != null) {
+                longitude = report.getLocation().getLongitude();
+            }
+            if (report.getLocation().getAddress() != null && !report.getLocation().getAddress().trim().isEmpty()) {
+                locationAddress = report.getLocation().getAddress();
+            } else if (report.getLocation().getDistrict() != null && !report.getLocation().getDistrict().trim().isEmpty()) {
+                locationAddress = report.getLocation().getDistrict();
+            }
+        }
+        
         return LiveIncidentResponse.builder()
                 .incidentId(report.getId().toString())
                 .title(report.getTitle())
                 .description(report.getDescription())
-                .crimeType(report.getCrimeType().name())
-                .status(report.getStatus().name())
-                .priority(report.getPriority().name())
-                .latitude(-1.9441) // Default coordinates
-                .longitude(30.0619)
-                .location(report.getLocation() != null ? report.getLocation().getAddress() : "Unknown")
-                .reportedAt(report.getSubmittedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime())
-                .lastUpdated(report.getUpdatedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime())
-                .reporterName(report.getReporter().getFullName())
+                .crimeType(report.getCrimeType() != null ? report.getCrimeType().name() : "OTHER")
+                .status(report.getStatus() != null ? report.getStatus().name() : "PENDING")
+                .priority(report.getPriority() != null ? report.getPriority().name() : "NORMAL")
+                .latitude(latitude)
+                .longitude(longitude)
+                .location(locationAddress)
+                .reportedAt(report.getSubmittedAt() != null ? 
+                    report.getSubmittedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime() : 
+                    LocalDateTime.now())
+                .lastUpdated(report.getUpdatedAt() != null ? 
+                    report.getUpdatedAt().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime() : 
+                    LocalDateTime.now())
+                .reporterName(report.getReporter() != null && !report.isAnonymous() ? 
+                    report.getReporter().getFullName() : "Anonymous")
                 .isAnonymous(report.isAnonymous())
                 .riskScore(calculateRiskScore(report))
-                .tags(Arrays.asList(report.getCrimeType().name(), report.getPriority().name()))
+                .tags(Arrays.asList(
+                    report.getCrimeType() != null ? report.getCrimeType().name() : "OTHER",
+                    report.getPriority() != null ? report.getPriority().name() : "NORMAL"
+                ))
                 .updateType("NEW")
                 .updateMessage("New crime report filed")
                 .updateTimestamp(LocalDateTime.now())
@@ -448,6 +537,7 @@ public class CrimeMapServiceImpl implements CrimeMapService {
             case "LOW": return 0.1;
             case "MEDIUM": return 0.2;
             case "HIGH": return 0.3;
+            case "URGENT": return 0.5;
             case "CRITICAL": return 0.4;
             default: return 0.2;
         }

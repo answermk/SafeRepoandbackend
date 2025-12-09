@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -21,4 +22,9 @@ public class UserDTO {
     private UserRole role;
     private boolean enabled;
     private boolean isActive;
+    private boolean anonymousMode;
+    private boolean locationSharing;
+    private Instant passwordChangedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

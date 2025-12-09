@@ -2,7 +2,13 @@
 /// Contains all app-wide configuration constants
 class AppConfig {
   // Backend API Configuration
-  static const String baseUrl = 'http://localhost:8080/api';
+  // IMPORTANT: Choose the correct URL based on where you're running the app:
+  // - Chrome/Web: 'http://localhost:8080/api' (current - for web browser)
+  // - Android Emulator: 'http://10.0.2.2:8080/api' (commented - use when running on Android emulator)
+  // - iOS Simulator: 'http://localhost:8080/api'
+  // - Physical Device (USB/WiFi): 'http://YOUR_COMPUTER_IP:8080/api' (e.g., 'http://192.168.1.100:8080/api')
+  static const String baseUrl = 'http://localhost:8080/api'; // Current: Chrome/Web
+  // static const String baseUrl = 'http://10.0.2.2:8080/api'; // Android Emulator (commented - uncomment for Android emulator)
   static const String productionUrl = 'https://api.saferreport.com/api';
   
   // Environment

@@ -1,10 +1,12 @@
 package com.crimeprevention.crime_backend.controller;
 
 import com.crimeprevention.crime_backend.core.dto.user.AuthResponse;
+import com.crimeprevention.crime_backend.core.dto.user.ChangePasswordRequest;
 import com.crimeprevention.crime_backend.core.dto.user.ForgotPasswordRequest;
 import com.crimeprevention.crime_backend.core.dto.user.LoginRequest;
 import com.crimeprevention.crime_backend.core.dto.user.ResetPasswordRequest;
 import com.crimeprevention.crime_backend.core.dto.user.SignupRequest;
+import com.crimeprevention.crime_backend.core.dto.user.VerifyCodeRequest;
 import com.crimeprevention.crime_backend.core.model.user.User;
 import com.crimeprevention.crime_backend.core.repo.user.UserRepository;
 import com.crimeprevention.crime_backend.core.service.interfaces.PasswordResetService;
@@ -20,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -98,7 +101,47 @@ public class AuthController {
 		}
 	}
 
-	// Reset password endpoint
+	// Verify code endpoint
+	@PostMapping("/verify-code")
+	public ResponseEntity<String> verifyCode(@Valid @RequestBody VerifyCodeRequest request) {
+		try {
+			boolean isValid = passwordResetService.verifyCode(request.getEmail(), request.getCode());
+			if (isValid) {
+				return ResponseEntity.ok("Code verified successfully");
+			} else {
+				return ResponseEntity.badRequest().body("Invalid or expired code");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error verifying code: " + e.getMessage());
+		}
+	}
+
+	// Change password endpoint (using email and code)
+	@PostMapping("/change-password")
+	public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+		try {
+			// Validate passwords match
+			if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+				return ResponseEntity.badRequest().body("Passwords do not match");
+			}
+
+			// Reset password using email and code
+			boolean success = passwordResetService.resetPassword(
+					request.getEmail(), 
+					request.getCode(), 
+					request.getNewPassword()
+			);
+			if (success) {
+				return ResponseEntity.ok("Password changed successfully");
+			} else {
+				return ResponseEntity.badRequest().body("Invalid code or failed to change password");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error processing request: " + e.getMessage());
+		}
+	}
+
+	// Reset password endpoint (legacy - using token)
 	@PostMapping("/reset-password")
 	public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 		try {
@@ -112,8 +155,8 @@ public class AuthController {
 				return ResponseEntity.badRequest().body("Invalid or expired reset token");
 			}
 
-			// Reset password
-			boolean success = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+			// Reset password using token (legacy method)
+			boolean success = passwordResetService.resetPasswordWithToken(request.getToken(), request.getNewPassword());
 			if (success) {
 				return ResponseEntity.ok("Password reset successfully");
 			} else {

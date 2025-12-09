@@ -39,7 +39,8 @@ public interface CrimeMapService {
     List<LiveIncidentResponse> getLiveIncidentsInArea(
             Double latitude, 
             Double longitude, 
-            Double radiusKm);
+            Double radiusKm,
+            String timeRange);
     
     /**
      * Get crime statistics for specific geographic area

@@ -19,7 +19,10 @@ public class PasswordResetToken {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String token;
+    private String token; // This will store the 6-digit code
+    
+    @Column(nullable = false, length = 6)
+    private String code; // 6-digit verification code
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

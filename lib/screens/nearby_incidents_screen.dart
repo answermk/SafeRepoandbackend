@@ -1,4 +1,8 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
+import '../services/map_service.dart';
 
 class NearbyIncidentsScreen extends StatefulWidget {
   const NearbyIncidentsScreen({Key? key}) : super(key: key);
@@ -10,34 +14,247 @@ class NearbyIncidentsScreen extends StatefulWidget {
 class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
   String _selectedRadius = '1km';
   String _selectedTimeFilter = '24h';
+  
+  // Location
+  double _latitude = -1.9441; // Default: Kigali
+  double _longitude = 30.0619;
+  
+  // Data
+  List<Map<String, dynamic>> _incidents = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
-  // TODO: Load from backend based on user location
-  final List<Map<String, dynamic>> incidents = [
-    {
-      'type': 'Suspicious Person',
-      'location': 'Oak Street & 1st Ave',
-      'distance': '0.3 km',
-      'time': '15 min ago',
-      'severity': 'medium',
-      'description': 'Individual loitering near school',
-    },
-    {
-      'type': 'Vehicle Activity',
-      'location': 'Main Street',
-      'distance': '0.8 km',
-      'time': '1 hour ago',
-      'severity': 'low',
-      'description': 'Car circling neighborhood',
-    },
-    {
-      'type': 'Theft Attempt',
-      'location': 'Maple Avenue',
-      'distance': '1.2 km',
-      'time': '3 hours ago',
-      'severity': 'high',
-      'description': 'Attempted break-in reported',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+  
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    
+    try {
+      // Get user's current location
+      await _getCurrentLocation();
+      
+      // Load incidents
+      await _loadIncidents();
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error loading incidents: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+  
+  Future<void> _getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return; // Use default location
+      }
+      
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return; // Use default location
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        return; // Use default location
+      }
+      
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+      
+      setState(() {
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      });
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+  
+  Future<void> _loadIncidents() async {
+    try {
+      // Convert radius to km
+      double radiusKm = _convertRadiusToKm(_selectedRadius);
+      
+      // Convert time filter to backend format
+      String timeRange = _convertTimeFilterToBackend(_selectedTimeFilter);
+      
+      final result = await MapService.getLiveIncidentsInArea(
+        latitude: _latitude,
+        longitude: _longitude,
+        radiusKm: radiusKm,
+        timeRange: timeRange,
+      );
+      
+      if (result['success'] == true && result['data'] != null) {
+        final incidents = result['data'] as List<dynamic>;
+        
+        // Calculate distance for each incident and format data
+        List<Map<String, dynamic>> formattedIncidents = [];
+        for (var incident in incidents) {
+          final incidentData = incident as Map<String, dynamic>;
+          final lat = (incidentData['latitude'] ?? 0.0) as double;
+          final lng = (incidentData['longitude'] ?? 0.0) as double;
+          
+          // Calculate distance
+          double distanceKm = 0.0;
+          if (lat != 0.0 && lng != 0.0) {
+            distanceKm = _calculateDistance(_latitude, _longitude, lat, lng);
+          }
+          
+          // Format time ago
+          String timeAgo = 'Unknown';
+          if (incidentData['reportedAt'] != null) {
+            timeAgo = _formatTimeAgo(incidentData['reportedAt']);
+          }
+          
+          // Determine severity based on priority
+          String severity = _getSeverityFromPriority(incidentData['priority'] ?? 'NORMAL');
+          
+          formattedIncidents.add({
+            'id': incidentData['incidentId'],
+            'type': incidentData['title'] ?? incidentData['crimeType'] ?? 'Unknown',
+            'description': incidentData['description'] ?? 'No description',
+            'location': incidentData['location'] ?? 'Unknown location',
+            'distance': _formatDistance(distanceKm),
+            'distanceKm': distanceKm,
+            'time': timeAgo,
+            'severity': severity,
+            'status': incidentData['status'] ?? 'PENDING',
+            'priority': incidentData['priority'] ?? 'NORMAL',
+            'reportedAt': incidentData['reportedAt'],
+            'latitude': lat,
+            'longitude': lng,
+          });
+        }
+        
+        // Sort by distance (nearest first)
+        formattedIncidents.sort((a, b) => 
+          (a['distanceKm'] as double).compareTo(b['distanceKm'] as double)
+        );
+        
+        setState(() {
+          _incidents = formattedIncidents;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = result['error'] ?? 'Failed to load incidents';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+  
+  double _convertRadiusToKm(String radius) {
+    if (radius.contains('m')) {
+      // Convert meters to km
+      final meters = double.tryParse(radius.replaceAll('m', '')) ?? 500;
+      return meters / 1000.0;
+    } else if (radius.contains('km')) {
+      return double.tryParse(radius.replaceAll('km', '')) ?? 1.0;
+    }
+    return 1.0; // Default 1km
+  }
+  
+  String _convertTimeFilterToBackend(String timeFilter) {
+    switch (timeFilter.toLowerCase()) {
+      case '1h':
+        return '1h';
+      case '24h':
+        return '24h';
+      case 'week':
+        return '7d';
+      default:
+        return '24h';
+    }
+  }
+  
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371; // km
+    
+    final dLat = _degreesToRadians(lat2 - lat1);
+    final dLon = _degreesToRadians(lon2 - lon1);
+    
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_degreesToRadians(lat1)) * math.cos(_degreesToRadians(lat2)) *
+        math.sin(dLon / 2) * math.sin(dLon / 2);
+    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    
+    return earthRadius * c;
+  }
+  
+  double _degreesToRadians(double degrees) {
+    return degrees * (math.pi / 180);
+  }
+  
+  String _formatDistance(double distanceKm) {
+    if (distanceKm < 1.0) {
+      return '${(distanceKm * 1000).toStringAsFixed(0)} m';
+    } else {
+      return '${distanceKm.toStringAsFixed(1)} km';
+    }
+  }
+  
+  String _formatTimeAgo(dynamic reportedAt) {
+    try {
+      DateTime reportedDate;
+      if (reportedAt is String) {
+        // Parse ISO 8601 format
+        reportedDate = DateTime.parse(reportedAt);
+      } else {
+        return 'Unknown';
+      }
+      
+      final now = DateTime.now();
+      final difference = now.difference(reportedDate);
+      
+      if (difference.inMinutes < 1) {
+        return 'Just now';
+      } else if (difference.inMinutes < 60) {
+        return '${difference.inMinutes} min ago';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+      } else if (difference.inDays < 7) {
+        return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+      } else {
+        return DateFormat('MMM d, y').format(reportedDate);
+      }
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+  
+  String _getSeverityFromPriority(String priority) {
+    switch (priority.toUpperCase()) {
+      case 'URGENT':
+        return 'high';
+      case 'HIGH':
+        return 'high';
+      case 'MEDIUM':
+        return 'medium';
+      case 'NORMAL':
+      case 'LOW':
+      default:
+        return 'low';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +266,9 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.map),
-            onPressed: () {
-              // TODO: Show map view
-            },
-            tooltip: 'Map View',
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadIncidents,
+            tooltip: 'Refresh',
           ),
         ],
       ),
@@ -85,7 +300,10 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
                     label: Text(radius),
                     selected: isSelected,
                     onSelected: (selected) {
-                      setState(() => _selectedRadius = radius);
+                      setState(() {
+                        _selectedRadius = radius;
+                      });
+                      _loadIncidents();
                     },
                     selectedColor: const Color(0xFF36599F),
                     labelStyle: TextStyle(
@@ -110,7 +328,10 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
                     label: Text(time),
                     selected: isSelected,
                     onSelected: (selected) {
-                      setState(() => _selectedTimeFilter = time);
+                      setState(() {
+                        _selectedTimeFilter = time;
+                      });
+                      _loadIncidents();
                     },
                     selectedColor: const Color(0xFF36599F),
                     labelStyle: TextStyle(
@@ -145,9 +366,9 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '5 Active Alerts',
-                  style: TextStyle(
+                Text(
+                  '${_incidents.length} Active Alert${_incidents.length == 1 ? '' : 's'}',
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF92400E),
                   ),
@@ -168,11 +389,63 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
   }
 
   Widget _buildIncidentsList() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              _errorMessage!,
+              style: TextStyle(color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loadIncidents,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    if (_incidents.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check_circle_outline, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'No incidents found',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No incidents reported within $_selectedRadius in the last $_selectedTimeFilter',
+              style: TextStyle(color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+    
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: incidents.length,
+      itemCount: _incidents.length,
       itemBuilder: (context, index) {
-        return _buildIncidentCard(incidents[index]);
+        return _buildIncidentCard(_incidents[index]);
       },
     );
   }
@@ -256,6 +529,8 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
                 fontSize: 14,
                 color: Colors.grey[700],
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 12),
             Row(
@@ -353,6 +628,8 @@ class _NearbyIncidentsScreenState extends State<NearbyIncidentsScreen> {
                     _buildDetailRow(Icons.location_on, 'Location', incident['location'] as String),
                     _buildDetailRow(Icons.near_me, 'Distance', incident['distance'] as String),
                     _buildDetailRow(Icons.access_time, 'Reported', incident['time'] as String),
+                    _buildDetailRow(Icons.flag, 'Status', incident['status'] as String),
+                    _buildDetailRow(Icons.priority_high, 'Priority', incident['priority'] as String),
                     const SizedBox(height: 24),
                     const Text(
                       'Safety Recommendations',

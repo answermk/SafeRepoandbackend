@@ -55,6 +55,8 @@ class UserService {
     String? location,
     String? emergencyContactName,
     String? emergencyContactPhone,
+    bool? anonymousMode,
+    bool? locationSharing,
   }) async {
     try {
       final token = await getAuthToken();
@@ -64,10 +66,11 @@ class UserService {
       
       final requestBody = <String, dynamic>{};
       if (fullName != null) requestBody['fullName'] = fullName;
-      if (phone != null) requestBody['phone'] = phone;
-      if (location != null) requestBody['location'] = location;
-      if (emergencyContactName != null) requestBody['emergencyContactName'] = emergencyContactName;
-      if (emergencyContactPhone != null) requestBody['emergencyContactPhone'] = emergencyContactPhone;
+      if (phone != null) requestBody['phoneNumber'] = phone; // Backend expects phoneNumber
+      if (anonymousMode != null) requestBody['anonymousMode'] = anonymousMode;
+      if (locationSharing != null) requestBody['locationSharing'] = locationSharing;
+      // Note: location, emergencyContactName, emergencyContactPhone are not in UpdateUserRequest DTO
+      // They may be added to the backend DTO in the future
       
       final response = await http.put(
         Uri.parse('${AppConfig.apiBaseUrl}/users/$userId'),
@@ -115,10 +118,8 @@ class UserService {
       
       final requestBody = <String, dynamic>{};
       if (fullName != null) requestBody['fullName'] = fullName;
-      if (phone != null) requestBody['phone'] = phone;
-      if (location != null) requestBody['location'] = location;
-      if (emergencyContactName != null) requestBody['emergencyContactName'] = emergencyContactName;
-      if (emergencyContactPhone != null) requestBody['emergencyContactPhone'] = emergencyContactPhone;
+      if (phone != null) requestBody['phoneNumber'] = phone; // Backend expects phoneNumber
+      // Note: location, emergencyContactName, emergencyContactPhone are not in UpdateUserRequest DTO
       
       final response = await http.put(
         Uri.parse('${AppConfig.apiBaseUrl}/users/by-email/$email'),
@@ -170,6 +171,7 @@ class UserService {
         body: jsonEncode({
           'currentPassword': currentPassword,
           'newPassword': newPassword,
+          'confirmPassword': newPassword, // Backend expects confirmPassword
         }),
       );
       

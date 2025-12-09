@@ -208,11 +208,12 @@ class MapService {
   }
   
   /// Get live incidents in area
-  /// Backend: GET /api/maps/live-incidents/area?latitude={lat}&longitude={lon}&radiusKm={radius}
+  /// Backend: GET /api/maps/live-incidents/area?latitude={lat}&longitude={lon}&radiusKm={radius}&timeRange={timeRange}
   static Future<Map<String, dynamic>> getLiveIncidentsInArea({
     required double latitude,
     required double longitude,
     required double radiusKm,
+    String timeRange = '7d', // Default: 7 days
   }) async {
     try {
       final token = await getAuthToken();
@@ -225,6 +226,7 @@ class MapService {
           'latitude': latitude.toString(),
           'longitude': longitude.toString(),
           'radiusKm': radiusKm.toString(),
+          'timeRange': timeRange,
         },
       );
       

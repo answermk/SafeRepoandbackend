@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'login_screen.dart';
+import 'change_password_screen.dart';
 
 class CheckEmailScreen extends StatefulWidget {
-  const CheckEmailScreen({super.key});
+  final String email;
+  
+  const CheckEmailScreen({super.key, required this.email});
 
   @override
   State<CheckEmailScreen> createState() => _CheckEmailScreenState();
@@ -18,12 +22,17 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
   }
 
   Future<void> _handleVerifyEmail() async {
-    // Handle email verification - backend functionality
-    print('Verify Email button pressed');
-    print('Verification Code: ${_verificationController.text}');
-
-    // TODO: Implement actual verification logic with backend
-    // For now, simulate successful verification
+    final code = _verificationController.text.trim();
+    
+    if (code.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter the 6-digit code'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     // Show loading indicator
     showDialog(
@@ -34,36 +43,48 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
       ),
     );
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final result = await AuthService.verifyCode(
+        email: widget.email,
+        code: code,
+      );
 
-    // Close loading dialog
-    Navigator.of(context).pop();
+      // Close loading dialog
+      Navigator.of(context).pop();
 
-    // Navigate to login screen after successful verification
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
-      ),
-    );
-
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Email verified successfully! You can now sign in.'),
-        backgroundColor: Color(0xFF4CAF50),
-      ),
-    );
+      if (result['success'] == true) {
+        // Navigate to change password screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChangePasswordScreen.forReset(
+              email: widget.email,
+              code: code,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? 'Invalid or expired code'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _handleSendNewCode() async {
-    // Handle send new code - backend functionality
-    print('Send new code pressed');
-
-    // TODO: Implement actual send new code logic with backend
-    // For now, simulate sending new code
-
     // Show loading indicator
     showDialog(
       context: context,
@@ -73,19 +94,38 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
       ),
     );
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final result = await AuthService.forgotPassword(widget.email);
+      
+      // Close loading dialog
+      Navigator.of(context).pop();
 
-    // Close loading dialog
-    Navigator.of(context).pop();
-
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('New verification code sent to your email.'),
-        backgroundColor: Color(0xFF36599F),
-      ),
-    );
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('New verification code sent to your email.'),
+            backgroundColor: Color(0xFF36599F),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? 'Failed to send new code'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -188,17 +228,17 @@ class _CheckEmailScreenState extends State<CheckEmailScreen> {
           // Subtitle
           RichText(
             textAlign: TextAlign.center,
-            text: const TextSpan(
-              style: TextStyle(
+            text: TextSpan(
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white,
                 height: 1.5,
               ),
               children: [
-                TextSpan(text: 'we\'ve sent a verification code to\n'),
+                const TextSpan(text: 'we\'ve sent a verification code to\n'),
                 TextSpan(
-                  text: 'your@email.com',
-                  style: TextStyle(
+                  text: widget.email,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w700,
                   ),
                 ),

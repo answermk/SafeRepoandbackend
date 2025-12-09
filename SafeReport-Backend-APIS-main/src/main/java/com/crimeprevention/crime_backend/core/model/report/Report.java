@@ -79,13 +79,28 @@ public class Report extends AbstractAuditEntity {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Location {
-        private double latitude;
-        private double longitude;
+        @Column(name = "latitude")
+        private Double latitude;
+        
+        @Column(name = "longitude")
+        private Double longitude;
+        
+        @Column(name = "address", columnDefinition = "TEXT")
         private String address;
+        
+        @Column(name = "city")
         private String city;
+        
+        @Column(name = "state")
         private String state;
+        
+        @Column(name = "zip_code")
         private String zipCode;
+        
+        @Column(name = "area")
         private String area;
+        
+        @Column(name = "district")
         private String district;
     }
 }

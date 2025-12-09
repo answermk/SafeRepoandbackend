@@ -14,5 +14,5 @@ public interface UserService {
     List<UserDTO> getAllUsers();
     UserDTO registerCivilian(SignupRequest request);
     UserStatsDTO getUserStats();
-    void changePassword(UUID userId, ChangePasswordRequest request);
+    void changePassword(UUID userId, UpdatePasswordRequest request);
 }
