@@ -37,10 +37,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// Format "Member since" with relative time or absolute year
   String _formatMemberSince(dynamic createdAt) {
-    if (createdAt == null) return "Member";
+    if (createdAt == null) {
+      print('⚠️ CreatedAt is null');
+      return "Member since unknown";
+    }
     
     try {
-      final createdDate = DateTime.parse(createdAt.toString());
+      // Handle different date formats (ISO string, timestamp, etc.)
+      DateTime createdDate;
+      if (createdAt is String) {
+        createdDate = DateTime.parse(createdAt);
+      } else if (createdAt is int) {
+        // Handle timestamp in milliseconds
+        createdDate = DateTime.fromMillisecondsSinceEpoch(createdAt);
+      } else if (createdAt is DateTime) {
+        createdDate = createdAt;
+      } else {
+        // Try to parse as string
+        createdDate = DateTime.parse(createdAt.toString());
+      }
+      
       final now = DateTime.now();
       final difference = now.difference(createdDate);
       
@@ -101,6 +117,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (result['success'] == true && result['data'] != null) {
         final userData = result['data'] as Map<String, dynamic>;
         
+        // Debug: Print user data to see what we're getting
+        print('📋 User Profile Data: $userData');
+        print('📋 Phone Number: ${userData['phoneNumber']}');
+        print('📋 Created At: ${userData['createdAt']}');
+        
         // Format "Member since" date with relative or absolute time
         String formattedMemberSince = _formatMemberSince(userData['createdAt']);
         
@@ -111,9 +132,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? userData['fullName'] 
               : (userData['username'] ?? "User");
           userEmail = userData['email'] ?? "";
-          userPhone = userData['phoneNumber']?.toString().trim().isNotEmpty == true 
-              ? userData['phoneNumber'] 
+          
+          // Handle phone number - check multiple possible field names
+          final phoneValue = userData['phoneNumber'] ?? 
+                            userData['phone'] ?? 
+                            userData['phone_number'];
+          userPhone = (phoneValue != null && phoneValue.toString().trim().isNotEmpty)
+              ? phoneValue.toString().trim()
               : "Not provided";
+          
           memberSince = formattedMemberSince;
           _isLoading = false;
         });

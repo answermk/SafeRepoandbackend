@@ -197,6 +197,16 @@ class AppLocalizationsRw extends AppLocalizations {
   }
 
   @override
+  String goodAfternoon(String userName) {
+    return 'Mwiriwe, $userName';
+  }
+
+  @override
+  String goodEvening(String userName) {
+    return 'Mwiriwe, $userName';
+  }
+
+  @override
   String get reportNow => 'Tanga Raporo Nonaha';
 
   @override
@@ -1007,4 +1017,27 @@ class AppLocalizationsRw extends AppLocalizations {
   String audiosAdded(int count) {
     return '$count amajwi yongeweho';
   }
+
+  @override
+  String activeAlertsInYourArea(int count) {
+    return '$count amakuru akora mu karere kawe';
+  }
+
+  @override
+  String get viewGroups => 'Reba Amatsinda';
+
+  @override
+  String get callForHelp => 'Hamagara ubufasha';
+
+  @override
+  String get submitIncident => 'Ohereza Ikintu';
+
+  @override
+  String get viewContributions => 'Reba inkunga';
+
+  @override
+  String get safetyTips => 'Inama z\'umutekano';
+
+  @override
+  String get home => 'Ahabanza';
 }

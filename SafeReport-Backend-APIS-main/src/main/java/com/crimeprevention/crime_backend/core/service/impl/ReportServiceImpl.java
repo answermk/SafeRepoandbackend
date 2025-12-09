@@ -23,6 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -67,6 +69,7 @@ public class ReportServiceImpl implements ReportService {
         }
         
         Report report = Report.builder()
+            .reportNumber(generateReportNumber())
             .title(request.getTitle())
             .description(request.getDescription())
             .location(location)
@@ -98,6 +101,14 @@ public class ReportServiceImpl implements ReportService {
         }
         
         return reportMapper.toResponse(report);
+    }
+
+    private String generateReportNumber() {
+        // Format: SR + YYYYMMDD + 6-digit sequence derived from current millis
+        String datePart = LocalDate.now(ZoneOffset.UTC).format(DateTimeFormatter.BASIC_ISO_DATE); // YYYYMMDD
+        long suffix = Math.abs(System.currentTimeMillis() % 1_000_000);
+        String suffixStr = String.format("%06d", suffix);
+        return "SR" + datePart + suffixStr;
     }
     
     /**

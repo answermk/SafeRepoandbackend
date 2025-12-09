@@ -15,10 +15,6 @@ class LanguageController {
         return const Locale('fr');
       case 'rw':
         return const Locale('rw');
-      case 'sw':
-        return const Locale('sw');
-      case 'es':
-        return const Locale('es');
       default:
         return const Locale('en');
     }
@@ -35,8 +31,6 @@ class LanguageController {
       Locale('en'),
       Locale('fr'),
       Locale('rw'),
-      Locale('sw'),
-      Locale('es'),
     ];
   }
 

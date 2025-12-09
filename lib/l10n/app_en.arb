@@ -78,6 +78,24 @@
       }
     }
   },
+  "goodAfternoon": "Good Afternoon, {userName}",
+  "@goodAfternoon": {
+    "description": "Afternoon greeting with user name",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "goodEvening": "Good Evening, {userName}",
+  "@goodEvening": {
+    "description": "Evening greeting with user name",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
   "reportNow": "Report Now",
   "yourCommunitySafetyHub": "Your Community\nSafety Hub",
   "communityStatus": "Community Status",
@@ -495,5 +513,20 @@
         "type": "int"
       }
     }
-  }
+  },
+  "activeAlertsInYourArea": "{count} active alerts in your area",
+  "@activeAlertsInYourArea": {
+    "description": "Active alerts count in area",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewGroups": "View Groups",
+  "callForHelp": "Call for help",
+  "submitIncident": "Submit Incident",
+  "viewContributions": "View contributions",
+  "safetyTips": "Safety tips",
+  "home": "Home"
 }

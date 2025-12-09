@@ -69,9 +69,27 @@
   "emailTestSafereportCom": "Imeyili: test@safereport.com",
   "passwordSafeReport123": "Ijambobanga: SafeReport123",
   
-  "goodMorning": "Mwiriwe, {userName}",
+  "goodMorning": "Mwaramutse, {userName}",
   "@goodMorning": {
     "description": "Kwakira hamwe n'amazina y'umukoresha",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "goodAfternoon": "Mwiriwe, {userName}",
+  "@goodAfternoon": {
+    "description": "Kwakira w'umugoroba hamwe n'amazina y'umukoresha",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "goodEvening": "Mwiriwe, {userName}",
+  "@goodEvening": {
+    "description": "Kwakira w'ijoro hamwe n'amazina y'umukoresha",
     "placeholders": {
       "userName": {
         "type": "String"
@@ -494,5 +512,20 @@
         "type": "int"
       }
     }
-  }
+  },
+  "activeAlertsInYourArea": "{count} amakuru akora mu karere kawe",
+  "@activeAlertsInYourArea": {
+    "description": "Umubare w'amakuru akora mu karere",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewGroups": "Reba Amatsinda",
+  "callForHelp": "Hamagara ubufasha",
+  "submitIncident": "Ohereza Ikintu",
+  "viewContributions": "Reba inkunga",
+  "safetyTips": "Inama z'umutekano",
+  "home": "Ahabanza"
 }

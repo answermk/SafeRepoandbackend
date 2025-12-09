@@ -16,6 +16,7 @@ public interface ReportMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "title", source = "title")
     @Mapping(target = "description", source = "description")
+    @Mapping(target = "reportNumber", source = "reportNumber")
     @Mapping(target = "crimeRelationship", source = "crimeRelationship")
     @Mapping(target = "witnessInfo", source = "witnessInfo")
     @Mapping(target = "isAnonymous", source = "anonymous")

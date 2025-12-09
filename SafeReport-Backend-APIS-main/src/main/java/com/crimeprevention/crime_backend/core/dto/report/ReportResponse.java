@@ -18,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ReportResponse {
     private UUID id;
+    private String reportNumber;
     private String title;
     private String description;
     private CrimeType crimeType;

@@ -78,6 +78,24 @@
       }
     }
   },
+  "goodAfternoon": "Bon après-midi, {userName}",
+  "@goodAfternoon": {
+    "description": "Salutation de l'après-midi avec le nom d'utilisateur",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
+  "goodEvening": "Bonsoir, {userName}",
+  "@goodEvening": {
+    "description": "Salutation du soir avec le nom d'utilisateur",
+    "placeholders": {
+      "userName": {
+        "type": "String"
+      }
+    }
+  },
   "reportNow": "Signaler maintenant",
   "yourCommunitySafetyHub": "Votre Centre de\nSécurité Communautaire",
   "communityStatus": "Statut de la Communauté",
@@ -494,5 +512,20 @@
         "type": "int"
       }
     }
-  }
+  },
+  "activeAlertsInYourArea": "{count} alertes actives dans votre région",
+  "@activeAlertsInYourArea": {
+    "description": "Nombre d'alertes actives dans la région",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewGroups": "Voir les Groupes",
+  "callForHelp": "Appeler à l'aide",
+  "submitIncident": "Soumettre un Incident",
+  "viewContributions": "Voir les contributions",
+  "safetyTips": "Conseils de sécurité",
+  "home": "Accueil"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/report_service.dart';
 
 class MyImpactScreen extends StatefulWidget {
   const MyImpactScreen({Key? key}) : super(key: key);
@@ -8,29 +9,163 @@ class MyImpactScreen extends StatefulWidget {
 }
 
 class _MyImpactScreenState extends State<MyImpactScreen> {
-  // TODO: Load from backend
-  final int reportsSubmitted = 12;
-  final int actionsTaken = 8;
-  final int crimesPrevented = 3;
-  final String reputationLevel = 'Gold';
-  final int reputationPoints = 850;
+  int reportsSubmitted = 0;
+  int actionsTaken = 0;
+  int crimesPrevented = 0;
+  String reputationLevel = 'Member';
+  int reputationPoints = 0;
 
-  final List<Map<String, dynamic>> badges = [
-    {'name': 'First Report', 'icon': Icons.flag, 'color': Colors.blue, 'earned': true},
-    {'name': 'Week Warrior', 'icon': Icons.calendar_today, 'color': Colors.green, 'earned': true},
-    {'name': 'Evidence Expert', 'icon': Icons.camera_alt, 'color': Colors.purple, 'earned': true},
-    {'name': 'Community Hero', 'icon': Icons.star, 'color': Colors.amber, 'earned': false},
-  ];
+  List<Map<String, dynamic>> badges = [];
+  List<Map<String, String>> timeline = [];
 
-  final List<Map<String, String>> timeline = [
-    {'action': 'Report submitted', 'detail': 'Suspicious Person', 'time': '2 hours ago'},
-    {'action': 'Action taken', 'detail': 'Police responded', 'time': '1 day ago'},
-    {'action': 'Badge earned', 'detail': 'Evidence Expert', 'time': '3 days ago'},
-    {'action': 'Report resolved', 'detail': 'Vehicle Activity', 'time': '5 days ago'},
-  ];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImpactData();
+  }
+
+  Future<void> _loadImpactData() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    final result = await ReportService.getMyReports(
+      page: 0,
+      size: 100, // fetch first 100 to build timeline; total comes from API
+      sortBy: 'createdAt',
+      sortDir: 'desc',
+    );
+
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      final List<dynamic> rawReports = result['data'] ?? [];
+      final int total = (result['totalElements'] as int?) ?? rawReports.length;
+
+      // Compute counts from statuses
+      int resolved = 0;
+      int inProgress = 0;
+      for (final r in rawReports) {
+        final status = (r['status'] ?? '').toString().toUpperCase();
+        if (status == 'RESOLVED' || status == 'CLOSED') resolved++;
+        if (status == 'IN_PROGRESS' || status == 'REVIEWING') inProgress++;
+      }
+
+      setState(() {
+        reportsSubmitted = total;
+        actionsTaken = resolved + inProgress; // backend-driven activity
+        crimesPrevented = resolved; // assume resolved reports contributed
+
+        // Reputation placeholders based on activity
+        reputationPoints = (resolved * 20 + inProgress * 10 + total).clamp(0, 10000);
+        reputationLevel = _mapPointsToLevel(reputationPoints);
+
+        // Simple badges from backend-driven stats
+        badges = [
+          {'name': 'First Report', 'icon': Icons.flag, 'color': Colors.blue, 'earned': total > 0},
+          {'name': 'Active Reporter', 'icon': Icons.calendar_today, 'color': Colors.green, 'earned': total >= 5},
+          {'name': 'Resolution Star', 'icon': Icons.check_circle, 'color': Colors.teal, 'earned': resolved >= 3},
+          {'name': 'Community Hero', 'icon': Icons.star, 'color': Colors.amber, 'earned': resolved >= 5},
+        ];
+
+        // Build timeline from latest reports
+        timeline = rawReports.take(20).map<Map<String, String>>((r) {
+          final title = (r['title'] ?? r['type'] ?? 'Report').toString();
+          final status = (r['status'] ?? 'PENDING').toString();
+          final createdAt = r['createdAt']?.toString() ?? r['submittedAt']?.toString();
+          return {
+            'action': 'Report ${status.toLowerCase()}',
+            'detail': title,
+            'time': _formatTimeAgo(createdAt),
+          };
+        }).toList();
+
+        _loading = false;
+      });
+    } else {
+      setState(() {
+        _error = result['error']?.toString() ?? 'Failed to load impact data';
+        _loading = false;
+      });
+    }
+  }
+
+  String _mapPointsToLevel(int points) {
+    if (points >= 1000) return 'Platinum';
+    if (points >= 700) return 'Gold';
+    if (points >= 400) return 'Silver';
+    return 'Bronze';
+  }
+
+  String _formatTimeAgo(String? isoString) {
+    if (isoString == null || isoString.isEmpty) return 'Unknown';
+    try {
+      final dt = DateTime.parse(isoString).toLocal();
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+      if (diff.inHours < 24) return '${diff.inHours}h ago';
+      if (diff.inDays < 7) return '${diff.inDays}d ago';
+      final weeks = (diff.inDays / 7).floor();
+      if (weeks < 5) return '${weeks}w ago';
+      final months = (diff.inDays / 30).floor();
+      return '${months}mo ago';
+    } catch (_) {
+      return 'Unknown';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('My Impact', style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF36599F),
+          foregroundColor: Colors.white,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('My Impact', style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF36599F),
+          foregroundColor: Colors.white,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                const SizedBox(height: 12),
+                Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: _loadImpactData,
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF36599F)),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(

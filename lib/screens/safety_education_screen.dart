@@ -18,8 +18,11 @@ class SafetyEducationScreen extends StatelessWidget {
             _buildHeroSection(),
             _buildCategoriesGrid(context),
             _buildFeaturedArticles(context),
+            _buildHowToReport(context),
+            _buildWhatToReport(),
             _buildVideoTutorials(),
             _buildQuickTips(),
+            _buildEmergencySteps(),
             const SizedBox(height: 30),
           ],
         ),
@@ -240,6 +243,178 @@ class SafetyEducationScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildHowToReport(BuildContext context) {
+    final steps = [
+      {
+        'title': 'Stay Safe First',
+        'detail': 'Find a secure spot; never confront suspects.',
+        'icon': Icons.shield,
+        'color': Colors.orange,
+      },
+      {
+        'title': 'Capture Details',
+        'detail': 'Time, location, people, vehicles, photos/video if safe.',
+        'icon': Icons.visibility,
+        'color': Colors.blue,
+      },
+      {
+        'title': 'Submit the Report',
+        'detail': 'Use the app: select incident type, add description, attach evidence.',
+        'icon': Icons.send,
+        'color': Colors.green,
+      },
+      {
+        'title': 'Follow Up',
+        'detail': 'Check status in My Reports; add more info if requested.',
+        'icon': Icons.update,
+        'color': Colors.purple,
+      },
+    ];
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.how_to_reg, color: Color(0xFF36599F)),
+              SizedBox(width: 8),
+              Text(
+                'How to Report',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF36599F),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...steps.map((step) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: (step['color'] as Color).withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      step['icon'] as IconData,
+                      size: 20,
+                      color: step['color'] as Color,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          step['title'] as String,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          step['detail'] as String,
+                          style: const TextStyle(fontSize: 13, height: 1.4),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWhatToReport() {
+    final items = [
+      {'title': 'Crimes in progress', 'icon': Icons.warning_amber, 'color': Colors.red},
+      {'title': 'Suspicious persons/vehicles', 'icon': Icons.visibility, 'color': Colors.orange},
+      {'title': 'Threats or harassment', 'icon': Icons.campaign, 'color': Colors.deepOrange},
+      {'title': 'Domestic violence', 'icon': Icons.home, 'color': Colors.pink},
+      {'title': 'Vandalism or theft', 'icon': Icons.security, 'color': Colors.blue},
+      {'title': 'Drug activity', 'icon': Icons.medication_liquid, 'color': Colors.indigo},
+      {'title': 'Weapons observed', 'icon': Icons.gavel, 'color': Colors.brown},
+      {'title': 'Missing persons', 'icon': Icons.person_search, 'color': Colors.teal},
+    ];
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.report, color: Color(0xFF36599F)),
+              SizedBox(width: 8),
+              Text(
+                'What to Report',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF36599F),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: items.map((item) {
+              return Chip(
+                avatar: CircleAvatar(
+                  backgroundColor: (item['color'] as Color).withOpacity(0.15),
+                  child: Icon(item['icon'] as IconData, color: item['color'] as Color, size: 18),
+                ),
+                label: Text(item['title'] as String),
+                backgroundColor: Colors.grey[100],
+                labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildVideoTutorials() {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -396,11 +571,171 @@ class SafetyEducationScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToCategory(BuildContext context, String category) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Opening $category content...')),
+  Widget _buildEmergencySteps() {
+    final steps = [
+      {
+        'title': 'If danger is immediate, call emergency services first.',
+        'icon': Icons.call,
+        'color': Colors.red,
+      },
+      {
+        'title': 'Move to a safe location and enable Emergency Mode in the app.',
+        'icon': Icons.emergency_share,
+        'color': Colors.orange,
+      },
+      {
+        'title': 'Share clear location details; keep line open if prompted.',
+        'icon': Icons.location_on,
+        'color': Colors.blue,
+      },
+      {
+        'title': 'If safe, provide updates (suspect clothing, vehicles, direction).',
+        'icon': Icons.directions_run,
+        'color': Colors.green,
+      },
+    ];
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.emergency, color: Color(0xFF36599F)),
+              SizedBox(width: 8),
+              Text(
+                'Emergency Steps',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF36599F),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...steps.map((step) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: (step['color'] as Color).withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      step['icon'] as IconData,
+                      size: 20,
+                      color: step['color'] as Color,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      step['title'] as String,
+                      style: const TextStyle(fontSize: 13, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
     );
-    // TODO: Navigate to detailed category page
+  }
+
+  void _navigateToCategory(BuildContext context, String category) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  category,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF36599F),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (category == 'What to Report') ...[
+                  const Text(
+                    '• Crimes in progress, suspicious persons/vehicles\n'
+                    '• Threats, harassment, domestic violence\n'
+                    '• Vandalism, theft, drug activity\n'
+                    '• Weapons observed, missing persons',
+                    style: TextStyle(height: 1.5),
+                  ),
+                ] else if (category == 'How to Report') ...[
+                  const Text(
+                    '1) Stay safe; do not confront suspects\n'
+                    '2) Capture details: time, location, descriptions\n'
+                    '3) Use the app to submit, attach evidence\n'
+                    '4) Follow up in My Reports for updates',
+                    style: TextStyle(height: 1.5),
+                  ),
+                ] else if (category == 'Stay Safe') ...[
+                  const Text(
+                    '• Observe from a safe distance\n'
+                    '• Keep your phone silent\n'
+                    '• Use anonymous reporting if needed\n'
+                    '• Call emergency services if danger is immediate',
+                    style: TextStyle(height: 1.5),
+                  ),
+                ] else if (category == 'Your Rights') ...[
+                  const Text(
+                    '• You can report anonymously\n'
+                    '• You are not required to intervene physically\n'
+                    '• Evidence must be gathered safely\n'
+                    '• You can request updates on your submissions',
+                    style: TextStyle(height: 1.5),
+                  ),
+                ] else ...[
+                  const Text(
+                    'Stay safe, be specific, and use the app to report responsibly.',
+                    style: TextStyle(height: 1.5),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Close'),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _openArticle(BuildContext context, String title) {

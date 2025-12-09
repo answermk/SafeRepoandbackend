@@ -22,6 +22,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Report extends AbstractAuditEntity {
+
+    @Column(name = "report_number", unique = true, length = 32)
+    private String reportNumber;
     
     @Column(name = "title", nullable = false)
     private String title;

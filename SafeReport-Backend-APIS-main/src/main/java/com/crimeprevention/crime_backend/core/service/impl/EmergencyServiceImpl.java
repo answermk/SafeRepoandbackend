@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -47,6 +50,7 @@ public class EmergencyServiceImpl implements EmergencyService {
         String title = "EMERGENCY: " + (request.getEmergencyType() != null ? request.getEmergencyType() : "General Emergency");
         
         Report emergencyReport = Report.builder()
+            .reportNumber(generateReportNumber())
             .title(title)
             .description(request.getDescription() != null ? request.getDescription() : "Emergency assistance requested")
             .location(location)
@@ -81,6 +85,13 @@ public class EmergencyServiceImpl implements EmergencyService {
         log.info("Emergency request created: {}, ETA: {} minutes", emergencyReport.getId(), response.getEtaMinutes());
         
         return response;
+    }
+
+    private String generateReportNumber() {
+        String datePart = LocalDate.now(ZoneOffset.UTC).format(DateTimeFormatter.BASIC_ISO_DATE); // YYYYMMDD
+        long suffix = Math.abs(System.currentTimeMillis() % 1_000_000);
+        String suffixStr = String.format("%06d", suffix);
+        return "SR" + datePart + suffixStr;
     }
     
     @Override

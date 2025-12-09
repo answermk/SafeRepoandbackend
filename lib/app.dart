@@ -113,8 +113,8 @@ class _SafeReportAppState extends State<SafeReportApp> {
             locale: currentLocale,
             localizationsDelegates: LanguageController.getLocalizationDelegates(),
             supportedLocales: LanguageController.getSupportedLocales(),
-            theme: themeData,
-            darkTheme: appSettings.isDarkMode ? themeData : null,
+            theme: appSettings.getThemeData(),
+            darkTheme: appSettings.getThemeData(),
             themeMode: appSettings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             builder: (context, child) {
               // Apply font scaling globally

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:safereport_mobo/l10n/app_localizations.dart';
 import '../services/token_manager.dart';
 import '../services/community_service.dart';
+import '../services/map_service.dart';
+import '../utils/theme_helper.dart';
 import 'emergency_mode_screen.dart';
 import 'report_crime_screen.dart';
 import 'my_watch_groups_screen.dart';
@@ -29,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String avgResponse = "Loading...";
   String safetyLevel = "Loading...";
   String watchGroupInfo = "Oak Street Watch • 2 new alerts";
-  int nearbyIncidentsCount = 5; // NEW
+  int nearbyIncidentsCount = 0; // populated from backend
   bool isLoadingCommunityStatus = true;
 
   @override
@@ -61,6 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (!serviceEnabled) {
         // Use default location (Kigali) if location services are disabled
         _fetchCommunityStatus(-1.9441, 30.0619);
+        _fetchNearbyIncidentsCount(-1.9441, 30.0619);
         return;
       }
 
@@ -70,6 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (permission == LocationPermission.denied) {
           // Use default location if permission denied
           _fetchCommunityStatus(-1.9441, 30.0619);
+          _fetchNearbyIncidentsCount(-1.9441, 30.0619);
           return;
         }
       }
@@ -77,6 +82,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (permission == LocationPermission.deniedForever) {
         // Use default location if permission permanently denied
         _fetchCommunityStatus(-1.9441, 30.0619);
+        _fetchNearbyIncidentsCount(-1.9441, 30.0619);
         return;
       }
 
@@ -86,10 +92,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       );
 
       _fetchCommunityStatus(position.latitude, position.longitude);
+      _fetchNearbyIncidentsCount(position.latitude, position.longitude);
     } catch (e) {
       print('Error getting location: $e');
       // Use default location on error
       _fetchCommunityStatus(-1.9441, 30.0619);
+      _fetchNearbyIncidentsCount(-1.9441, 30.0619);
     }
   }
 
@@ -129,24 +137,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  /// Get greeting based on time of day
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) {
-      return 'Good Morning';
-    } else if (hour >= 12 && hour < 17) {
-      return 'Good Afternoon';
-    } else if (hour >= 17 && hour < 21) {
-      return 'Good Evening';
-    } else {
-      return 'Good Evening'; // Night time (21:00 - 04:59)
+  Future<void> _fetchNearbyIncidentsCount(double latitude, double longitude) async {
+    try {
+      final result = await MapService.getLiveIncidentsInArea(
+        latitude: latitude,
+        longitude: longitude,
+        radiusKm: 5.0,
+        timeRange: '24h',
+      );
+
+      if (result['success'] == true && result['data'] != null) {
+        final List<dynamic> incidents = result['data'] as List<dynamic>;
+        setState(() {
+          nearbyIncidentsCount = incidents.length;
+        });
+      } else {
+        setState(() {
+          nearbyIncidentsCount = 0;
+        });
+      }
+    } catch (e) {
+      print('Error fetching nearby incidents: $e');
+      setState(() {
+        nearbyIncidentsCount = 0;
+      });
     }
+  }
+
+  /// Get greeting based on time of day
+  String _getGreeting(BuildContext context, String userName) {
+    final localizations = AppLocalizations.of(context);
+    final hour = DateTime.now().hour;
+    String greeting;
+    if (hour >= 5 && hour < 12) {
+      // Morning: 5:00 AM - 11:59 AM
+      greeting = localizations?.goodMorning(userName) ?? 'Good Morning, $userName';
+    } else if (hour >= 12 && hour < 17) {
+      // Afternoon: 12:00 PM - 4:59 PM
+      greeting = localizations?.goodAfternoon(userName) ?? 'Good Afternoon, $userName';
+    } else {
+      // Evening/Night: 5:00 PM - 4:59 AM
+      greeting = localizations?.goodEvening(userName) ?? 'Good Evening, $userName';
+    }
+    return greeting;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ThemeHelper.getScaffoldBackgroundColor(context),
       body: SafeArea(
         child: Column(
           children: [
@@ -190,25 +229,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
+              child: Container(
               height: 80,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: ThemeHelper.getScaffoldBackgroundColor(context),
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
                 ),
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 30,
             left: 0,
             right: 0,
             child: Text(
-              'Your Community\nSafety Hub',
+              AppLocalizations.of(context)?.yourCommunitySafetyHub ?? 'Your Community\nSafety Hub',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -231,11 +270,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ThemeHelper.getCardColor(context),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
+            color: ThemeHelper.getShadowColor(context),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -258,10 +297,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           const SizedBox(height: 15),
           Text(
-            '${_getGreeting()}, $userName',
+            _getGreeting(context, userName),
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: ThemeHelper.getSecondaryTextColor(context),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -286,9 +325,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 elevation: 2,
               ),
-              child: const Text(
-                'Report Now',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                AppLocalizations.of(context)?.reportNow ?? 'Report Now',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -312,11 +351,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         margin: const EdgeInsets.fromLTRB(30, 20, 30, 0),
         padding: const EdgeInsets.all(25),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ThemeHelper.getCardColor(context),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.08),
+              color: ThemeHelper.getShadowColor(context),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -327,9 +366,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Row(
               children: [
-                const Text(
-                  'Community Status',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)?.communityStatus ?? 'Community Status',
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF36599F),
@@ -344,11 +383,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            _buildStatusItem('This Week', thisWeekReports, const Color(0xFF10B981)),
+            _buildStatusItem(AppLocalizations.of(context)?.thisWeek ?? 'This Week', thisWeekReports, const Color(0xFF10B981)),
             const SizedBox(height: 12),
-            _buildStatusItem('Avg Response', avgResponse, const Color(0xFF3B82F6)),
+            _buildStatusItem(AppLocalizations.of(context)?.avgResponse ?? 'Avg Response', avgResponse, const Color(0xFF3B82F6)),
             const SizedBox(height: 12),
-            _buildStatusItem('Safety Level', safetyLevel, _getSafetyLevelColor(safetyLevel)),
+            _buildStatusItem(AppLocalizations.of(context)?.safetyLevel ?? 'Safety Level', safetyLevel, _getSafetyLevelColor(safetyLevel)),
             const SizedBox(height: 15),
             Container(
               padding: const EdgeInsets.all(8),
@@ -451,8 +490,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: _buildActionCard(
                   icon: Icons.warning,
-                  title: 'Emergency',
-                  subtitle: 'Call for help',
+                  title: AppLocalizations.of(context)?.emergency ?? 'Emergency',
+                  subtitle: AppLocalizations.of(context)?.callNow ?? 'Call for help',
                   color: const Color(0xFFDC2626),
                   onTap: () {
                     Navigator.push(
@@ -468,8 +507,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: _buildActionCard(
                   icon: Icons.description,
-                  title: 'Report',
-                  subtitle: 'Submit Incident',
+                  title: AppLocalizations.of(context)?.reportCrime ?? 'Report',
+                  subtitle: AppLocalizations.of(context)?.submit ?? 'Submit Incident',
                   color: const Color(0xFFDC2626),
                   onTap: () {
                     Navigator.push(
@@ -492,8 +531,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: _buildActionCard(
                   icon: Icons.emoji_events,
-                  title: 'My Impact',
-                  subtitle: 'View contributions',
+                  title: AppLocalizations.of(context)?.myImpact ?? 'My Impact',
+                  subtitle: AppLocalizations.of(context)?.viewDetails ?? 'View contributions',
                   color: const Color(0xFFFFA500),
                   onTap: () {
                     Navigator.push(
@@ -509,8 +548,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: _buildActionCard(
                   icon: Icons.school,
-                  title: 'Learn',
-                  subtitle: 'Safety tips',
+                  title: AppLocalizations.of(context)?.safetyEducation ?? 'Learn',
+                  subtitle: AppLocalizations.of(context)?.learnMore ?? 'Safety tips',
                   color: const Color(0xFF8B5CF6),
                   onTap: () {
                     Navigator.push(
@@ -626,9 +665,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Nearby Incidents',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)?.nearbyIncidents ?? 'Nearby Incidents',
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF92400E),
@@ -636,7 +675,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$nearbyIncidentsCount active alerts in your area',
+                    AppLocalizations.of(context)?.nearbyIncidentsCount(nearbyIncidentsCount) ?? '$nearbyIncidentsCount active alerts in your area',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFFB45309),
@@ -667,9 +706,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               const Icon(Icons.location_city, color: Color(0xFF36599F), size: 22),
               const SizedBox(width: 10),
-              const Text(
-                'Your Watch Groups',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)?.myWatchGroups ?? 'Your Watch Groups',
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF36599F),
@@ -706,9 +745,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   borderRadius: BorderRadius.circular(22),
                 ),
               ),
-              child: const Text(
-                'View Groups',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                AppLocalizations.of(context)?.browseGroups ?? 'View Groups',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -743,9 +782,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Safety Education',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)?.safetyEducation ?? 'Safety Education',
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF6B21A8),
@@ -771,9 +810,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               );
             },
-            child: const Text(
-              'Learn',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)?.learnMore ?? 'Learn',
+              style: const TextStyle(
                 color: Color(0xFF8B5CF6),
                 fontWeight: FontWeight.w600,
               ),
@@ -801,24 +840,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(Icons.home, 'Home', 0, true, () {
+          _buildNavItem(Icons.home, AppLocalizations.of(context)?.dashboard ?? 'Home', 0, true, () {
             setState(() => _selectedIndex = 0);
           }),
-          _buildNavItem(Icons.description, 'Reports', 1, false, () {
+          _buildNavItem(Icons.description, AppLocalizations.of(context)?.myReports ?? 'Reports', 1, false, () {
             setState(() => _selectedIndex = 1);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const MyReportsScreen()),
             );
           }),
-          _buildNavItem(Icons.message, 'Messages', 2, false, () {
+          _buildNavItem(Icons.message, AppLocalizations.of(context)?.messages ?? 'Messages', 2, false, () {
             setState(() => _selectedIndex = 2);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const MessagesScreen()),
             );
           }),
-          _buildNavItem(Icons.person, 'Profile', 3, false, () {
+          _buildNavItem(Icons.person, AppLocalizations.of(context)?.profile ?? 'Profile', 3, false, () {
             setState(() => _selectedIndex = 3);
             Navigator.push(
               context,

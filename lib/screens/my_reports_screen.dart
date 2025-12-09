@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -7,7 +8,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'dart:convert';
+import 'dart:io' as io;
 import '../services/report_service.dart';
 import 'dashboard_screen.dart';
 import 'messages_screen.dart';
@@ -348,20 +350,21 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
         );
       }
 
-      // Try to load logo image (supports JPG and PNG)
-      try {
-        final logoData = await rootBundle.load('assets/images/logo.jpg');
-        final logoBytes = logoData.buffer.asUint8List();
-        logoImage = pw.MemoryImage(logoBytes);
-      } catch (e) {
-        // Try PNG if JPG not found
+      // Try to load logo image (handles common extensions and case)
+      final logoCandidates = [
+        'assets/images/logo.jpg',
+        'assets/images/logo.JPG',
+        'assets/images/logo.png',
+        'assets/images/logo.PNG',
+      ];
+      for (final path in logoCandidates) {
         try {
-          final logoData = await rootBundle.load('assets/images/logo.png');
+          final logoData = await rootBundle.load(path);
           final logoBytes = logoData.buffer.asUint8List();
           logoImage = pw.MemoryImage(logoBytes);
-        } catch (e2) {
-          // Logo not found, will use placeholder
-          print('Logo not found, using placeholder: $e2');
+          break;
+        } catch (_) {
+          // continue to next candidate
         }
       }
 
@@ -424,7 +427,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    // Logo - use loaded image or placeholder
+                    // Logo - use loaded image; if not found, leave empty box (no SR text)
                     logoImage != null
                         ? pw.Image(
                             logoImage,
@@ -432,24 +435,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                             height: 60,
                             fit: pw.BoxFit.contain,
                           )
-                        : pw.Container(
-                            width: 60,
-                            height: 60,
-                            decoration: pw.BoxDecoration(
-                              color: PdfColor.fromHex('#36599F'),
-                              borderRadius: pw.BorderRadius.circular(8),
-                            ),
-                            child: pw.Center(
-                              child: pw.Text(
-                                'SR',
-                                style: pw.TextStyle(
-                                  color: PdfColors.white,
-                                  fontSize: 24,
-                                  fontWeight: pw.FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
+                        : pw.SizedBox(width: 60, height: 60),
                     pw.SizedBox(width: 20),
                     pw.Expanded(
                       child: pw.Column(
@@ -694,19 +680,25 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
         ),
       );
 
-      // Save to file
-      final directory = await getApplicationDocumentsDirectory();
+      // Save/share the file
       final fileName = 'Official_Case_Report_${reportId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
-      final file = File('${directory.path}/$fileName');
       final pdfBytes = await pdf.save();
-      await file.writeAsBytes(pdfBytes);
 
-      // Share the file
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Official Case Report: $title',
-        subject: 'Case Report Export',
-      );
+      if (kIsWeb) {
+        // On web, use Printing to trigger download/share
+        await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        final file = io.File('${directory.path}/$fileName');
+        await file.writeAsBytes(pdfBytes);
+
+        // Share the file
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Official Case Report: $title',
+          subject: 'Case Report Export',
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -944,10 +936,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
       final generatedTime = DateFormat('h:mm a').format(now);
       
       // Create formatted text document (DOCX alternative)
-      final directory = await getApplicationDocumentsDirectory();
       final fileName = 'Official_Case_Report_${reportId}_${DateTime.now().millisecondsSinceEpoch}.txt';
-      final file = File('${directory.path}/$fileName');
-      
       final content = '''
 ═══════════════════════════════════════════════════════════════════════════════
                     OFFICIAL CASE REPORT
@@ -1005,14 +994,26 @@ This is an official document generated by the Safe Report System.
 ═══════════════════════════════════════════════════════════════════════════════
 ''';
       
-      await file.writeAsString(content);
-
-      // Share the file
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Official Case Report: $title',
-        subject: 'Case Report Export',
-      );
+      if (kIsWeb) {
+        // Share/download as text file directly from memory
+        final bytes = utf8.encode(content);
+        await Share.shareXFiles(
+          [XFile.fromData(bytes, mimeType: 'text/plain', name: fileName)],
+          text: 'Official Case Report: $title',
+          subject: 'Case Report Export',
+        );
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        final file = io.File('${directory.path}/$fileName');
+        await file.writeAsString(content);
+        
+        // Share the file
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Official Case Report: $title',
+          subject: 'Case Report Export',
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();

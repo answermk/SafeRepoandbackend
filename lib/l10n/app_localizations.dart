@@ -472,6 +472,18 @@ abstract class AppLocalizations {
   /// **'Good Morning, {userName}'**
   String goodMorning(String userName);
 
+  /// Afternoon greeting with user name
+  ///
+  /// In en, this message translates to:
+  /// **'Good Afternoon, {userName}'**
+  String goodAfternoon(String userName);
+
+  /// Evening greeting with user name
+  ///
+  /// In en, this message translates to:
+  /// **'Good Evening, {userName}'**
+  String goodEvening(String userName);
+
   /// No description provided for @reportNow.
   ///
   /// In en, this message translates to:
@@ -1971,6 +1983,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} audio(s) added'**
   String audiosAdded(int count);
+
+  /// Active alerts count in area
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active alerts in your area'**
+  String activeAlertsInYourArea(int count);
+
+  /// No description provided for @viewGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'View Groups'**
+  String get viewGroups;
+
+  /// No description provided for @callForHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Call for help'**
+  String get callForHelp;
+
+  /// No description provided for @submitIncident.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Incident'**
+  String get submitIncident;
+
+  /// No description provided for @viewContributions.
+  ///
+  /// In en, this message translates to:
+  /// **'View contributions'**
+  String get viewContributions;
+
+  /// No description provided for @safetyTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety tips'**
+  String get safetyTips;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
 }
 
 class _AppLocalizationsDelegate

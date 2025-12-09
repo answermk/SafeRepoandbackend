@@ -197,6 +197,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String goodAfternoon(String userName) {
+    return 'Bon après-midi, $userName';
+  }
+
+  @override
+  String goodEvening(String userName) {
+    return 'Bonsoir, $userName';
+  }
+
+  @override
   String get reportNow => 'Signaler maintenant';
 
   @override
@@ -1010,4 +1020,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String audiosAdded(int count) {
     return '$count audio(s) ajouté(s)';
   }
+
+  @override
+  String activeAlertsInYourArea(int count) {
+    return '$count alertes actives dans votre région';
+  }
+
+  @override
+  String get viewGroups => 'Voir les Groupes';
+
+  @override
+  String get callForHelp => 'Appeler à l\'aide';
+
+  @override
+  String get submitIncident => 'Soumettre un Incident';
+
+  @override
+  String get viewContributions => 'Voir les contributions';
+
+  @override
+  String get safetyTips => 'Conseils de sécurité';
+
+  @override
+  String get home => 'Accueil';
 }

@@ -14,8 +14,6 @@ class LanguageService {
     'en': 'English',
     'fr': 'French',
     'rw': 'Kinyarwanda',
-    'sw': 'Swahili',
-    'es': 'Spanish',
   };
 
   /// Get saved language preference
