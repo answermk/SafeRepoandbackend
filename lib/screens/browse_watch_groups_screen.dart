@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/watch_group_service.dart';
 import 'watch_group_details_screen.dart';
 
 class BrowseWatchGroupsScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _allGroups = [];
   List<Map<String, dynamic>> _filteredGroups = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -26,71 +28,66 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
     super.dispose();
   }
 
-  void _loadGroups() {
-    // Sample watch groups data
-    _allGroups = [
-      {
-        'id': '1',
-        'title': 'Maple Avenue Watch',
-        'subtitle': 'Maple Avenue Neighborhood',
-        'members': 22,
-        'status': 'Active',
-        'icon': Icons.home,
-        'location': 'Maple Avenue',
-        'description': 'Neighborhood watch covering Maple Avenue area',
-      },
-      {
-        'id': '2',
-        'title': 'Riverside Community',
-        'subtitle': 'Riverside District',
-        'members': 18,
-        'status': 'Active',
-        'icon': Icons.water,
-        'location': 'Riverside',
-        'description': 'Community safety group for Riverside area',
-      },
-      {
-        'id': '3',
-        'title': 'University Campus Watch',
-        'subtitle': 'University District',
-        'members': 35,
-        'status': 'Active',
-        'icon': Icons.school,
-        'location': 'University District',
-        'description': 'Campus safety watch group',
-      },
-      {
-        'id': '4',
-        'title': 'Park View Residential',
-        'subtitle': 'Park View Neighborhood',
-        'members': 12,
-        'status': 'Active',
-        'icon': Icons.park,
-        'location': 'Park View',
-        'description': 'Residential watch group near the park',
-      },
-      {
-        'id': '5',
-        'title': 'Industrial Zone Security',
-        'subtitle': 'Industrial District',
-        'members': 8,
-        'status': 'Active',
-        'icon': Icons.factory,
-        'location': 'Industrial Zone',
-        'description': 'Security watch for industrial area',
-      },
-      {
-        'id': '6',
-        'title': 'Shopping District Watch',
-        'subtitle': 'Commercial Area',
-        'members': 15,
-        'status': 'Active',
-        'icon': Icons.shopping_cart,
-        'location': 'Shopping District',
-        'description': 'Watch group for shopping and commercial areas',
-      },
-    ];
-    _filteredGroups = List.from(_allGroups);
+  Future<void> _loadGroups() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await WatchGroupService.getAllWatchGroups(page: 0, size: 100);
+      
+      if (result['success'] == true) {
+        final groups = result['data'] as List<dynamic>? ?? [];
+        setState(() {
+          _allGroups = groups.map((g) {
+            final members = g['members'] as List<dynamic>? ?? [];
+            final groupName = g['name'] ?? 'Watch Group';
+            
+            // Determine icon based on group name or type
+            IconData icon = Icons.location_city;
+            final nameLower = groupName.toString().toLowerCase();
+            if (nameLower.contains('business') || nameLower.contains('downtown') || nameLower.contains('commercial') || nameLower.contains('shopping')) {
+              icon = Icons.business;
+            } else if (nameLower.contains('residential') || nameLower.contains('street') || nameLower.contains('avenue') || nameLower.contains('neighborhood')) {
+              icon = Icons.home;
+            } else if (nameLower.contains('university') || nameLower.contains('campus') || nameLower.contains('school')) {
+              icon = Icons.school;
+            } else if (nameLower.contains('park') || nameLower.contains('riverside')) {
+              icon = Icons.park;
+            } else if (nameLower.contains('industrial') || nameLower.contains('factory')) {
+              icon = Icons.factory;
+            }
+            
+            return {
+              'id': g['id']?.toString(),
+              'title': groupName,
+              'subtitle': g['description'] ?? g['location'] ?? 'Watch Group',
+              'members': members.length,
+              'status': g['status'] ?? 'ACTIVE',
+              'icon': icon,
+              'location': g['location'] ?? 'Unknown',
+              'description': g['description'] ?? '',
+            };
+          }).toList();
+          _filteredGroups = List.from(_allGroups);
+          _isLoading = false;
+        });
+      } else {
+        // If loading fails, show empty state
+        setState(() {
+          _allGroups = [];
+          _filteredGroups = [];
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      // On error, show empty state
+      setState(() {
+        _allGroups = [];
+        _filteredGroups = [];
+        _isLoading = false;
+      });
+    }
   }
 
   void _filterGroups() {
@@ -140,15 +137,17 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
         children: [
           _buildSearchBar(),
           Expanded(
-            child: _filteredGroups.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _filteredGroups.length,
-                    itemBuilder: (context, index) {
-                      return _buildGroupCard(_filteredGroups[index]);
-                    },
-                  ),
+            child: _isLoading
+                ? _buildLoadingState()
+                : _filteredGroups.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _filteredGroups.length,
+                        itemBuilder: (context, index) {
+                          return _buildGroupCard(_filteredGroups[index]);
+                        },
+                      ),
           ),
         ],
       ),
@@ -193,6 +192,15 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
     );
   }
 
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(32.0),
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -214,7 +222,9 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Try a different search term',
+            _searchController.text.isEmpty
+                ? 'No watch groups available yet'
+                : 'Try a different search term',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -242,12 +252,15 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
       ),
       child: InkWell(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const WatchGroupDetailsScreen(),
-            ),
-          );
+          final groupId = group['id']?.toString();
+          if (groupId != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WatchGroupDetailsScreen(groupId: groupId),
+              ),
+            );
+          }
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -352,12 +365,15 @@ class _BrowseWatchGroupsScreenState extends State<BrowseWatchGroupsScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const WatchGroupDetailsScreen(),
-                      ),
-                    );
+                    final groupId = group['id']?.toString();
+                    if (groupId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WatchGroupDetailsScreen(groupId: groupId),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF36599F),

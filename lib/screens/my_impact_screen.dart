@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/report_service.dart';
+import '../services/impact_service.dart';
+import '../services/token_manager.dart';
 
 class MyImpactScreen extends StatefulWidget {
   const MyImpactScreen({Key? key}) : super(key: key);
@@ -12,8 +13,10 @@ class _MyImpactScreenState extends State<MyImpactScreen> {
   int reportsSubmitted = 0;
   int actionsTaken = 0;
   int crimesPrevented = 0;
-  String reputationLevel = 'Member';
+  String reputationLevel = 'Bronze';
   int reputationPoints = 0;
+  int pointsToNextLevel = 0;
+  double progressToNextLevel = 0.0;
 
   List<Map<String, dynamic>> badges = [];
   List<Map<String, String>> timeline = [];
@@ -33,73 +36,102 @@ class _MyImpactScreenState extends State<MyImpactScreen> {
       _error = null;
     });
 
-    final result = await ReportService.getMyReports(
-      page: 0,
-      size: 100, // fetch first 100 to build timeline; total comes from API
-      sortBy: 'createdAt',
-      sortDir: 'desc',
-    );
-
-    if (!mounted) return;
-
-    if (result['success'] == true) {
-      final List<dynamic> rawReports = result['data'] ?? [];
-      final int total = (result['totalElements'] as int?) ?? rawReports.length;
-
-      // Compute counts from statuses
-      int resolved = 0;
-      int inProgress = 0;
-      for (final r in rawReports) {
-        final status = (r['status'] ?? '').toString().toUpperCase();
-        if (status == 'RESOLVED' || status == 'CLOSED') resolved++;
-        if (status == 'IN_PROGRESS' || status == 'REVIEWING') inProgress++;
+    try {
+      // Get current user ID
+      var userId = await TokenManager.getUserId();
+      
+      // If userId is not stored, show error and ask user to log in again
+      if (userId == null) {
+        setState(() {
+          _error = 'User ID not found. Please log out and log in again to refresh your session.';
+          _loading = false;
+        });
+        return;
       }
 
+      // Fetch impact data from backend
+      final result = await ImpactService.getUserImpact(userId);
+
+      if (!mounted) return;
+
+      if (result['success'] == true) {
+        final data = result['data'] as Map<String, dynamic>;
+        
+        // Extract metrics from backend response
+        setState(() {
+          reportsSubmitted = data['reportsSubmitted'] ?? 0;
+          actionsTaken = data['actionsTaken'] ?? 0;
+          crimesPrevented = data['crimesPrevented'] ?? 0;
+          reputationPoints = data['reputationPoints'] ?? 0;
+          reputationLevel = data['reputationLevel'] ?? 'Bronze';
+          pointsToNextLevel = data['pointsToNextLevel'] ?? 0;
+          progressToNextLevel = (data['progressToNextLevel'] ?? 0.0).toDouble();
+
+          // Convert backend badges to UI format
+          final backendBadges = data['badges'] as List<dynamic>? ?? [];
+          badges = backendBadges.map<Map<String, dynamic>>((b) {
+            final iconName = b['icon'] as String? ?? 'star';
+            IconData iconData;
+            switch (iconName) {
+              case 'flag':
+                iconData = Icons.flag;
+                break;
+              case 'calendar_today':
+                iconData = Icons.calendar_today;
+                break;
+              case 'check_circle':
+                iconData = Icons.check_circle;
+                break;
+              case 'star':
+                iconData = Icons.star;
+                break;
+              default:
+                iconData = Icons.star;
+            }
+            
+            final colorStr = b['color'] as String? ?? '#FF9800';
+            Color badgeColor;
+            try {
+              badgeColor = Color(int.parse(colorStr.replaceFirst('#', '0xFF')));
+            } catch (e) {
+              badgeColor = Colors.amber;
+            }
+            
+            return {
+              'name': b['name'] ?? 'Badge',
+              'icon': iconData,
+              'color': badgeColor,
+              'earned': b['earned'] ?? false,
+            };
+          }).toList();
+
+          // Convert backend timeline to UI format
+          final backendTimeline = data['recentActivity'] as List<dynamic>? ?? [];
+          timeline = backendTimeline.map<Map<String, String>>((item) {
+            return {
+              'action': item['action'] ?? 'Activity',
+              'detail': item['detail'] ?? '',
+              'time': item['time'] ?? 'Unknown',
+            };
+          }).toList();
+
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _error = result['error']?.toString() ?? 'Failed to load impact data';
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
-        reportsSubmitted = total;
-        actionsTaken = resolved + inProgress; // backend-driven activity
-        crimesPrevented = resolved; // assume resolved reports contributed
-
-        // Reputation placeholders based on activity
-        reputationPoints = (resolved * 20 + inProgress * 10 + total).clamp(0, 10000);
-        reputationLevel = _mapPointsToLevel(reputationPoints);
-
-        // Simple badges from backend-driven stats
-        badges = [
-          {'name': 'First Report', 'icon': Icons.flag, 'color': Colors.blue, 'earned': total > 0},
-          {'name': 'Active Reporter', 'icon': Icons.calendar_today, 'color': Colors.green, 'earned': total >= 5},
-          {'name': 'Resolution Star', 'icon': Icons.check_circle, 'color': Colors.teal, 'earned': resolved >= 3},
-          {'name': 'Community Hero', 'icon': Icons.star, 'color': Colors.amber, 'earned': resolved >= 5},
-        ];
-
-        // Build timeline from latest reports
-        timeline = rawReports.take(20).map<Map<String, String>>((r) {
-          final title = (r['title'] ?? r['type'] ?? 'Report').toString();
-          final status = (r['status'] ?? 'PENDING').toString();
-          final createdAt = r['createdAt']?.toString() ?? r['submittedAt']?.toString();
-          return {
-            'action': 'Report ${status.toLowerCase()}',
-            'detail': title,
-            'time': _formatTimeAgo(createdAt),
-          };
-        }).toList();
-
-        _loading = false;
-      });
-    } else {
-      setState(() {
-        _error = result['error']?.toString() ?? 'Failed to load impact data';
+        _error = 'Error loading impact data: ${e.toString()}';
         _loading = false;
       });
     }
   }
 
-  String _mapPointsToLevel(int points) {
-    if (points >= 1000) return 'Platinum';
-    if (points >= 700) return 'Gold';
-    if (points >= 400) return 'Silver';
-    return 'Bronze';
-  }
 
   String _formatTimeAgo(String? isoString) {
     if (isoString == null || isoString.isEmpty) return 'Unknown';
@@ -228,16 +260,18 @@ class _MyImpactScreenState extends State<MyImpactScreen> {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: 0.85,
+              value: progressToNextLevel.clamp(0.0, 1.0),
               backgroundColor: Colors.white.withOpacity(0.3),
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               minHeight: 8,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            '150 points to Platinum',
-            style: TextStyle(
+          Text(
+            pointsToNextLevel > 0 
+                ? '$pointsToNextLevel points to ${_getNextLevel(reputationLevel)}'
+                : 'Maximum level reached!',
+            style: const TextStyle(
               fontSize: 13,
               color: Colors.white,
             ),
@@ -486,5 +520,18 @@ class _MyImpactScreenState extends State<MyImpactScreen> {
         ],
       ),
     );
+  }
+  
+  String _getNextLevel(String currentLevel) {
+    switch (currentLevel) {
+      case 'Bronze':
+        return 'Silver';
+      case 'Silver':
+        return 'Gold';
+      case 'Gold':
+        return 'Platinum';
+      default:
+        return 'Platinum';
+    }
   }
 }

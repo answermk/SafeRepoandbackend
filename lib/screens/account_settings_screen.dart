@@ -11,6 +11,9 @@ import 'anonymous_reporting_info_screen.dart';
 import 'my_impact_screen.dart';
 import 'change_password_screen.dart';
 import 'accessibility_settings_screen.dart';
+import '../l10n/app_localizations.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -119,21 +122,29 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final dividerColor = ThemeHelper.getDividerColor(context);
+    final primaryColor = ThemeHelper.getPrimaryColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondaryText = ThemeHelper.getSecondaryTextColor(context);
+
     return Scaffold(
+      backgroundColor: ThemeHelper.getScaffoldBackgroundColor(context),
       appBar: AppBar(
         leading: const BackButton(),
-        title: const Text('Account Settings', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF36599F),
+        title: Text(t.accountSettingsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(24),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(24),
           child: Padding(
-            padding: EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.only(bottom: 8.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text('Manage your preferences', style: TextStyle(fontSize: 14, color: Colors.white70)),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(t.managePreferencesSubtitle, style: const TextStyle(fontSize: 14, color: Colors.white70)),
               ),
             ),
           ),
@@ -145,13 +156,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Quick Access Cards Section
-            _buildQuickAccessSection(),
+            _buildQuickAccessSection(t, primaryColor),
             const SizedBox(height: 24),
 
             // Security Settings
             _buildSection(
               icon: Icons.security,
-              title: 'Security Settings',
+              title: t.securitySettingsTitle,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -167,12 +178,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Change Password', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(t.changePassword, style: const TextStyle(fontWeight: FontWeight.bold)),
                               const SizedBox(height: 2),
                               Text(
                                 lastChanged != null 
-                                    ? 'Last changed $daysSinceChange days ago'
-                                    : 'Never changed',
+                                    ? t.lastChangedDaysAgo(daysSinceChange)
+                                    : t.neverChanged,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: daysSinceChange < 30 ? Colors.orange : Colors.grey,
@@ -202,16 +213,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   const SizedBox(height: 12),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Two-Factor Authentication', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Add extra security to your account'),
+                          title: Text(t.twoFactorAuth, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(t.addExtraSecurity),
                     value: twoFactorEnabled,
                     activeColor: const Color(0xFF36599F),
                     onChanged: (val) => setState(() => twoFactorEnabled = val),
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Biometric Login', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Use fingerprint or face ID'),
+                          title: Text(t.biometricLogin, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(t.useFingerprint),
                     value: biometricLogin,
                     activeColor: const Color(0xFF36599F),
                     onChanged: (val) => setState(() => biometricLogin = val),
@@ -224,29 +235,29 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             // Notifications Settings
             _buildSection(
               icon: Icons.notifications,
-              title: 'Notifications Preferences',
+              title: t.notificationsPreferencesTitle,
               child: Column(
                 children: [
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Push Notifications', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Report updates and alerts'),
+                    title: Text(t.pushNotificationsLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.pushNotificationsSubtitle),
                     value: pushNotifications,
                     activeColor: const Color(0xFF36599F),
                     onChanged: (val) => setState(() => pushNotifications = val),
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Email Updates', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Weekly community summary'),
+                    title: Text(t.emailUpdatesLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.emailUpdatesSubtitle),
                     value: emailUpdates,
                     activeColor: const Color(0xFF36599F),
                     onChanged: (val) => setState(() => emailUpdates = val),
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Watch Group Alerts', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Messages from your groups'),
+                    title: Text(t.watchGroupAlertsLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.watchGroupAlertsSubtitle),
                     value: watchGroupAlerts,
                     activeColor: const Color(0xFF36599F),
                     onChanged: (val) => setState(() => watchGroupAlerts = val),
@@ -259,13 +270,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             // Privacy Settings with Anonymous Reporting Link
             _buildSection(
               icon: Icons.privacy_tip,
-              title: 'Privacy Settings',
+              title: t.privacySettingsTitle,
               child: Column(
                 children: [
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Default Anonymous Mode', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Always submit reports anonymously'),
+                    title: Text(t.defaultAnonymousModeLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.defaultAnonymousModeSubtitle),
                     value: anonymousMode,
                     activeColor: const Color(0xFF36599F),
                     onChanged: _isLoadingPrivacy ? null : (val) {
@@ -275,8 +286,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Location Sharing', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Share precise location with reports (Always enabled)'),
+                    title: Text(t.locationSharingLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.locationSharingSubtitle),
                     value: locationSharing,
                     activeColor: const Color(0xFF36599F),
                     onChanged: null, // Always enabled, cannot be disabled
@@ -286,8 +297,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.info_outline, color: Color(0xFF36599F)),
-                    title: const Text('Anonymous Reporting Guide', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Learn about privacy protections'),
+                    title: Text(t.anonymousGuideTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.anonymousGuideSubtitle),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
                       Navigator.push(
@@ -306,13 +317,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             // Language Settings
             _buildSection(
               icon: Icons.language,
-              title: 'Language Preferences',
+              title: t.languagePreferencesTitle,
               child: Consumer<AppSettingsProvider>(
                 builder: (context, appSettings, _) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('App Language', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(t.appLanguage, style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         value: appLanguage,
@@ -343,7 +354,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Language changed to $val'),
+                                    content: Text(t.languageChangedTo(val)),
                                     backgroundColor: Colors.green,
                                     duration: const Duration(seconds: 2),
                                   ),
@@ -363,14 +374,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             // Accessibility Settings
             _buildSection(
               icon: Icons.accessibility_new,
-              title: 'Accessibility Settings',
+              title: t.accessibilitySettingsTitle,
               child: Column(
                 children: [
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.text_fields, color: Color(0xFF36599F)),
-                    title: const Text('Font Size & Display', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text('Adjust font size, contrast, and text-to-speech'),
+                    title: Text(t.accessibilitySettingsLinkTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(t.accessibilitySettingsLinkSubtitle),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
                       Navigator.push(
@@ -396,7 +407,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
                 backgroundColor: const Color(0xFF36599F),
               ),
-              child: const Text('Save All Settings', style: TextStyle(color: Colors.white)),
+              child: Text(t.saveAllSettings, style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -404,16 +415,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  Widget _buildQuickAccessSection() {
+  Widget _buildQuickAccessSection(AppLocalizations t, Color primaryColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Access',
+        Text(
+          t.quickAccess,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF36599F),
+            color: primaryColor,
           ),
         ),
         const SizedBox(height: 12),
@@ -422,8 +433,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             Expanded(
               child: _buildQuickAccessCard(
                 icon: Icons.cloud_queue,
-                title: 'Offline Queue',
-                subtitle: 'Pending reports',
+                title: t.offlineQueue,
+                subtitle: t.pendingReports,
                 color: Colors.orange,
                 onTap: () {
                   Navigator.push(
@@ -439,8 +450,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             Expanded(
               child: _buildQuickAccessCard(
                 icon: Icons.emoji_events,
-                title: 'My Impact',
-                subtitle: 'View stats',
+                title: t.myImpact,
+                subtitle: t.viewStats,
                 color: Colors.amber,
                 onTap: () {
                   Navigator.push(
@@ -460,8 +471,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             Expanded(
               child: _buildQuickAccessCard(
                 icon: Icons.accessibility_new,
-                title: 'Accessibility',
-                subtitle: 'Font & display',
+                title: t.accessibilityCardTitle,
+                subtitle: t.fontDisplay,
                 color: Colors.purple,
                 onTap: () {
                   Navigator.push(
@@ -495,7 +506,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ThemeHelper.getCardColor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: color.withOpacity(0.3)),
           boxShadow: [
@@ -536,8 +547,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300),
+        color: ThemeHelper.getCardColor(context),
+        border: Border.all(color: ThemeHelper.getDividerColor(context)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -545,9 +556,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, color: const Color(0xFF36599F)),
+              Icon(icon, color: ThemeHelper.getPrimaryColor(context)),
               const SizedBox(width: 8),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF36599F))),
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: ThemeHelper.getPrimaryColor(context))),
             ],
           ),
           const SizedBox(height: 8),

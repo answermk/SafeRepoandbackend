@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/ai_chat_service.dart';
 
 class SupportChatScreen extends StatefulWidget {
   const SupportChatScreen({Key? key}) : super(key: key);
@@ -11,16 +12,46 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   
-  List<Map<String, dynamic>> _messages = [
-    {
-      'id': '1',
-      'sender': 'Support Team',
-      'senderInitials': 'ST',
-      'message': 'Hello! Thank you for contacting Safe Report support. How can we assist you today?',
-      'timestamp': DateTime.now().subtract(const Duration(minutes: 5)),
-      'isFromSupport': true,
-    },
-  ];
+  List<Map<String, dynamic>> _messages = [];
+  bool _isLoading = false;
+  bool _isSending = false;
+  bool _aiServiceAvailable = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeChat();
+  }
+
+  Future<void> _initializeChat() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Check AI service status
+    final status = await AIChatService.checkAIServiceStatus();
+    setState(() {
+      _aiServiceAvailable = status['available'] ?? false;
+      _isLoading = false;
+    });
+
+    // Add welcome message
+    if (mounted) {
+      setState(() {
+        _messages.insert(0, {
+          'id': 'welcome',
+          'sender': 'AI Assistant',
+          'senderInitials': 'AI',
+          'message': _aiServiceAvailable
+              ? 'Hello! I\'m your Safe Report AI assistant. How can I help you today?'
+              : 'Hello! Thank you for contacting Safe Report support. How can we assist you today?',
+          'timestamp': DateTime.now(),
+          'isFromSupport': true,
+        });
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -29,46 +60,169 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     super.dispose();
   }
 
-  void _sendMessage() {
-    if (_messageController.text.trim().isEmpty) {
+  Future<void> _sendMessage() async {
+    if (_messageController.text.trim().isEmpty || _isSending) {
       return;
     }
 
+    final userMessage = _messageController.text.trim();
+    _messageController.clear();
+
+    // Add user message
+    final userMessageId = DateTime.now().millisecondsSinceEpoch.toString();
     setState(() {
       _messages.insert(0, {
-        'id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'id': userMessageId,
         'sender': 'You',
         'senderInitials': 'ME',
-        'message': _messageController.text.trim(),
+        'message': userMessage,
         'timestamp': DateTime.now(),
         'isFromSupport': false,
+        'isUser': true,
       });
-      _messageController.clear();
+      _isSending = true;
+      _errorMessage = null;
     });
 
-    // Simulate support response after a delay
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
+    // Scroll to show new message
+    _scrollToTop();
+
+    // Add typing indicator
+    final typingId = 'typing_${DateTime.now().millisecondsSinceEpoch}';
+    setState(() {
+      _messages.insert(0, {
+        'id': typingId,
+        'sender': 'AI Assistant',
+        'senderInitials': 'AI',
+        'message': '...',
+        'timestamp': DateTime.now(),
+        'isFromSupport': true,
+        'isTyping': true,
+      });
+    });
+    _scrollToTop();
+
+    try {
+      // Build conversation history (excluding typing indicator)
+      final conversationHistory = _messages
+          .where((msg) => msg['isTyping'] != true && msg['id'] != typingId)
+          .take(20)
+          .map((msg) => {
+                'isUser': msg['isFromSupport'] == false,
+                'message': msg['message'],
+                'content': msg['message'],
+              })
+          .toList()
+          .reversed
+          .toList();
+
+      // Call AI service
+      final result = await AIChatService.sendMessage(
+        userMessage,
+        conversationHistory: conversationHistory,
+      );
+
+      // Remove typing indicator
+      setState(() {
+        _messages.removeWhere((msg) => msg['id'] == typingId);
+      });
+
+      if (result['success'] == true) {
+        // Add AI response
         setState(() {
           _messages.insert(0, {
-            'id': '${DateTime.now().millisecondsSinceEpoch}_response',
-            'sender': 'Support Team',
-            'senderInitials': 'ST',
-            'message': 'Thank you for your message. Our support team will review your inquiry and get back to you shortly.',
+            'id': 'ai_${DateTime.now().millisecondsSinceEpoch}',
+            'sender': 'AI Assistant',
+            'senderInitials': 'AI',
+            'message': result['response'] ?? 'I apologize, but I couldn\'t generate a response.',
             'timestamp': DateTime.now(),
             'isFromSupport': true,
           });
+          _isSending = false;
         });
-      }
-    });
+      } else {
+        // Show error message with more helpful text
+        final errorMsg = result['error'] ?? 'I apologize, but I\'m having trouble responding right now.';
+        String userFriendlyError = errorMsg;
+        
+        // Check if it's an API key error
+        if (errorMsg.toLowerCase().contains('api key') || 
+            errorMsg.toLowerCase().contains('invalid') ||
+            errorMsg.toLowerCase().contains('gemini')) {
+          userFriendlyError = 'The AI service is currently unavailable. Please contact support directly via email or phone for assistance.';
+        }
+        
+        setState(() {
+          _messages.insert(0, {
+            'id': 'error_${DateTime.now().millisecondsSinceEpoch}',
+            'sender': 'AI Assistant',
+            'senderInitials': 'AI',
+            'message': userFriendlyError,
+            'timestamp': DateTime.now(),
+            'isFromSupport': true,
+            'isError': true,
+          });
+          _isSending = false;
+          _errorMessage = result['error'] ?? 'Unknown error';
+        });
 
-    // Scroll to top to show new message
+        // Show error snackbar
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['error'] ?? 'Failed to get AI response'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Remove typing indicator
+      setState(() {
+        _messages.removeWhere((msg) => msg['id'] == typingId);
+        _isSending = false;
+        _errorMessage = e.toString();
+      });
+
+      // Show error message
+      setState(() {
+        _messages.insert(0, {
+          'id': 'error_${DateTime.now().millisecondsSinceEpoch}',
+          'sender': 'AI Assistant',
+          'senderInitials': 'AI',
+          'message': 'I apologize, but I encountered an error. Please check your connection and try again.',
+          'timestamp': DateTime.now(),
+          'isFromSupport': true,
+          'isError': true,
+        });
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+
+    _scrollToTop();
+  }
+
+  void _scrollToTop() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
     }
   }
 
@@ -107,12 +261,24 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                 fontSize: 18,
               ),
             ),
-            Text(
-              'We typically reply within a few minutes',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 11,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.smart_toy,
+                  size: 14,
+                  color: Colors.white.withOpacity(0.8),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  _aiServiceAvailable
+                      ? 'AI Assistant • Online'
+                      : 'Support Team • Available',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 11,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -121,19 +287,24 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: _messages.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    controller: _scrollController,
-                    reverse: true,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final message = _messages[index];
-                      final isCurrentUser = !message['isFromSupport'] as bool;
-                      return _buildMessageBubble(message, isCurrentUser);
-                    },
-                  ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : _messages.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        controller: _scrollController,
+                        reverse: true,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final message = _messages[index];
+                          final isCurrentUser = !message['isFromSupport'] as bool;
+                          final isTyping = message['isTyping'] == true;
+                          return _buildMessageBubble(message, isCurrentUser, isTyping: isTyping);
+                        },
+                      ),
           ),
           _buildMessageInput(),
         ],
@@ -173,7 +344,13 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     );
   }
 
-  Widget _buildMessageBubble(Map<String, dynamic> message, bool isCurrentUser) {
+  Widget _buildMessageBubble(
+    Map<String, dynamic> message,
+    bool isCurrentUser, {
+    bool isTyping = false,
+  }) {
+    final isError = message['isError'] == true;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -188,9 +365,9 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                 color: const Color(0xFF36599F).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.support_agent,
-                color: Color(0xFF36599F),
+              child: Icon(
+                _aiServiceAvailable ? Icons.smart_toy : Icons.support_agent,
+                color: const Color(0xFF36599F),
                 size: 20,
               ),
             ),
@@ -202,8 +379,13 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
               decoration: BoxDecoration(
                 color: isCurrentUser
                     ? const Color(0xFF36599F)
-                    : Colors.white,
+                    : isError
+                        ? Colors.red[50]
+                        : Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: isError
+                    ? Border.all(color: Colors.red[300]!, width: 1)
+                    : null,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.1),
@@ -217,31 +399,63 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                 children: [
                   if (!isCurrentUser)
                     Text(
-                      message['sender'] ?? 'Support',
-                      style: const TextStyle(
+                      message['sender'] ?? 'AI Assistant',
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
-                        color: Color(0xFF36599F),
+                        color: isError
+                            ? Colors.red[700]
+                            : const Color(0xFF36599F),
                       ),
                     ),
                   if (!isCurrentUser) const SizedBox(height: 4),
-                  Text(
-                    message['message'] ?? '',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isCurrentUser ? Colors.white : Colors.black87,
+                  if (isTyping)
+                    const Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF36599F),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'AI is typing...',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Text(
+                      message['message'] ?? '',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isCurrentUser
+                            ? Colors.white
+                            : isError
+                                ? Colors.red[900]
+                                : Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatTimestamp(message['timestamp'] as DateTime),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isCurrentUser
-                          ? Colors.white70
-                          : Colors.grey[600],
+                  if (!isTyping) const SizedBox(height: 4),
+                  if (!isTyping)
+                    Text(
+                      _formatTimestamp(message['timestamp'] as DateTime),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isCurrentUser
+                            ? Colors.white70
+                            : Colors.grey[600],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -315,12 +529,23 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
             const SizedBox(width: 8),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF36599F),
+                color: _isSending
+                    ? Colors.grey[400]
+                    : const Color(0xFF36599F),
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: const Icon(Icons.send, color: Colors.white),
-                onPressed: _sendMessage,
+                icon: _isSending
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(Icons.send, color: Colors.white),
+                onPressed: _isSending ? null : _sendMessage,
               ),
             ),
           ],

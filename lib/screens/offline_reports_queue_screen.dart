@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
+import 'dart:io';
 import '../services/offline_reports_service.dart';
-import '../services/sample_backend_api.dart';
+import '../services/report_service.dart';
 
 class OfflineReportsQueueScreen extends StatefulWidget {
   const OfflineReportsQueueScreen({Key? key}) : super(key: key);
@@ -106,39 +107,49 @@ class _OfflineReportsQueueScreenState extends State<OfflineReportsQueueScreen> {
         throw Exception('Report not found in queue');
       }
 
-      // Prepare report data for backend
-      final reportData = {
-        'incidentType': report['incidentType'],
-        'incidentTitle': report['incidentTitle'],
-        'description': report['description'],
-        'location': report['location'],
-        'evidence': report['evidence'] ?? [],
-        'mediaPaths': report['mediaPaths'] ?? [],
-        'submitAnonymously': report['submitAnonymously'] ?? false,
-        'timestamp': report['timestamp'],
-      };
-
-      // TODO: Replace with actual backend API call
-      // Example backend sync:
-      /*
-      final token = TokenManager.getToken();
-      if (token == null) {
-        throw Exception('Not authenticated');
+      // Extract report data from queue
+      final incidentType = report['incidentType'] as String? ?? 
+                          report['crimeType'] as String? ?? 
+                          'other';
+      final description = report['description'] as String? ?? 
+                         report['incidentTitle'] as String? ?? 
+                         '';
+      final latitude = (report['latitude'] ?? report['location']?['latitude'] ?? 0.0) as double;
+      final longitude = (report['longitude'] ?? report['location']?['longitude'] ?? 0.0) as double;
+      final address = report['address'] as String? ?? 
+                     report['location']?['address'] as String?;
+      final isAnonymous = report['submitAnonymously'] as bool? ?? 
+                         report['isAnonymous'] as bool? ?? 
+                         false;
+      
+      // Get media files if available
+      List<File>? mediaFiles;
+      if (report['mediaPaths'] != null) {
+        final mediaPaths = report['mediaPaths'] as List<dynamic>;
+        mediaFiles = mediaPaths
+            .map((path) => path.toString())
+            .where((path) => path.isNotEmpty)
+            .map((path) => File(path))
+            .where((file) => file.existsSync())
+            .toList();
+        
+        if (mediaFiles.isEmpty) {
+          mediaFiles = null;
+        }
       }
-      
-      final result = await ReportService.submitReport(
-        reportData: reportData,
-        mediaPaths: report['mediaPaths'] ?? [],
-        token: token,
-      );
-      */
 
-      // Sample sync (simulate API call)
-      await Future.delayed(const Duration(seconds: 2));
+      // Call actual backend API
+      final result = await ReportService.createReport(
+        incidentType: incidentType,
+        description: description,
+        latitude: latitude,
+        longitude: longitude,
+        address: address,
+        isAnonymous: isAnonymous,
+        mediaFiles: mediaFiles,
+      );
       
-      // Simulate success (remove when backend is ready)
-      // In real implementation, check result.success
-      final success = true; // result['success'] == true;
+      final success = result['success'] == true;
 
       if (success) {
         // Mark as synced in local storage

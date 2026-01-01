@@ -65,15 +65,27 @@ class UserService {
       }
       
       final requestBody = <String, dynamic>{};
-      if (fullName != null) requestBody['fullName'] = fullName;
-      if (phone != null) requestBody['phoneNumber'] = phone; // Backend expects phoneNumber
-      if (anonymousMode != null) requestBody['anonymousMode'] = anonymousMode;
-      if (locationSharing != null) requestBody['locationSharing'] = locationSharing;
+      if (fullName != null && fullName.isNotEmpty) {
+        requestBody['fullName'] = fullName;
+      }
+      if (phone != null && phone.isNotEmpty) {
+        requestBody['phoneNumber'] = phone; // Backend expects phoneNumber
+      }
+      if (anonymousMode != null) {
+        requestBody['anonymousMode'] = anonymousMode;
+      }
+      if (locationSharing != null) {
+        requestBody['locationSharing'] = locationSharing;
+      }
       // Note: location, emergencyContactName, emergencyContactPhone are not in UpdateUserRequest DTO
       // They may be added to the backend DTO in the future
       
+      print('📤 Updating user profile - User ID: $userId');
+      print('📤 Request body: $requestBody');
+      
+      final url = Uri.parse('${AppConfig.apiBaseUrl}/users/$userId');
       final response = await http.put(
-        Uri.parse('${AppConfig.apiBaseUrl}/users/$userId'),
+        url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -81,15 +93,28 @@ class UserService {
         body: jsonEncode(requestBody),
       );
       
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+      
       if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('✅ Profile updated successfully');
         return {
           'success': true,
-          'data': jsonDecode(response.body),
+          'data': responseData,
         };
       } else {
+        print('❌ Profile update failed with status ${response.statusCode}');
+        String errorMessage = response.body;
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['message'] ?? errorData['error'] ?? response.body;
+        } catch (e) {
+          // If not JSON, use response body as is
+        }
         return {
           'success': false,
-          'error': response.body,
+          'error': errorMessage,
         };
       }
     } catch (e) {

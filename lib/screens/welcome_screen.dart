@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'onboarding_screen_1.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -11,8 +14,12 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffold,
       body: Stack(
         children: [
           // Main content
@@ -24,7 +31,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   flex: 5,
               child: Container(
                 width: double.infinity,
-                color: Colors.white,
+                color: scaffold,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -85,7 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       // Blue wavy background
                       CustomPaint(
                         size: Size(double.infinity, double.infinity),
-                        painter: WelcomeWavePainter(),
+                        painter: WelcomeWavePainter(primary),
                       ),
                       // Content
                       Padding(
@@ -95,7 +102,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     children: [
                       // App title
                       Text(
-                        'SafeReport',
+                        t.appTitle,
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w800,
@@ -106,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             SizedBox(height: 25),
                       // Description
                       Text(
-                        'A Real-Time Crime Prevention Platform uses smart technology to detect and respond to crime instantly, helping keep communities safe through quick alerts and data-driven actions.',
+                        t.aRealTimeCrimePreventionPlatform,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                                 fontSize: 15,
@@ -131,7 +138,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: Color(0xFF36599F),
+                            foregroundColor: primary,
                             shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                             ),
@@ -139,7 +146,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             shadowColor: Colors.transparent,
                           ),
                           child: Text(
-                            'Get Started',
+                            t.getStarted,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -164,10 +171,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
 // Custom painter for the wavy blue background
 class WelcomeWavePainter extends CustomPainter {
+  final Color color;
+  WelcomeWavePainter(this.color);
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color(0xFF36599F)
+      ..color = color
       ..style = PaintingStyle.fill;
 
     final path = Path();

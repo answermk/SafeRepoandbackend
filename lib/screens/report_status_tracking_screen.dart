@@ -1,36 +1,49 @@
 import 'package:flutter/material.dart';
+import '../utils/theme_helper.dart';
+import '../utils/translation_helper.dart';
 
 class ReportStatusTrackingScreen extends StatelessWidget {
   const ReportStatusTrackingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final iconColor = ThemeHelper.getIconColor(context);
+    final secondaryText = ThemeHelper.getSecondaryTextColor(context);
+
     final reports = [
       {
-        'type': 'Suspicious Activity',
+        'type': t.suspiciousActivityLabel,
         'date': '2025-06-18',
-        'status': 'Pending',
+        'status': t.statusPending,
         'color': Colors.orange,
       },
       {
-        'type': 'Vandalism',
+        'type': t.vandalismLabel,
         'date': '2025-06-15',
-        'status': 'In Review',
+        'status': t.statusInReview,
         'color': Colors.blue,
       },
       {
-        'type': 'Theft',
+        'type': t.theftLabel,
         'date': '2025-06-10',
-        'status': 'Resolved',
+        'status': t.statusResolved,
         'color': Colors.green,
       },
     ];
 
     return Scaffold(
+      backgroundColor: scaffold,
       appBar: AppBar(
-        title: const Text('My Report Status', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF36599F),
-        foregroundColor: Colors.white,
+        title: Text(
+          t.myReportStatusTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: ThemeHelper.getPrimaryColor(context),
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor ?? Colors.white,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -41,6 +54,7 @@ class ReportStatusTrackingScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 3,
+            color: cardColor,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -55,9 +69,18 @@ class ReportStatusTrackingScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(report['type'] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          report['type'] as String,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('Date: ${report['date']}', style: const TextStyle(color: Colors.black54)),
+                        Text(
+                          '${t.dateLabel}: ${report['date']}',
+                          style: TextStyle(color: secondaryText),
+                        ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
@@ -80,12 +103,15 @@ class ReportStatusTrackingScreen extends StatelessWidget {
                             OutlinedButton(
                               onPressed: () {},
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Color(0xFF36599F)),
+                                side: BorderSide(color: ThemeHelper.getPrimaryColor(context)),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                                 minimumSize: const Size(0, 32),
                               ),
-                              child: const Text('Details', style: TextStyle(color: Color(0xFF36599F))),
+                              child: Text(
+                                t.detailsCta,
+                                style: TextStyle(color: ThemeHelper.getPrimaryColor(context)),
+                              ),
                             ),
                           ],
                         ),

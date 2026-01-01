@@ -37,4 +37,15 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     // Find reports by date range for anomaly detection
     @Query("SELECT r FROM Report r WHERE r.date >= :startDate AND r.date <= :endDate ORDER BY r.date DESC")
     List<Report> findByDateRange(@Param("startDate") Instant startDate, @Param("endDate") Instant endDate);
+    
+    // Count reports by reporter ID
+    long countByReporterId(UUID reporterId);
+    
+    // Count reports by reporter ID and status
+    @Query("SELECT COUNT(r) FROM Report r WHERE r.reporterId = :reporterId AND r.status = :status")
+    long countByReporterIdAndStatus(@Param("reporterId") UUID reporterId, @Param("status") ReportStatus status);
+    
+    // Get recent reports by reporter for timeline
+    @Query("SELECT r FROM Report r WHERE r.reporterId = :reporterId ORDER BY r.createdAt DESC")
+    List<Report> findRecentByReporterId(@Param("reporterId") UUID reporterId, org.springframework.data.domain.Pageable pageable);
 }

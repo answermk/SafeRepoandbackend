@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import '../config/app_config.dart';
 import 'api_client.dart';
 import 'token_manager.dart';
+import 'offline_reports_service.dart';
 
 /// Report Service
 /// Handles report creation, retrieval, updates, and deletion
@@ -98,9 +99,25 @@ class ReportService {
             'data': jsonDecode(response.body),
           };
         } else {
+          // If request failed, try to add to offline queue
+          final queueData = {
+            'incidentType': incidentType,
+            'incidentTitle': title,
+            'description': description,
+            'latitude': latitude,
+            'longitude': longitude,
+            'address': address,
+            'submitAnonymously': isAnonymous,
+            'isAnonymous': isAnonymous,
+            'mediaPaths': mediaFiles?.map((f) => f.path).toList() ?? [],
+          };
+          
+          await OfflineReportsService.addToQueue(queueData);
+          
           return {
             'success': false,
             'error': response.body,
+            'queued': true,
           };
         }
       }
@@ -173,15 +190,55 @@ class ReportService {
           'data': jsonDecode(response.body),
         };
       } else {
+        // If request failed, try to add to offline queue
+        final title = incidentType.replaceAll('_', ' ').split(' ').map((word) => 
+          word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)
+        ).join(' ');
+        
+        final queueData = {
+          'incidentType': incidentType,
+          'incidentTitle': title,
+          'description': description,
+          'latitude': latitude,
+          'longitude': longitude,
+          'address': address,
+          'submitAnonymously': isAnonymous,
+          'isAnonymous': isAnonymous,
+          'mediaPaths': mediaFiles?.map((f) => f.path).toList() ?? [],
+        };
+        
+        await OfflineReportsService.addToQueue(queueData);
+        
         return {
           'success': false,
           'error': response.body,
+          'queued': true,
         };
       }
     } catch (e) {
+      // Connection error - add to offline queue
+      final title = incidentType.replaceAll('_', ' ').split(' ').map((word) => 
+        word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)
+      ).join(' ');
+      
+      final queueData = {
+        'incidentType': incidentType,
+        'incidentTitle': title,
+        'description': description,
+        'latitude': latitude,
+        'longitude': longitude,
+        'address': address,
+        'submitAnonymously': isAnonymous,
+        'isAnonymous': isAnonymous,
+        'mediaPaths': mediaFiles?.map((f) => f.path).toList() ?? [],
+      };
+      
+      await OfflineReportsService.addToQueue(queueData);
+      
       return {
         'success': false,
         'error': 'Connection error: ${e.toString()}',
+        'queued': true,
       };
     }
   }

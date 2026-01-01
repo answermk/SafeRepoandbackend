@@ -442,6 +442,18 @@ abstract class AppLocalizations {
   /// **'Enter Full Name'**
   String get enterFullName;
 
+  /// No description provided for @usernameMustBeAtLeast3Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least 3 characters'**
+  String get usernameMustBeAtLeast3Characters;
+
+  /// No description provided for @usernameMustBeLessThan50Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be less than 50 characters'**
+  String get usernameMustBeLessThan50Characters;
+
   /// No description provided for @youremailGmailCom.
   ///
   /// In en, this message translates to:
@@ -483,6 +495,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Good Evening, {userName}'**
   String goodEvening(String userName);
+
+  /// No description provided for @accessibilitySettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility Settings'**
+  String get accessibilitySettingsTitle;
+
+  /// No description provided for @accessibilityCustomize.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize the app to make it easier to use'**
+  String get accessibilityCustomize;
+
+  /// No description provided for @fontSizeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Font Size'**
+  String get fontSizeLabel;
+
+  /// No description provided for @fontSizeSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small (12px)'**
+  String get fontSizeSmall;
+
+  /// No description provided for @fontSizeLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large (28px)'**
+  String get fontSizeLarge;
+
+  /// No description provided for @fontSizePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview: This is how text will appear'**
+  String get fontSizePreview;
+
+  /// No description provided for @darkModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkModeTitle;
+
+  /// No description provided for @darkModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to dark theme for better visibility in low light'**
+  String get darkModeSubtitle;
+
+  /// No description provided for @ttsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Text-to-Speech'**
+  String get ttsTitle;
+
+  /// No description provided for @ttsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reads text aloud when enabled'**
+  String get ttsSubtitle;
+
+  /// No description provided for @ttsEnabledToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-to-speech enabled'**
+  String get ttsEnabledToast;
+
+  /// No description provided for @settingsSavedAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings are saved automatically'**
+  String get settingsSavedAutomatically;
 
   /// No description provided for @reportNow.
   ///
@@ -1555,7 +1639,7 @@ abstract class AppLocalizations {
   /// Time ago in hours
   ///
   /// In en, this message translates to:
-  /// **'{hours} hrs ago'**
+  /// **'{hours} hours ago'**
   String hoursAgo(int hours);
 
   /// No description provided for @yesterday.
@@ -2025,6 +2109,1404 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
+
+  /// No description provided for @managePreferencesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your preferences'**
+  String get managePreferencesSubtitle;
+
+  /// No description provided for @quickAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Access'**
+  String get quickAccess;
+
+  /// No description provided for @pendingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reports'**
+  String get pendingReports;
+
+  /// No description provided for @viewStats.
+  ///
+  /// In en, this message translates to:
+  /// **'View stats'**
+  String get viewStats;
+
+  /// No description provided for @accessibilityCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility'**
+  String get accessibilityCardTitle;
+
+  /// No description provided for @fontDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Font & display'**
+  String get fontDisplay;
+
+  /// No description provided for @securitySettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Settings'**
+  String get securitySettingsTitle;
+
+  /// No description provided for @lastChangedDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Last changed {days} days ago'**
+  String lastChangedDaysAgo(int days);
+
+  /// No description provided for @neverChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Never changed'**
+  String get neverChanged;
+
+  /// No description provided for @twoFactorAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-Factor Authentication'**
+  String get twoFactorAuth;
+
+  /// No description provided for @addExtraSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Add extra security to your account'**
+  String get addExtraSecurity;
+
+  /// No description provided for @useFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fingerprint or face ID'**
+  String get useFingerprint;
+
+  /// No description provided for @notificationsPreferencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Preferences'**
+  String get notificationsPreferencesTitle;
+
+  /// No description provided for @pushNotificationsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Push Notifications'**
+  String get pushNotificationsLabel;
+
+  /// No description provided for @pushNotificationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report updates and alerts'**
+  String get pushNotificationsSubtitle;
+
+  /// No description provided for @emailUpdatesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Updates'**
+  String get emailUpdatesLabel;
+
+  /// No description provided for @emailUpdatesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly community summary'**
+  String get emailUpdatesSubtitle;
+
+  /// No description provided for @watchGroupAlertsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Group Alerts'**
+  String get watchGroupAlertsLabel;
+
+  /// No description provided for @watchGroupAlertsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages from your groups'**
+  String get watchGroupAlertsSubtitle;
+
+  /// No description provided for @privacySettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Settings'**
+  String get privacySettingsTitle;
+
+  /// No description provided for @defaultAnonymousModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Anonymous Mode'**
+  String get defaultAnonymousModeLabel;
+
+  /// No description provided for @defaultAnonymousModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Always submit reports anonymously'**
+  String get defaultAnonymousModeSubtitle;
+
+  /// No description provided for @locationSharingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Sharing'**
+  String get locationSharingLabel;
+
+  /// No description provided for @locationSharingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share precise location with reports (Always enabled)'**
+  String get locationSharingSubtitle;
+
+  /// No description provided for @anonymousGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous Reporting Guide'**
+  String get anonymousGuideTitle;
+
+  /// No description provided for @anonymousGuideSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn about privacy protections'**
+  String get anonymousGuideSubtitle;
+
+  /// No description provided for @languagePreferencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Preferences'**
+  String get languagePreferencesTitle;
+
+  /// No description provided for @languageChangedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Language changed to {language}'**
+  String languageChangedTo(String language);
+
+  /// No description provided for @accessibilitySettingsLinkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility Settings'**
+  String get accessibilitySettingsLinkTitle;
+
+  /// No description provided for @accessibilitySettingsLinkSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust font size, contrast, and text-to-speech'**
+  String get accessibilitySettingsLinkSubtitle;
+
+  /// No description provided for @saveAllSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Save All Settings'**
+  String get saveAllSettings;
+
+  /// No description provided for @settingsSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved successfully'**
+  String get settingsSavedSuccess;
+
+  /// No description provided for @anonymousReportingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous Reporting'**
+  String get anonymousReportingTitle;
+
+  /// No description provided for @reportSafely.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Safely'**
+  String get reportSafely;
+
+  /// No description provided for @identityProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity is fully protected'**
+  String get identityProtected;
+
+  /// No description provided for @whatsHiddenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s Hidden'**
+  String get whatsHiddenTitle;
+
+  /// No description provided for @hiddenName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name and identity'**
+  String get hiddenName;
+
+  /// No description provided for @hiddenEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get hiddenEmail;
+
+  /// No description provided for @hiddenPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get hiddenPhone;
+
+  /// No description provided for @hiddenAccountId.
+  ///
+  /// In en, this message translates to:
+  /// **'Account ID'**
+  String get hiddenAccountId;
+
+  /// No description provided for @hiddenPersonalIdentifiers.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal identifiers'**
+  String get hiddenPersonalIdentifiers;
+
+  /// No description provided for @whatsSharedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s Still Shared'**
+  String get whatsSharedTitle;
+
+  /// No description provided for @sharedLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident location only'**
+  String get sharedLocation;
+
+  /// No description provided for @sharedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time of report'**
+  String get sharedTime;
+
+  /// No description provided for @sharedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Report description'**
+  String get sharedDescription;
+
+  /// No description provided for @sharedEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence (if provided)'**
+  String get sharedEvidence;
+
+  /// No description provided for @helpsPolice.
+  ///
+  /// In en, this message translates to:
+  /// **'This information helps police respond effectively without revealing who you are'**
+  String get helpsPolice;
+
+  /// No description provided for @benefitsAnonymousTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits of Anonymous Reporting'**
+  String get benefitsAnonymousTitle;
+
+  /// No description provided for @benefit1.
+  ///
+  /// In en, this message translates to:
+  /// **'Report without fear of retaliation'**
+  String get benefit1;
+
+  /// No description provided for @benefit2.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect your personal safety'**
+  String get benefit2;
+
+  /// No description provided for @benefit3.
+  ///
+  /// In en, this message translates to:
+  /// **'Help your community without exposure'**
+  String get benefit3;
+
+  /// No description provided for @benefit4.
+  ///
+  /// In en, this message translates to:
+  /// **'No follow-up contact unless you choose'**
+  String get benefit4;
+
+  /// No description provided for @legalProtectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Protection'**
+  String get legalProtectionTitle;
+
+  /// No description provided for @legalProtectionText.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous reports are protected by law. Your identity cannot be disclosed without your explicit consent, even under legal proceedings.'**
+  String get legalProtectionText;
+
+  /// No description provided for @faqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions'**
+  String get faqTitle;
+
+  /// No description provided for @faqQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'Can police trace my report back to me?'**
+  String get faqQ1;
+
+  /// No description provided for @faqA1.
+  ///
+  /// In en, this message translates to:
+  /// **'No. Anonymous reports are encrypted and stored without any identifying information.'**
+  String get faqA1;
+
+  /// No description provided for @faqQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I switch between anonymous and non-anonymous?'**
+  String get faqQ2;
+
+  /// No description provided for @faqA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, you can choose for each report whether to submit anonymously or with your information.'**
+  String get faqA2;
+
+  /// No description provided for @faqQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Will my report be taken less seriously?'**
+  String get faqQ3;
+
+  /// No description provided for @faqA3.
+  ///
+  /// In en, this message translates to:
+  /// **'No. All reports are investigated equally regardless of anonymity status.'**
+  String get faqA3;
+
+  /// No description provided for @orText.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orText;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @usernameOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Username (Optional)'**
+  String get usernameOptionalLabel;
+
+  /// No description provided for @usernameOptionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to auto-generate from email'**
+  String get usernameOptionalHint;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @phoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phoneRequired;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an Account'**
+  String get createAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an Account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @signUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUpTitle;
+
+  /// No description provided for @easyReporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy Reporting'**
+  String get easyReporting;
+
+  /// No description provided for @communityWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Watch'**
+  String get communityWatch;
+
+  /// No description provided for @anonymousSecure.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous & Secure'**
+  String get anonymousSecure;
+
+  /// No description provided for @emergencyReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Ready'**
+  String get emergencyReady;
+
+  /// No description provided for @onboardingDescCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'Report suspicious activities instantly with\njust a few taps. Your safety is our priority'**
+  String get onboardingDescCommon;
+
+  /// No description provided for @skipTutorial.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip Tutorial'**
+  String get skipTutorial;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your personal information'**
+  String get profileSubtitle;
+
+  /// No description provided for @usernameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get usernameLabel;
+
+  /// No description provided for @locationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationLabel;
+
+  /// No description provided for @emergencyContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Contact'**
+  String get emergencyContactTitle;
+
+  /// No description provided for @emergencyContactNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jane Doe'**
+  String get emergencyContactNameHint;
+
+  /// No description provided for @emergencyContactPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+250 7............'**
+  String get emergencyContactPhoneHint;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @unableToLoadProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to Load Profile'**
+  String get unableToLoadProfile;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @memberSinceUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since unknown'**
+  String get memberSinceUnknown;
+
+  /// No description provided for @usingAvailableData.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load full profile. Using available data.'**
+  String get usingAvailableData;
+
+  /// No description provided for @userIdNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID not found. Please login again.'**
+  String get userIdNotFound;
+
+  /// No description provided for @loadProfileError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading your profile. Please try again.'**
+  String get loadProfileError;
+
+  /// No description provided for @profileUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccess;
+
+  /// No description provided for @failedToUpdateProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get failedToUpdateProfile;
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirmMessage;
+
+  /// No description provided for @learnReportProtect.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn. Report. Protect.'**
+  String get learnReportProtect;
+
+  /// No description provided for @empowerWithKnowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Empower yourself with knowledge on responsible reporting'**
+  String get empowerWithKnowledge;
+
+  /// No description provided for @featuredArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Articles'**
+  String get featuredArticles;
+
+  /// No description provided for @howToReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to Report'**
+  String get howToReportTitle;
+
+  /// No description provided for @whatToReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What to Report'**
+  String get whatToReportTitle;
+
+  /// No description provided for @videoTutorialsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Tutorials'**
+  String get videoTutorialsTitle;
+
+  /// No description provided for @quickSafetyTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Safety Tips'**
+  String get quickSafetyTipsTitle;
+
+  /// No description provided for @emergencyStepsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Steps'**
+  String get emergencyStepsTitle;
+
+  /// No description provided for @closeText.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeText;
+
+  /// No description provided for @searchFaqHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search FAQs...'**
+  String get searchFaqHint;
+
+  /// No description provided for @noFaqsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No FAQs found'**
+  String get noFaqsFound;
+
+  /// No description provided for @tryDifferentSearchTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Try different search terms'**
+  String get tryDifferentSearchTerms;
+
+  /// No description provided for @browseByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse by Category'**
+  String get browseByCategory;
+
+  /// No description provided for @resultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} result{count, plural, one {} other {s}} found'**
+  String resultsFound(num count);
+
+  /// No description provided for @tutorialFaqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutorial & FAQ'**
+  String get tutorialFaqTitle;
+
+  /// No description provided for @fullNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name is required'**
+  String get fullNameRequired;
+
+  /// No description provided for @onboardingDesc1.
+  ///
+  /// In en, this message translates to:
+  /// **'Report suspicious activities instantly with just a few taps. Your safety is our priority.'**
+  String get onboardingDesc1;
+
+  /// No description provided for @myReportStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Report Status'**
+  String get myReportStatusTitle;
+
+  /// No description provided for @suspiciousActivityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspicious Activity'**
+  String get suspiciousActivityLabel;
+
+  /// No description provided for @vandalismLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vandalism'**
+  String get vandalismLabel;
+
+  /// No description provided for @theftLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Theft'**
+  String get theftLabel;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'In Review'**
+  String get statusInReview;
+
+  /// No description provided for @statusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get statusResolved;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @detailsCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get detailsCta;
+
+  /// No description provided for @reportSubmittedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Submitted!'**
+  String get reportSubmittedTitle;
+
+  /// No description provided for @reportSubmittedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for helping keep your community safe. Law enforcement has been notified.'**
+  String get reportSubmittedSubtitle;
+
+  /// No description provided for @reportIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Report ID:'**
+  String get reportIdLabel;
+
+  /// No description provided for @saveIdForReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this ID for reference'**
+  String get saveIdForReference;
+
+  /// No description provided for @viewMyReportsCta.
+  ///
+  /// In en, this message translates to:
+  /// **'View My Reports'**
+  String get viewMyReportsCta;
+
+  /// No description provided for @returnToHomeCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to Home'**
+  String get returnToHomeCta;
+
+  /// No description provided for @estimatedResponseTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated response time: 5-10 minutes'**
+  String get estimatedResponseTime;
+
+  /// No description provided for @reportDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get reportDetailsTitle;
+
+  /// No description provided for @unableToLoadReportDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load report details'**
+  String get unableToLoadReportDetails;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @updatedTimeAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {timeAgo}'**
+  String updatedTimeAgo(Object timeAgo);
+
+  /// No description provided for @updatedUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated: Unknown'**
+  String get updatedUnknown;
+
+  /// No description provided for @untitledReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled Report'**
+  String get untitledReport;
+
+  /// No description provided for @noDescriptionProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'No description provided'**
+  String get noDescriptionProvided;
+
+  /// No description provided for @locationNotSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not specified'**
+  String get locationNotSpecified;
+
+  /// No description provided for @incidentInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Information'**
+  String get incidentInformation;
+
+  /// No description provided for @typeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get typeLabel;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get timeLabel;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionLabel;
+
+  /// No description provided for @statusUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Status Updates'**
+  String get statusUpdates;
+
+  /// No description provided for @reportUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Under Review'**
+  String get reportUnderReview;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes ago'**
+  String minutesAgo(Object minutes);
+
+  /// No description provided for @officerAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'An officer has been assigned to investigate'**
+  String get officerAssigned;
+
+  /// No description provided for @reportReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Received'**
+  String get reportReceived;
+
+  /// No description provided for @reportLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report has been logged and prioritized'**
+  String get reportLogged;
+
+  /// No description provided for @anonymousReportLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous Report'**
+  String get anonymousReportLabel;
+
+  /// No description provided for @protectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get protectedLabel;
+
+  /// No description provided for @reviewReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Report'**
+  String get reviewReportTitle;
+
+  /// No description provided for @confirmSubmission.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your submission'**
+  String get confirmSubmission;
+
+  /// No description provided for @reportSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Summary'**
+  String get reportSummaryTitle;
+
+  /// No description provided for @evidenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get evidenceLabel;
+
+  /// No description provided for @noEvidenceAttached.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence attached'**
+  String get noEvidenceAttached;
+
+  /// No description provided for @yesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yesLabel;
+
+  /// No description provided for @noLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get noLabel;
+
+  /// No description provided for @emergencyPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency ?'**
+  String get emergencyPrompt;
+
+  /// No description provided for @call911Prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Call 911 for immediate danger'**
+  String get call911Prompt;
+
+  /// No description provided for @submitReportCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReportCta;
+
+  /// No description provided for @saveAsDraftCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as Draft'**
+  String get saveAsDraftCta;
+
+  /// No description provided for @reportSubmitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit report'**
+  String get reportSubmitFailed;
+
+  /// No description provided for @draftSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report saved as draft successfully'**
+  String get draftSavedSuccess;
+
+  /// No description provided for @draftSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save draft'**
+  String get draftSaveFailed;
+
+  /// No description provided for @reportCrimeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Crime'**
+  String get reportCrimeTitle;
+
+  /// No description provided for @reportCrimeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help keep your community safe'**
+  String get reportCrimeSubtitle;
+
+  /// No description provided for @selectIncidentTypeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Incident Type'**
+  String get selectIncidentTypeTitle;
+
+  /// No description provided for @provideDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide details about what you observed'**
+  String get provideDetailsHint;
+
+  /// No description provided for @addEvidenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Evidence'**
+  String get addEvidenceTitle;
+
+  /// No description provided for @optionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'(Optional)'**
+  String get optionalLabel;
+
+  /// No description provided for @evidenceHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos, videos, or audio recordings'**
+  String get evidenceHelperText;
+
+  /// No description provided for @filesAttachedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} file(s) attached'**
+  String filesAttachedCount(Object count);
+
+  /// No description provided for @savingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get savingLabel;
+
+  /// No description provided for @restoreDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Draft?'**
+  String get restoreDraftTitle;
+
+  /// No description provided for @restoreDraftMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have an unsaved draft from {timeAgo}.'**
+  String restoreDraftMessage(Object timeAgo);
+
+  /// No description provided for @incidentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident'**
+  String get incidentLabel;
+
+  /// No description provided for @descriptionPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what you observed in detail...'**
+  String get descriptionPlaceholder;
+
+  /// No description provided for @pleaseSelectIncidentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an incident type'**
+  String get pleaseSelectIncidentType;
+
+  /// No description provided for @pleaseProvideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a description'**
+  String get pleaseProvideDescription;
+
+  /// No description provided for @filesAddedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {type}(s) added'**
+  String filesAddedCount(Object count, Object type);
+
+  /// No description provided for @submitAnonymouslyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Anonymously'**
+  String get submitAnonymouslyTitle;
+
+  /// No description provided for @identityProtectedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity will be protected'**
+  String get identityProtectedSubtitle;
+
+  /// No description provided for @anonymousToggleYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get anonymousToggleYes;
+
+  /// No description provided for @anonymousToggleNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get anonymousToggleNo;
+
+  /// No description provided for @photoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photoLabel;
+
+  /// No description provided for @videoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get videoLabel;
+
+  /// No description provided for @audioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get audioLabel;
+
+  /// No description provided for @suspiciousPersonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspicious Person'**
+  String get suspiciousPersonLabel;
+
+  /// No description provided for @vehicleActivityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Activity'**
+  String get vehicleActivityLabel;
+
+  /// No description provided for @abandonedItemLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Abandoned Item'**
+  String get abandonedItemLabel;
+
+  /// No description provided for @theftBurglaryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Theft/Burglary'**
+  String get theftBurglaryLabel;
+
+  /// No description provided for @vandalismLabelFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Vandalism'**
+  String get vandalismLabelFull;
+
+  /// No description provided for @drugActivityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Drug Activity'**
+  String get drugActivityLabel;
+
+  /// No description provided for @assaultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assault/Violence'**
+  String get assaultLabel;
+
+  /// No description provided for @noiseDisturbanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Noise Disturbance'**
+  String get noiseDisturbanceLabel;
+
+  /// No description provided for @trespassingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trespassing'**
+  String get trespassingLabel;
+
+  /// No description provided for @otherIncidentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get otherIncidentLabel;
+
+  /// No description provided for @incidentSubtitleDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the incident type'**
+  String get incidentSubtitleDefault;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Your Password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @changePasswordResetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password below.'**
+  String get changePasswordResetDesc;
+
+  /// No description provided for @changePasswordSettingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password and new password below.'**
+  String get changePasswordSettingsDesc;
+
+  /// No description provided for @currentPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPasswordLabel;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @passwordChangedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully!'**
+  String get passwordChangedSuccess;
+
+  /// No description provided for @enterCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your current password'**
+  String get enterCurrentPassword;
+
+  /// No description provided for @passwordChange30DayRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Password can only be changed once every 30 days. Last changed {days} days ago. Please wait {remaining} more days.'**
+  String passwordChange30DayRule(Object days, Object remaining);
+
+  /// No description provided for @failedToChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to change password'**
+  String get failedToChangePassword;
+
+  /// No description provided for @userNotFoundLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found. Please login again.'**
+  String get userNotFoundLogin;
+
+  /// No description provided for @backToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get backToSignIn;
+
+  /// No description provided for @cancelCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelCta;
+
+  /// No description provided for @changePasswordCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePasswordCta;
+
+  /// No description provided for @verifyEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Your Email'**
+  String get verifyEmailTitle;
+
+  /// No description provided for @verifyEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve sent a verification code to'**
+  String get verifyEmailSubtitle;
+
+  /// No description provided for @verifyEmailCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Email'**
+  String get verifyEmailCta;
+
+  /// No description provided for @didNotReceiveCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive code?'**
+  String get didNotReceiveCode;
+
+  /// No description provided for @sendNewCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send new code'**
+  String get sendNewCode;
+
+  /// No description provided for @verificationCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verificationCodeLabel;
+
+  /// No description provided for @enter6Digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 6 Digits'**
+  String get enter6Digits;
+
+  /// No description provided for @enter6DigitCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the 6-digit code'**
+  String get enter6DigitCode;
+
+  /// No description provided for @invalidOrExpiredCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired code'**
+  String get invalidOrExpiredCode;
+
+  /// No description provided for @newCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'New verification code sent to your email.'**
+  String get newCodeSent;
+
+  /// No description provided for @failedToSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send new code'**
+  String get failedToSendCode;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Your Password?'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and we\'ll send you instructions to reset your password.'**
+  String get forgotPasswordDesc;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @enterEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address'**
+  String get enterEmailAddress;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get sendResetLink;
+
+  /// No description provided for @failedToSendReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send reset code'**
+  String get failedToSendReset;
+
+  /// No description provided for @emergencyModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Mode'**
+  String get emergencyModeTitle;
+
+  /// No description provided for @emergencyModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help is on the way.\nYour location is being shared with emergency services.'**
+  String get emergencyModeSubtitle;
+
+  /// No description provided for @policeEtaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Police ETA'**
+  String get policeEtaLabel;
+
+  /// No description provided for @etaMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{min}-{max} minutes'**
+  String etaMinutes(Object max, Object min);
+
+  /// No description provided for @emergencyContactsNotified.
+  ///
+  /// In en, this message translates to:
+  /// **'Your emergency contacts have been notified'**
+  String get emergencyContactsNotified;
 }
 
 class _AppLocalizationsDelegate

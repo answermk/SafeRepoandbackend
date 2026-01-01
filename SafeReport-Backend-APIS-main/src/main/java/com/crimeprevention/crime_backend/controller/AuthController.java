@@ -64,7 +64,7 @@ public class AuthController {
 			String token = jwtTokenProvider.generateToken(user.getId(), user.getRole().name());
 			System.out.println("✅ Login successful for: " + user.getEmail());
 
-			return ResponseEntity.ok(new AuthResponse(token, user.getEmail(), user.getUsername()));
+			return ResponseEntity.ok(new AuthResponse(token, user.getEmail(), user.getUsername(), user.getId()));
 		} catch (BadCredentialsException ex) {
 			System.out.println("❌ Bad credentials for email: " + loginRequest.getEmail() + " - " + ex.getMessage());
 			return ResponseEntity.status(401).body(null);

@@ -180,6 +180,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get enterFullName => 'Entrer le nom complet';
 
   @override
+  String get usernameMustBeAtLeast3Characters =>
+      'Le nom d’utilisateur doit comporter au moins 3 caractères';
+
+  @override
+  String get usernameMustBeLessThan50Characters =>
+      'Le nom d’utilisateur doit comporter moins de 50 caractères';
+
+  @override
   String get youremailGmailCom => 'votreemail@gmail.com';
 
   @override
@@ -205,6 +213,45 @@ class AppLocalizationsFr extends AppLocalizations {
   String goodEvening(String userName) {
     return 'Bonsoir, $userName';
   }
+
+  @override
+  String get accessibilitySettingsTitle => 'Paramètres d’accessibilité';
+
+  @override
+  String get accessibilityCustomize =>
+      'Personnalisez l’application pour la rendre plus facile à utiliser';
+
+  @override
+  String get fontSizeLabel => 'Taille de police';
+
+  @override
+  String get fontSizeSmall => 'Petite (12px)';
+
+  @override
+  String get fontSizeLarge => 'Grande (28px)';
+
+  @override
+  String get fontSizePreview => 'Aperçu : voici l’apparence du texte';
+
+  @override
+  String get darkModeTitle => 'Mode sombre';
+
+  @override
+  String get darkModeSubtitle =>
+      'Passez en mode sombre pour une meilleure visibilité en faible luminosité';
+
+  @override
+  String get ttsTitle => 'Activer la synthèse vocale';
+
+  @override
+  String get ttsSubtitle => 'Lit le texte à voix haute lorsqu’il est activé';
+
+  @override
+  String get ttsEnabledToast => 'Synthèse vocale activée';
+
+  @override
+  String get settingsSavedAutomatically =>
+      'Les paramètres sont enregistrés automatiquement';
 
   @override
   String get reportNow => 'Signaler maintenant';
@@ -356,7 +403,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discard => 'Ignorer';
 
   @override
-  String get continueToLocation => 'Continuer vers l\'Emplacement';
+  String get continueToLocation => 'Continuer vers la localisation';
 
   @override
   String get all => 'Tous';
@@ -409,7 +456,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mySafetyReports => 'Mes Rapports de Sécurité';
 
   @override
-  String get accountInformation => 'Informations du Compte';
+  String get accountInformation => 'Informations du compte';
 
   @override
   String get name => 'Nom';
@@ -429,16 +476,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountSettings => 'Paramètres du Compte';
 
   @override
-  String get changePassword => 'Changer le Mot de Passe';
+  String get changePassword => 'Changer le mot de passe';
 
   @override
   String get editProfile => 'Modifier le Profil';
 
   @override
-  String get myImpact => 'Mon Impact';
+  String get myImpact => 'Mon impact';
 
   @override
-  String get offlineQueue => 'File d\'Attente Hors Ligne';
+  String get offlineQueue => 'File d’attente hors ligne';
 
   @override
   String get accessibility => 'Accessibilité';
@@ -447,7 +494,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get language => 'Langue';
 
   @override
-  String get accountSettingsTitle => 'Paramètres du Compte';
+  String get accountSettingsTitle => 'Paramètres du compte';
 
   @override
   String get manageYourPreferences => 'Gérer vos préférences';
@@ -471,7 +518,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ajouter une sécurité supplémentaire à votre compte';
 
   @override
-  String get biometricLogin => 'Connexion Biométrique';
+  String get biometricLogin => 'Connexion biométrique';
 
   @override
   String get useFingerprintOrFaceId =>
@@ -526,7 +573,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get languagePreferences => 'Préférences de Langue';
 
   @override
-  String get appLanguage => 'Langue de l\'Application';
+  String get appLanguage => 'Langue de l’application';
 
   @override
   String get english => 'Anglais';
@@ -714,20 +761,20 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get callNow => 'APPELER MAINTENANT';
+  String get callNow => 'APPELER';
 
   @override
-  String get cancelEmergency => 'Annuler l\'Urgence';
+  String get cancelEmergency => 'Annuler l’urgence';
 
   @override
   String get yourEmergencyContactsHaveBeenNotified =>
       'Vos contacts d\'urgence ont été notifiés';
 
   @override
-  String get selectEmergencyService => 'Sélectionner le Service d\'Urgence';
+  String get selectEmergencyService => 'Sélectionnez le service d’urgence';
 
   @override
-  String get policeEmergency => 'Urgence Police';
+  String get policeEmergency => 'Police (urgence)';
 
   @override
   String get fireDepartment => 'Pompiers';
@@ -736,7 +783,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ambulance => 'Ambulance';
 
   @override
-  String get nonEmergencyPolice => 'Police Non-Urgente';
+  String get nonEmergencyPolice => 'Police (non urgence)';
 
   @override
   String get communityForumTitle => 'Forum Communautaire';
@@ -780,7 +827,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String hoursAgo(int hours) {
-    return 'il y a $hours heures';
+    return 'Il y a $hours heures';
   }
 
   @override
@@ -1043,4 +1090,769 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get home => 'Accueil';
+
+  @override
+  String get managePreferencesSubtitle => 'Gérez vos préférences';
+
+  @override
+  String get quickAccess => 'Accès rapide';
+
+  @override
+  String get pendingReports => 'Rapports en attente';
+
+  @override
+  String get viewStats => 'Voir les statistiques';
+
+  @override
+  String get accessibilityCardTitle => 'Accessibilité';
+
+  @override
+  String get fontDisplay => 'Police et affichage';
+
+  @override
+  String get securitySettingsTitle => 'Paramètres de sécurité';
+
+  @override
+  String lastChangedDaysAgo(int days) {
+    return 'Dernier changement il y a $days jours';
+  }
+
+  @override
+  String get neverChanged => 'Jamais modifié';
+
+  @override
+  String get twoFactorAuth => 'Authentification à deux facteurs';
+
+  @override
+  String get addExtraSecurity =>
+      'Ajoutez une sécurité supplémentaire à votre compte';
+
+  @override
+  String get useFingerprint =>
+      'Utiliser l’empreinte ou la reconnaissance faciale';
+
+  @override
+  String get notificationsPreferencesTitle => 'Préférences de notifications';
+
+  @override
+  String get pushNotificationsLabel => 'Notifications push';
+
+  @override
+  String get pushNotificationsSubtitle => 'Mises à jour de rapports et alertes';
+
+  @override
+  String get emailUpdatesLabel => 'Mises à jour par email';
+
+  @override
+  String get emailUpdatesSubtitle => 'Résumé hebdomadaire de la communauté';
+
+  @override
+  String get watchGroupAlertsLabel => 'Alertes des groupes de vigilance';
+
+  @override
+  String get watchGroupAlertsSubtitle => 'Messages de vos groupes';
+
+  @override
+  String get privacySettingsTitle => 'Paramètres de confidentialité';
+
+  @override
+  String get defaultAnonymousModeLabel => 'Mode anonyme par défaut';
+
+  @override
+  String get defaultAnonymousModeSubtitle =>
+      'Toujours envoyer les rapports anonymement';
+
+  @override
+  String get locationSharingLabel => 'Partage de localisation';
+
+  @override
+  String get locationSharingSubtitle =>
+      'Partager la localisation précise avec les rapports (Toujours activé)';
+
+  @override
+  String get anonymousGuideTitle => 'Guide du signalement anonyme';
+
+  @override
+  String get anonymousGuideSubtitle =>
+      'En savoir plus sur les protections de confidentialité';
+
+  @override
+  String get languagePreferencesTitle => 'Préférences de langue';
+
+  @override
+  String languageChangedTo(String language) {
+    return 'Langue changée en $language';
+  }
+
+  @override
+  String get accessibilitySettingsLinkTitle => 'Paramètres d’accessibilité';
+
+  @override
+  String get accessibilitySettingsLinkSubtitle =>
+      'Ajuster la taille de police, le contraste et la synthèse vocale';
+
+  @override
+  String get saveAllSettings => 'Enregistrer tous les paramètres';
+
+  @override
+  String get settingsSavedSuccess => 'Paramètres enregistrés avec succès';
+
+  @override
+  String get anonymousReportingTitle => 'Signalement anonyme';
+
+  @override
+  String get reportSafely => 'Signaler en toute sécurité';
+
+  @override
+  String get identityProtected => 'Votre identité est entièrement protégée';
+
+  @override
+  String get whatsHiddenTitle => 'Ce qui est caché';
+
+  @override
+  String get hiddenName => 'Votre nom et identité';
+
+  @override
+  String get hiddenEmail => 'Adresse email';
+
+  @override
+  String get hiddenPhone => 'Numéro de téléphone';
+
+  @override
+  String get hiddenAccountId => 'ID du compte';
+
+  @override
+  String get hiddenPersonalIdentifiers => 'Identifiants personnels';
+
+  @override
+  String get whatsSharedTitle => 'Ce qui est toujours partagé';
+
+  @override
+  String get sharedLocation => 'Lieu de l’incident uniquement';
+
+  @override
+  String get sharedTime => 'Heure du rapport';
+
+  @override
+  String get sharedDescription => 'Description du rapport';
+
+  @override
+  String get sharedEvidence => 'Preuves (si fournies)';
+
+  @override
+  String get helpsPolice =>
+      'Ces informations aident la police à répondre efficacement sans révéler qui vous êtes';
+
+  @override
+  String get benefitsAnonymousTitle => 'Avantages du signalement anonyme';
+
+  @override
+  String get benefit1 => 'Signaler sans peur de représailles';
+
+  @override
+  String get benefit2 => 'Protéger votre sécurité personnelle';
+
+  @override
+  String get benefit3 => 'Aider votre communauté sans exposition';
+
+  @override
+  String get benefit4 => 'Aucun suivi sauf si vous le choisissez';
+
+  @override
+  String get legalProtectionTitle => 'Protection juridique';
+
+  @override
+  String get legalProtectionText =>
+      'Les signalements anonymes sont protégés par la loi. Votre identité ne peut pas être divulguée sans votre consentement explicite, même en cas de procédure légale.';
+
+  @override
+  String get faqTitle => 'Questions fréquemment posées';
+
+  @override
+  String get faqQ1 => 'La police peut-elle retrouver mon rapport jusqu’à moi ?';
+
+  @override
+  String get faqA1 =>
+      'Non. Les rapports anonymes sont chiffrés et stockés sans aucune information d’identification.';
+
+  @override
+  String get faqQ2 => 'Puis-je passer de l’anonymat au non-anonymat ?';
+
+  @override
+  String get faqA2 =>
+      'Oui, vous pouvez choisir pour chaque rapport de le soumettre anonymement ou avec vos informations.';
+
+  @override
+  String get faqQ3 => 'Mon rapport sera-t-il pris moins au sérieux ?';
+
+  @override
+  String get faqA3 =>
+      'Non. Tous les rapports sont examinés de la même manière, qu’ils soient anonymes ou non.';
+
+  @override
+  String get orText => 'ou';
+
+  @override
+  String get continueWithGoogle => 'Continuer avec Google';
+
+  @override
+  String get usernameOptionalLabel => 'Nom d’utilisateur (optionnel)';
+
+  @override
+  String get usernameOptionalHint =>
+      'Laissez vide pour l’auto-générer depuis l’email';
+
+  @override
+  String get phoneNumberLabel => 'Numéro de téléphone';
+
+  @override
+  String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas';
+
+  @override
+  String get phoneRequired => 'Le numéro de téléphone est requis';
+
+  @override
+  String get createAccount => 'Créer un compte';
+
+  @override
+  String get alreadyHaveAccount => 'Vous avez déjà un compte ?';
+
+  @override
+  String get signUpTitle => 'Inscription';
+
+  @override
+  String get easyReporting => 'Signalement facile';
+
+  @override
+  String get communityWatch => 'Vigilance communautaire';
+
+  @override
+  String get anonymousSecure => 'Anonyme et sécurisé';
+
+  @override
+  String get emergencyReady => 'Prêt pour l\'urgence';
+
+  @override
+  String get onboardingDescCommon =>
+      'Signalez les activités suspectes en un instant,\nquelques gestes suffisent. Votre sécurité est notre priorité.';
+
+  @override
+  String get skipTutorial => 'Passer le tutoriel';
+
+  @override
+  String get profileTitle => 'Mon profil';
+
+  @override
+  String get profileSubtitle => 'Gérez vos informations personnelles';
+
+  @override
+  String get usernameLabel => 'Nom d’utilisateur';
+
+  @override
+  String get locationLabel => 'Lieu';
+
+  @override
+  String get emergencyContactTitle => 'Contact d’urgence';
+
+  @override
+  String get emergencyContactNameHint => 'Jane Doe';
+
+  @override
+  String get emergencyContactPhoneHint => '+250 7............';
+
+  @override
+  String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get unableToLoadProfile => 'Impossible de charger le profil';
+
+  @override
+  String get retry => 'Réessayer';
+
+  @override
+  String get goBack => 'Retour';
+
+  @override
+  String get memberSinceUnknown => 'Membre depuis : inconnu';
+
+  @override
+  String get usingAvailableData =>
+      'Impossible de charger le profil complet. Utilisation des données disponibles.';
+
+  @override
+  String get userIdNotFound =>
+      'ID utilisateur introuvable. Veuillez vous reconnecter.';
+
+  @override
+  String get loadProfileError =>
+      'Une erreur est survenue lors du chargement de votre profil. Veuillez réessayer.';
+
+  @override
+  String get profileUpdatedSuccess => 'Profil mis à jour avec succès';
+
+  @override
+  String get failedToUpdateProfile => 'Échec de la mise à jour du profil';
+
+  @override
+  String get logoutConfirmTitle => 'Déconnexion';
+
+  @override
+  String get logoutConfirmMessage => 'Voulez-vous vraiment vous déconnecter ?';
+
+  @override
+  String get learnReportProtect => 'Apprendre. Signaler. Protéger.';
+
+  @override
+  String get empowerWithKnowledge =>
+      'Renforcez-vous grâce à des connaissances sur le signalement responsable';
+
+  @override
+  String get featuredArticles => 'Articles à la une';
+
+  @override
+  String get howToReportTitle => 'Comment signaler';
+
+  @override
+  String get whatToReportTitle => 'Que signaler';
+
+  @override
+  String get videoTutorialsTitle => 'Tutoriels vidéo';
+
+  @override
+  String get quickSafetyTipsTitle => 'Conseils de sécurité rapides';
+
+  @override
+  String get emergencyStepsTitle => 'Étapes d’urgence';
+
+  @override
+  String get closeText => 'Fermer';
+
+  @override
+  String get searchFaqHint => 'Rechercher dans la FAQ...';
+
+  @override
+  String get noFaqsFound => 'Aucune FAQ trouvée';
+
+  @override
+  String get tryDifferentSearchTerms => 'Essayez d’autres termes de recherche';
+
+  @override
+  String get browseByCategory => 'Parcourir par catégorie';
+
+  @override
+  String resultsFound(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 's',
+      one: '',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 's',
+      one: '',
+    );
+    return '$count résultat$_temp0 trouvé$_temp1';
+  }
+
+  @override
+  String get tutorialFaqTitle => 'Tutoriel & FAQ';
+
+  @override
+  String get fullNameRequired => 'Le nom complet est requis';
+
+  @override
+  String get onboardingDesc1 =>
+      'Signalez les activités suspectes en un instant avec seulement quelques gestes. Votre sécurité est notre priorité.';
+
+  @override
+  String get myReportStatusTitle => 'Statut de mes rapports';
+
+  @override
+  String get suspiciousActivityLabel => 'Activité suspecte';
+
+  @override
+  String get vandalismLabel => 'Vandalisme';
+
+  @override
+  String get theftLabel => 'Vol';
+
+  @override
+  String get statusPending => 'En attente';
+
+  @override
+  String get statusInReview => 'En cours d\'examen';
+
+  @override
+  String get statusResolved => 'Résolu';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get detailsCta => 'Détails';
+
+  @override
+  String get reportSubmittedTitle => 'Rapport envoyé !';
+
+  @override
+  String get reportSubmittedSubtitle =>
+      'Merci d’aider à sécuriser votre communauté. Les forces de l’ordre ont été informées.';
+
+  @override
+  String get reportIdLabel => 'ID du rapport :';
+
+  @override
+  String get saveIdForReference => 'Gardez cet identifiant en référence';
+
+  @override
+  String get viewMyReportsCta => 'Voir mes rapports';
+
+  @override
+  String get returnToHomeCta => 'Retour à l’accueil';
+
+  @override
+  String get estimatedResponseTime => 'Temps de réponse estimé : 5-10 minutes';
+
+  @override
+  String get reportDetailsTitle => 'Détails du rapport';
+
+  @override
+  String get unableToLoadReportDetails =>
+      'Impossible de charger les détails du rapport';
+
+  @override
+  String get notAvailable => 'N/D';
+
+  @override
+  String updatedTimeAgo(Object timeAgo) {
+    return 'Mis à jour $timeAgo';
+  }
+
+  @override
+  String get updatedUnknown => 'Mis à jour : Inconnu';
+
+  @override
+  String get untitledReport => 'Rapport sans titre';
+
+  @override
+  String get noDescriptionProvided => 'Aucune description fournie';
+
+  @override
+  String get locationNotSpecified => 'Lieu non spécifié';
+
+  @override
+  String get incidentInformation => 'Informations sur l’incident';
+
+  @override
+  String get typeLabel => 'Type';
+
+  @override
+  String get timeLabel => 'Heure';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get statusUpdates => 'Mises à jour du statut';
+
+  @override
+  String get reportUnderReview => 'Rapport en cours d’examen';
+
+  @override
+  String minutesAgo(Object minutes) {
+    return 'Il y a $minutes minutes';
+  }
+
+  @override
+  String get officerAssigned => 'Un agent a été assigné à l’enquête';
+
+  @override
+  String get reportReceived => 'Rapport reçu';
+
+  @override
+  String get reportLogged => 'Votre rapport a été enregistré et priorisé';
+
+  @override
+  String get anonymousReportLabel => 'Rapport anonyme';
+
+  @override
+  String get protectedLabel => 'Protégé';
+
+  @override
+  String get reviewReportTitle => 'Vérifier le rapport';
+
+  @override
+  String get confirmSubmission => 'Confirmez votre soumission';
+
+  @override
+  String get reportSummaryTitle => 'Résumé du rapport';
+
+  @override
+  String get evidenceLabel => 'Preuves';
+
+  @override
+  String get noEvidenceAttached => 'Aucune preuve jointe';
+
+  @override
+  String get yesLabel => 'Oui';
+
+  @override
+  String get noLabel => 'Non';
+
+  @override
+  String get emergencyPrompt => 'Urgence ?';
+
+  @override
+  String get call911Prompt => 'Appelez le 112 en cas de danger immédiat';
+
+  @override
+  String get submitReportCta => 'Soumettre le rapport';
+
+  @override
+  String get saveAsDraftCta => 'Enregistrer comme brouillon';
+
+  @override
+  String get reportSubmitFailed => 'Échec de l’envoi du rapport';
+
+  @override
+  String get draftSavedSuccess =>
+      'Rapport enregistré comme brouillon avec succès';
+
+  @override
+  String get draftSaveFailed => 'Échec de l’enregistrement du brouillon';
+
+  @override
+  String get reportCrimeTitle => 'Signaler un incident';
+
+  @override
+  String get reportCrimeSubtitle => 'Aidez à sécuriser votre communauté';
+
+  @override
+  String get selectIncidentTypeTitle => 'Sélectionnez le type d’incident';
+
+  @override
+  String get provideDetailsHint =>
+      'Donnez des détails sur ce que vous avez observé';
+
+  @override
+  String get addEvidenceTitle => 'Ajouter des preuves';
+
+  @override
+  String get optionalLabel => '(Optionnel)';
+
+  @override
+  String get evidenceHelperText => 'Photos, vidéos ou enregistrements audio';
+
+  @override
+  String filesAttachedCount(Object count) {
+    return '$count fichier(s) joint(s)';
+  }
+
+  @override
+  String get savingLabel => 'Enregistrement...';
+
+  @override
+  String get restoreDraftTitle => 'Restaurer le brouillon ?';
+
+  @override
+  String restoreDraftMessage(Object timeAgo) {
+    return 'Vous avez un brouillon non sauvegardé datant de $timeAgo.';
+  }
+
+  @override
+  String get incidentLabel => 'Incident';
+
+  @override
+  String get descriptionPlaceholder =>
+      'Décrivez en détail ce que vous avez observé...';
+
+  @override
+  String get pleaseSelectIncidentType =>
+      'Veuillez sélectionner un type d’incident';
+
+  @override
+  String get pleaseProvideDescription => 'Veuillez fournir une description';
+
+  @override
+  String filesAddedCount(Object count, Object type) {
+    return '$count $type ajouté(s)';
+  }
+
+  @override
+  String get submitAnonymouslyTitle => 'Soumettre anonymement';
+
+  @override
+  String get identityProtectedSubtitle => 'Votre identité sera protégée';
+
+  @override
+  String get anonymousToggleYes => 'Oui';
+
+  @override
+  String get anonymousToggleNo => 'Non';
+
+  @override
+  String get photoLabel => 'Photo';
+
+  @override
+  String get videoLabel => 'Vidéo';
+
+  @override
+  String get audioLabel => 'Audio';
+
+  @override
+  String get suspiciousPersonLabel => 'Personne suspecte';
+
+  @override
+  String get vehicleActivityLabel => 'Activité de véhicule';
+
+  @override
+  String get abandonedItemLabel => 'Objet abandonné';
+
+  @override
+  String get theftBurglaryLabel => 'Vol/Cambriolage';
+
+  @override
+  String get vandalismLabelFull => 'Vandalisme';
+
+  @override
+  String get drugActivityLabel => 'Activité liée à la drogue';
+
+  @override
+  String get assaultLabel => 'Agression/Violence';
+
+  @override
+  String get noiseDisturbanceLabel => 'Nuisance sonore';
+
+  @override
+  String get trespassingLabel => 'Intrusion';
+
+  @override
+  String get otherIncidentLabel => 'Autre';
+
+  @override
+  String get incidentSubtitleDefault => 'Sélectionnez le type d’incident';
+
+  @override
+  String get changePasswordTitle => 'Changez votre mot de passe';
+
+  @override
+  String get changePasswordResetDesc =>
+      'Entrez votre nouveau mot de passe ci-dessous.';
+
+  @override
+  String get changePasswordSettingsDesc =>
+      'Entrez votre mot de passe actuel et votre nouveau mot de passe ci-dessous.';
+
+  @override
+  String get currentPasswordLabel => 'Mot de passe actuel';
+
+  @override
+  String get newPasswordLabel => 'Nouveau mot de passe';
+
+  @override
+  String get confirmPasswordLabel => 'Confirmez le mot de passe';
+
+  @override
+  String get passwordChangedSuccess => 'Mot de passe changé avec succès !';
+
+  @override
+  String get enterCurrentPassword =>
+      'Veuillez entrer votre mot de passe actuel';
+
+  @override
+  String passwordChange30DayRule(Object days, Object remaining) {
+    return 'Le mot de passe ne peut être changé qu’une fois tous les 30 jours. Dernier changement il y a $days jours. Veuillez attendre $remaining jours de plus.';
+  }
+
+  @override
+  String get failedToChangePassword => 'Échec du changement de mot de passe';
+
+  @override
+  String get userNotFoundLogin =>
+      'Utilisateur introuvable. Veuillez vous reconnecter.';
+
+  @override
+  String get backToSignIn => 'Retour à la connexion';
+
+  @override
+  String get cancelCta => 'Annuler';
+
+  @override
+  String get changePasswordCta => 'Changer le mot de passe';
+
+  @override
+  String get verifyEmailTitle => 'Vérifiez votre email';
+
+  @override
+  String get verifyEmailSubtitle =>
+      'Nous avons envoyé un code de vérification à';
+
+  @override
+  String get verifyEmailCta => 'Vérifier l’email';
+
+  @override
+  String get didNotReceiveCode => 'Vous n’avez pas reçu de code ?';
+
+  @override
+  String get sendNewCode => 'Envoyer un nouveau code';
+
+  @override
+  String get verificationCodeLabel => 'Code de vérification';
+
+  @override
+  String get enter6Digits => 'Entrez 6 chiffres';
+
+  @override
+  String get enter6DigitCode => 'Veuillez entrer le code à 6 chiffres';
+
+  @override
+  String get invalidOrExpiredCode => 'Code invalide ou expiré';
+
+  @override
+  String get newCodeSent =>
+      'Nouveau code de vérification envoyé à votre email.';
+
+  @override
+  String get failedToSendCode => 'Échec de l’envoi du nouveau code';
+
+  @override
+  String get forgotPasswordTitle => 'Mot de passe oublié ?';
+
+  @override
+  String get forgotPasswordDesc =>
+      'Saisissez votre adresse email et nous vous enverrons les instructions pour réinitialiser votre mot de passe.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get enterEmailAddress => 'Veuillez entrer votre adresse email';
+
+  @override
+  String get sendResetLink => 'Envoyer le lien de réinitialisation';
+
+  @override
+  String get failedToSendReset =>
+      'Échec de l’envoi du code de réinitialisation';
+
+  @override
+  String get emergencyModeTitle => 'Mode urgence';
+
+  @override
+  String get emergencyModeSubtitle =>
+      'L’aide est en route.\nVotre position est partagée avec les services d’urgence.';
+
+  @override
+  String get policeEtaLabel => 'ETA Police';
+
+  @override
+  String etaMinutes(Object max, Object min) {
+    return '$min-$max minutes';
+  }
+
+  @override
+  String get emergencyContactsNotified =>
+      'Vos contacts d’urgence ont été informés';
 }

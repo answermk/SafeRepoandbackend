@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/theme_helper.dart';
+import '../utils/translation_helper.dart';
 import 'dashboard_screen.dart';
 import 'report_details_screen.dart';
 
@@ -12,8 +14,14 @@ class ReportSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF36599F),
+      backgroundColor: primary,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -31,13 +39,13 @@ class ReportSuccessScreen extends StatelessWidget {
                   Container(
                     width: 120,
                     height: 120,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF10B981),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade500,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.check,
-                      color: Colors.white,
+                      color: scaffold,
                       size: 60,
                     ),
                   ),
@@ -45,9 +53,9 @@ class ReportSuccessScreen extends StatelessWidget {
                   const SizedBox(height: 40),
 
                   // Title
-                  const Text(
-                    'Report Submitted!',
-                    style: TextStyle(
+                  Text(
+                    t.reportSubmittedTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
@@ -58,9 +66,9 @@ class ReportSuccessScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Subtitle
-                  const Text(
-                    'Thank you for helping keep\nyour community safe. Law\nenforcement has been notified.',
-                    style: TextStyle(
+                  Text(
+                    t.reportSubmittedSubtitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       height: 1.6,
@@ -76,24 +84,24 @@ class ReportSuccessScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(25),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardColor,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Column(
                       children: [
                         Text(
-                          'Report ID: $reportId',
-                          style: const TextStyle(
-                            color: Color(0xFF36599F),
+                          '${t.reportIdLabel} $reportId',
+                          style: TextStyle(
+                            color: primary,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Save this ID for reference',
+                        Text(
+                          t.saveIdForReference,
                           style: TextStyle(
-                            color: Colors.grey,
+                            color: secondary,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -132,9 +140,9 @@ class ReportSuccessScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'View My Reports',
-                        style: TextStyle(
+                      child: Text(
+                        t.viewMyReportsCta,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -160,15 +168,15 @@ class ReportSuccessScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF36599F),
+                        foregroundColor: primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Return to Home',
-                        style: TextStyle(
+                      child: Text(
+                        t.returnToHomeCta,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -179,9 +187,9 @@ class ReportSuccessScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Response time
-                  const Text(
-                    'Estimated response time: 5-10 minutes',
-                    style: TextStyle(
+                  Text(
+                    t.estimatedResponseTime,
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,

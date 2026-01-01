@@ -1,7 +1,118 @@
 import 'package:flutter/material.dart';
+import '../services/article_service.dart';
+import '../services/video_tutorial_service.dart';
+import '../config/app_config.dart';
+import 'article_detail_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SafetyEducationScreen extends StatelessWidget {
+class SafetyEducationScreen extends StatefulWidget {
   const SafetyEducationScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SafetyEducationScreen> createState() => _SafetyEducationScreenState();
+}
+
+class _SafetyEducationScreenState extends State<SafetyEducationScreen> {
+  List<Map<String, dynamic>> _featuredArticles = [];
+  bool _loadingArticles = true;
+  String? _articlesError;
+  
+  // Video tutorials - loaded from backend
+  List<Map<String, dynamic>> _videoTutorials = [];
+  bool _loadingVideos = true;
+  String? _videosError;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFeaturedArticles();
+    _loadVideoTutorials();
+  }
+
+  Future<void> _loadVideoTutorials() async {
+    setState(() {
+      _loadingVideos = true;
+      _videosError = null;
+    });
+
+    try {
+      final result = await VideoTutorialService.getAllVideos();
+      
+      if (result['success'] == true && result['data'] != null) {
+        final videos = result['data'] as List<dynamic>;
+        setState(() {
+          _videoTutorials = videos.map((v) => v as Map<String, dynamic>).toList();
+          _loadingVideos = false;
+        });
+      } else {
+        setState(() {
+          _videosError = result['error']?.toString() ?? 'Failed to load videos';
+          _loadingVideos = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _videosError = 'Error loading videos: ${e.toString()}';
+        _loadingVideos = false;
+      });
+    }
+  }
+
+  Future<void> _loadFeaturedArticles() async {
+    setState(() {
+      _loadingArticles = true;
+      _articlesError = null;
+    });
+
+    final result = await ArticleService.getFeaturedArticles();
+
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      final List<dynamic> articles = result['data'] ?? [];
+      setState(() {
+        _featuredArticles = articles.map<Map<String, dynamic>>((article) {
+          return {
+            'id': article['id']?.toString(),
+            'title': article['title'] ?? 'Untitled',
+            'description': article['description'] ?? '',
+            'readTime': article['readTimeMinutes'] != null
+                ? '${article['readTimeMinutes']} min read'
+                : '5 min read',
+            'imageUrl': article['imageUrl'],
+            'author': article['author'],
+          };
+        }).toList();
+        _loadingArticles = false;
+      });
+    } else {
+      setState(() {
+        _articlesError = result['error']?.toString();
+        _loadingArticles = false;
+        // Fallback to default articles if API fails
+        _featuredArticles = [
+          {
+            'id': null,
+            'title': 'Understanding Suspicious Behavior',
+            'description': 'Learn to identify concerning activities',
+            'readTime': '5 min read',
+          },
+          {
+            'id': null,
+            'title': 'Anonymous Reporting Guide',
+            'description': 'How to report safely and anonymously',
+            'readTime': '3 min read',
+          },
+          {
+            'id': null,
+            'title': 'Evidence Collection Best Practices',
+            'description': 'Tips for gathering useful evidence',
+            'readTime': '7 min read',
+          },
+        ];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,19 +123,22 @@ class SafetyEducationScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF36599F),
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeroSection(),
-            _buildCategoriesGrid(context),
-            _buildFeaturedArticles(context),
-            _buildHowToReport(context),
-            _buildWhatToReport(),
-            _buildVideoTutorials(),
-            _buildQuickTips(),
-            _buildEmergencySteps(),
-            const SizedBox(height: 30),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _loadFeaturedArticles,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeroSection(),
+              _buildCategoriesGrid(context),
+              _buildFeaturedArticles(context),
+              _buildHowToReport(context),
+              _buildWhatToReport(),
+              _buildVideoTutorials(),
+              _buildQuickTips(),
+              _buildEmergencySteps(),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
@@ -146,98 +260,167 @@ class SafetyEducationScreen extends StatelessWidget {
   }
 
   Widget _buildFeaturedArticles(BuildContext context) {
-    final articles = [
-      {
-        'title': 'Understanding Suspicious Behavior',
-        'description': 'Learn to identify concerning activities',
-        'readTime': '5 min read',
-      },
-      {
-        'title': 'Anonymous Reporting Guide',
-        'description': 'How to report safely and anonymously',
-        'readTime': '3 min read',
-      },
-      {
-        'title': 'Evidence Collection Best Practices',
-        'description': 'Tips for gathering useful evidence',
-        'readTime': '7 min read',
-      },
-    ];
-
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Featured Articles',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF36599F),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Featured Articles',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF36599F),
+                ),
+              ),
+              if (_loadingArticles)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
-          ...articles.map((article) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
+          if (_loadingArticles && _featuredArticles.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else if (_articlesError != null && _featuredArticles.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.red[50],
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                border: Border.all(color: Colors.red[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red[700]),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _articlesError!,
+                      style: TextStyle(color: Colors.red[700], fontSize: 12),
+                    ),
                   ),
                 ],
               ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF36599F).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.article, color: Color(0xFF36599F)),
-                ),
-                title: Text(
-                  article['title'] as String,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  ),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 4),
-                    Text(
-                      article['description'] as String,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                        const SizedBox(width: 4),
-                        Text(
-                          article['readTime'] as String,
-                          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                        ),
-                      ],
+            )
+          else
+            ..._featuredArticles.map((article) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  _openArticle(context, article['title'] as String);
-                },
-              ),
-            );
-          }).toList(),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: article['imageUrl'] != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            article['imageUrl'],
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF36599F).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(Icons.article,
+                                    color: Color(0xFF36599F)),
+                              );
+                            },
+                          ),
+                        )
+                      : Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF36599F).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.article, color: Color(0xFF36599F)),
+                        ),
+                  title: Text(
+                    article['title'] ?? 'Untitled',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      if (article['description'] != null &&
+                          article['description'].toString().isNotEmpty)
+                        Text(
+                          article['description'],
+                          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time,
+                              size: 14, color: Colors.grey[500]),
+                          const SizedBox(width: 4),
+                          Text(
+                            article['readTime'] ?? '5 min read',
+                            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                          ),
+                          if (article['author'] != null) ...[
+                            const SizedBox(width: 12),
+                            Icon(Icons.person, size: 14, color: Colors.grey[500]),
+                            const SizedBox(width: 4),
+                            Text(
+                              article['author'],
+                              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    if (article['id'] != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArticleDetailScreen(
+                            articleId: article['id'],
+                            title: article['title'],
+                            description: article['description'],
+                          ),
+                        ),
+                      );
+                    } else {
+                      _openArticle(context, article['title'] ?? 'Article');
+                    }
+                  },
+                ),
+              );
+            }).toList(),
         ],
       ),
     );
@@ -432,75 +615,191 @@ class SafetyEducationScreen extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             height: 180,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildVideoCard('How to Report Safely', '3:45'),
-                _buildVideoCard('Using the App', '2:30'),
-                _buildVideoCard('Evidence Tips', '4:15'),
-              ],
-            ),
+            child: _loadingVideos
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : _videosError != null
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+                            const SizedBox(height: 8),
+                            Text(
+                              _videosError!,
+                              style: TextStyle(color: Colors.red[600], fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: _loadVideoTutorials,
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : _videoTutorials.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.video_library, size: 48, color: Colors.grey[400]),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'No video tutorials available',
+                                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Videos are added by administrators',
+                                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _videoTutorials.map((video) {
+                              return _buildVideoCard(
+                                video['title'] ?? 'Video Tutorial',
+                                video['videoUrl'] ?? '',
+                                video['duration'] ?? '0:00',
+                                video['id']?.toString() ?? '',
+                                video['description'] ?? '',
+                              );
+                            }).toList(),
+                          ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildVideoCard(String title, String duration) {
-    return Container(
-      width: 280,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+  Widget _buildVideoCard(String title, String videoUrl, String duration, String videoId, String description) {
+    return GestureDetector(
+      onTap: () {
+        _playVideo(videoUrl, videoId, title, description);
+      },
+      child: Container(
+        width: 280,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                const Icon(Icons.play_circle_filled, size: 50, color: Color(0xFF36599F)),
-                Positioned(
-                  bottom: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      duration,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Icon(Icons.play_circle_filled, size: 50, color: Color(0xFF36599F)),
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        duration,
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
+                ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _playVideo(String videoUrl, String videoId, String title, String description) async {
+    // Increment views
+    if (videoId.isNotEmpty) {
+      VideoTutorialService.incrementViews(videoId);
+    }
+    
+    // Build full URL
+    final fullUrl = videoUrl.startsWith('http') 
+        ? videoUrl 
+        : '${AppConfig.apiBaseUrl}${videoUrl.startsWith('/') ? videoUrl : '/$videoUrl'}';
+    
+    // Show dialog with video info and play option
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (description.isNotEmpty) ...[
+              Text(description),
+              const SizedBox(height: 12),
+            ],
+            const Text(
+              'Tap "Open Video" to play in your default video player.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final uri = Uri.parse(fullUrl);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Could not open video player'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF36599F),
+            ),
+            child: const Text('Open Video', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -742,6 +1041,5 @@ class SafetyEducationScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Opening article: $title')),
     );
-    // TODO: Navigate to full article page
   }
 }

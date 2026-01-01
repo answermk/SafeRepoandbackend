@@ -4,6 +4,8 @@ import com.crimeprevention.crime_backend.core.dto.user.RegisterUserRequest;
 import com.crimeprevention.crime_backend.core.dto.user.UserDTO;
 import com.crimeprevention.crime_backend.core.dto.user.UpdateUserRequest;
 import com.crimeprevention.crime_backend.core.dto.user.UserStatsDTO;
+import com.crimeprevention.crime_backend.core.dto.user.UserImpactDTO;
+import com.crimeprevention.crime_backend.core.dto.user.AdminContactInfoDTO;
 import com.crimeprevention.crime_backend.core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -126,6 +128,46 @@ public class UserController {
 			Map<String, String> error = new HashMap<>();
 			error.put("error", "Failed to change password: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+		}
+	}
+	
+	// Get user impact/performance metrics
+	@GetMapping("/{id}/impact")
+	@PreAuthorize("hasAnyRole('CIVILIAN', 'POLICE_OFFICER', 'OFFICER', 'ADMIN')")
+	public ResponseEntity<UserImpactDTO> getUserImpact(
+			@PathVariable("id") UUID userId,
+			org.springframework.security.core.Authentication authentication) {
+		try {
+			// Users can only view their own impact, unless they're admin/officer
+			UUID currentUserId = UUID.fromString(authentication.getName());
+			String role = authentication.getAuthorities().iterator().next().getAuthority();
+			
+			if (!currentUserId.equals(userId) && 
+			    !role.equals("ROLE_ADMIN") && 
+			    !role.equals("ROLE_POLICE_OFFICER") && 
+			    !role.equals("ROLE_OFFICER")) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			}
+			
+			UserImpactDTO impact = userService.getUserImpact(userId);
+			return ResponseEntity.ok(impact);
+		} catch (Exception e) {
+			System.err.println("❌ Error getting user impact: " + e.getMessage());
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	// Get admin contact information for support
+	@GetMapping("/admin/contact-info")
+	public ResponseEntity<AdminContactInfoDTO> getAdminContactInfo() {
+		try {
+			AdminContactInfoDTO contactInfo = userService.getAdminContactInfo();
+			return ResponseEntity.ok(contactInfo);
+		} catch (Exception e) {
+			System.err.println("❌ Error getting admin contact info: " + e.getMessage());
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 }

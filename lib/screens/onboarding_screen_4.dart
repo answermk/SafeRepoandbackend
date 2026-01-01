@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 //import 'dart:math' as math;
 import 'login_screen.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class OnboardingScreen4 extends StatelessWidget {
   const OnboardingScreen4({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffold,
       body: SafeArea(
         child: Column(
           children: [
@@ -18,7 +27,7 @@ class OnboardingScreen4 extends StatelessWidget {
               width: double.infinity,
               height: 120,
               child: CustomPaint(
-                painter: WavePainter(),
+                painter: WavePainter(primary),
                 child: Container(),
               ),
             ),
@@ -89,10 +98,10 @@ class OnboardingScreen4 extends StatelessWidget {
                     const SizedBox(height: 40),
 
                     // Title
-                    const Text(
-                      'Emergency Ready',
+                    Text(
+                      t.emergencyReady,
                       style: TextStyle(
-                        color: Color(0xFF36599F),
+                        color: primary,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
@@ -100,11 +109,11 @@ class OnboardingScreen4 extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Description
-                    const Text(
-                      'Report suspicious activities instantly with\njust a few taps.your safety is our priority',
+                    Text(
+                      t.onboardingDescCommon,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.grey,
+                        color: secondary,
                         fontSize: 16,
                         height: 1.5,
                       ),
@@ -146,7 +155,7 @@ class OnboardingScreen4 extends StatelessWidget {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: Color(0xFF36599F),
+                            color: primary,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -168,16 +177,16 @@ class OnboardingScreen4 extends StatelessWidget {
                           );
                         },
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Color(0xFF36599F), width: 1.5),
-                          foregroundColor: Color(0xFF36599F),
+                          side: BorderSide(color: primary, width: 1.5),
+                          foregroundColor: primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          backgroundColor: Colors.white,
+                          backgroundColor: scaffold,
                         ),
-                        child: const Text(
-                          'Next',
-                          style: TextStyle(
+                        child: Text(
+                          t.next,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -200,14 +209,14 @@ class OnboardingScreen4 extends StatelessWidget {
                           );
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.grey[600],
+                          foregroundColor: secondary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
-                          'Get Started',
-                          style: TextStyle(
+                        child: Text(
+                          t.getStarted,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                           ),
@@ -226,10 +235,13 @@ class OnboardingScreen4 extends StatelessWidget {
 }
 
 class WavePainter extends CustomPainter {
+  final Color color;
+  WavePainter(this.color);
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color(0xFF36599F)
+      ..color = color
       ..style = PaintingStyle.fill;
 
     final path = Path();

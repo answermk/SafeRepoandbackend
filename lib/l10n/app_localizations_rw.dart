@@ -15,7 +15,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get welcome => 'Murakaza neza';
 
   @override
-  String get reportCrime => 'Tanga Raporo';
+  String get reportCrime => 'Tanga Ikirego';
 
   @override
   String get myReports => 'Raporo Zanjye';
@@ -27,7 +27,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get profile => 'Profayili';
 
   @override
-  String get dashboard => 'Ikibaho';
+  String get dashboard => 'Ahabanza';
 
   @override
   String get emergency => 'Ibyihutirwa';
@@ -84,7 +84,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get filter => 'Akayunguruzo';
 
   @override
-  String get sort => 'Gutondekanya';
+  String get sort => 'Tondekanya';
 
   @override
   String get loading => 'Buri gushakisha...';
@@ -108,7 +108,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get location => 'Ahantu';
 
   @override
-  String get anonymous => 'Kitazwi';
+  String get anonymous => 'utazwi';
 
   @override
   String get submitAnonymously => 'Ohereza Utazwi';
@@ -156,13 +156,13 @@ class AppLocalizationsRw extends AppLocalizations {
   String get logIntoYourAccount => 'Injira mu konti yawe';
 
   @override
-  String get rememberMe => 'Wibuke?';
+  String get rememberMe => 'Inyibuke?';
 
   @override
   String get noAccount => 'Nta konti?';
 
   @override
-  String get createAnAccount => 'Kora Konti';
+  String get createAnAccount => 'Fungura Konti';
 
   @override
   String get fullName => 'Amazina Yuzuye';
@@ -174,10 +174,18 @@ class AppLocalizationsRw extends AppLocalizations {
   String get confirmPassword => 'Emeza Ijambobanga';
 
   @override
-  String get registerAnonymously => 'Kwiyandikisha Utazwi';
+  String get registerAnonymously => 'Iyandikishe mu ibanga';
 
   @override
   String get enterFullName => 'Andika Amazina Yuzuye';
+
+  @override
+  String get usernameMustBeAtLeast3Characters =>
+      'Izina ry’umukoresha rigomba kugira nibura inyuguti 3';
+
+  @override
+  String get usernameMustBeLessThan50Characters =>
+      'Izina ry’umukoresha rigomba kuba munsi y’inyuguti 50';
 
   @override
   String get youremailGmailCom => 'imeyiliyawe@gmail.com';
@@ -193,7 +201,7 @@ class AppLocalizationsRw extends AppLocalizations {
 
   @override
   String goodMorning(String userName) {
-    return 'Mwiriwe, $userName';
+    return 'Mwaramutse, $userName';
   }
 
   @override
@@ -205,6 +213,44 @@ class AppLocalizationsRw extends AppLocalizations {
   String goodEvening(String userName) {
     return 'Mwiriwe, $userName';
   }
+
+  @override
+  String get accessibilitySettingsTitle => 'Igenamiterere ry’ubushobozi';
+
+  @override
+  String get accessibilityCustomize =>
+      'Hindura porogaramu kugira ngo byorohereze kuyikoresha';
+
+  @override
+  String get fontSizeLabel => 'Ingano y’inyandiko';
+
+  @override
+  String get fontSizeSmall => 'Nto (12px)';
+
+  @override
+  String get fontSizeLarge => 'Nini (28px)';
+
+  @override
+  String get fontSizePreview => 'Igaragaza: inyandiko izagaragara itya';
+
+  @override
+  String get darkModeTitle => 'Uburyo bwijime';
+
+  @override
+  String get darkModeSubtitle =>
+      'Hindura kuri theme yijime kugira ngo ubone neza ahatabona cyane';
+
+  @override
+  String get ttsTitle => 'Fungura gusoma inyandiko';
+
+  @override
+  String get ttsSubtitle => 'Isoma inyandiko mu ijwi iyo byemejwe';
+
+  @override
+  String get ttsEnabledToast => 'Gusoma inyandiko byemejwe';
+
+  @override
+  String get settingsSavedAutomatically => 'Igenamiterere ribikwa ryikora';
 
   @override
   String get reportNow => 'Tanga Raporo Nonaha';
@@ -356,7 +402,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get discard => 'Kureka';
 
   @override
-  String get continueToLocation => 'Komeza ku Ahantu';
+  String get continueToLocation => 'Komeza ku hantu';
 
   @override
   String get all => 'Byose';
@@ -409,7 +455,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get mySafetyReports => 'Amapororo Yanjye y\'Umutekano';
 
   @override
-  String get accountInformation => 'Amakuru ya Konti';
+  String get accountInformation => 'Amakuru ya konti';
 
   @override
   String get name => 'Izina';
@@ -429,16 +475,16 @@ class AppLocalizationsRw extends AppLocalizations {
   String get accountSettings => 'Igenamiterere ya Konti';
 
   @override
-  String get changePassword => 'Guhindura Ijambobanga';
+  String get changePassword => 'Hindura ijambobanga';
 
   @override
   String get editProfile => 'Guhindura Profayili';
 
   @override
-  String get myImpact => 'Ingaruka Zanjye';
+  String get myImpact => 'Ibyo nagizeho uruhare';
 
   @override
-  String get offlineQueue => 'Urutonde rw\'Inyandiko';
+  String get offlineQueue => 'Urutonde rudakoresha interineti';
 
   @override
   String get accessibility => 'Kugerwaho';
@@ -447,7 +493,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get language => 'Ururimi';
 
   @override
-  String get accountSettingsTitle => 'Igenamiterere ya Konti';
+  String get accountSettingsTitle => 'Igenamiterere ry’akauntu';
 
   @override
   String get manageYourPreferences => 'Gucunga Ibyifuzo Byawe';
@@ -471,7 +517,7 @@ class AppLocalizationsRw extends AppLocalizations {
       'Ongeraho umutekano wongeweho ku konti yawe';
 
   @override
-  String get biometricLogin => 'Kwinjira mu Biometriki';
+  String get biometricLogin => 'Kwinjira ukoresheje ibikumwe/isarabwayi';
 
   @override
   String get useFingerprintOrFaceId => 'Koresha iminwe cyangwa isura';
@@ -525,7 +571,7 @@ class AppLocalizationsRw extends AppLocalizations {
   String get languagePreferences => 'Ibyifuzo by\'Ururimi';
 
   @override
-  String get appLanguage => 'Ururimi rw\'Urubuga';
+  String get appLanguage => 'Ururimi rwa porogaramu';
 
   @override
   String get english => 'Icyongereza';
@@ -712,29 +758,29 @@ class AppLocalizationsRw extends AppLocalizations {
   }
 
   @override
-  String get callNow => 'HAMAGARA NONAHA';
+  String get callNow => 'Hamagara nonaha';
 
   @override
-  String get cancelEmergency => 'Kureka Ubwoba';
+  String get cancelEmergency => 'Hagarika ubwirinzi';
 
   @override
   String get yourEmergencyContactsHaveBeenNotified =>
       'Abantu bawe b\'ubwoba baramenyeshejwe';
 
   @override
-  String get selectEmergencyService => 'Hitamo Serivisi y\'Ubwoba';
+  String get selectEmergencyService => 'Hitamo serivisi y’igihutirwa';
 
   @override
-  String get policeEmergency => 'Ubwoba bw\'Abapolisi';
+  String get policeEmergency => 'Polisi (igihutirwa)';
 
   @override
-  String get fireDepartment => 'Abatwara Umuriro';
+  String get fireDepartment => 'Abashinzwe kuzimya';
 
   @override
   String get ambulance => 'Ambulansi';
 
   @override
-  String get nonEmergencyPolice => 'Abapolisi batari mu Bwoba';
+  String get nonEmergencyPolice => 'Polisi (idasanzwe)';
 
   @override
   String get communityForumTitle => 'Inama y\'Abaturage';
@@ -778,7 +824,7 @@ class AppLocalizationsRw extends AppLocalizations {
 
   @override
   String hoursAgo(int hours) {
-    return 'amasaha $hours ashize';
+    return 'Amasaha $hours ashize';
   }
 
   @override
@@ -1040,4 +1086,752 @@ class AppLocalizationsRw extends AppLocalizations {
 
   @override
   String get home => 'Ahabanza';
+
+  @override
+  String get managePreferencesSubtitle => 'Tunganya ibyo uhitamo';
+
+  @override
+  String get quickAccess => 'Kwinjira byihuse';
+
+  @override
+  String get pendingReports => 'Raporo zitegereje';
+
+  @override
+  String get viewStats => 'Reba imibare';
+
+  @override
+  String get accessibilityCardTitle => 'Ubushobozi';
+
+  @override
+  String get fontDisplay => 'Inyuguti n’imigaragarire';
+
+  @override
+  String get securitySettingsTitle => 'Igenamiterere ry’umutekano';
+
+  @override
+  String lastChangedDaysAgo(int days) {
+    return 'Byahinduwe hashize iminsi $days';
+  }
+
+  @override
+  String get neverChanged => 'Ntabwo ryahindutse';
+
+  @override
+  String get twoFactorAuth => 'Uburyo bwo kwinjira bubiri';
+
+  @override
+  String get addExtraSecurity =>
+      'Ongeraho umutekano wiyongereye ku kaunti yawe';
+
+  @override
+  String get useFingerprint => 'Koresha igikumwe cyangwa isura';
+
+  @override
+  String get notificationsPreferencesTitle => 'Igenamiterere ry’amakuru';
+
+  @override
+  String get pushNotificationsLabel => 'Amakuru asunika';
+
+  @override
+  String get pushNotificationsSubtitle => 'Amakuru ya raporo n’alarme';
+
+  @override
+  String get emailUpdatesLabel => 'Amakuru yo kuri email';
+
+  @override
+  String get emailUpdatesSubtitle => 'Incamake y’icyumweru y’umuryango';
+
+  @override
+  String get watchGroupAlertsLabel =>
+      'Amakuru y’amatsinda yo gucungira umutekano';
+
+  @override
+  String get watchGroupAlertsSubtitle => 'Ubutumwa buva mu matsinda yawe';
+
+  @override
+  String get privacySettingsTitle => 'Igenamiterere ry’ibanga';
+
+  @override
+  String get defaultAnonymousModeLabel => 'Uburyo bw’ibanga bwa default';
+
+  @override
+  String get defaultAnonymousModeSubtitle =>
+      'Bohereza raporo mu ibanga buri gihe';
+
+  @override
+  String get locationSharingLabel => 'Gusangiza aho uherereye';
+
+  @override
+  String get locationSharingSubtitle =>
+      'Sangira aho uherereye neza ku raporo (buri gihe bikorwa)';
+
+  @override
+  String get anonymousGuideTitle => 'Inyandiko y’uburyo bwo gutanga mu ibanga';
+
+  @override
+  String get anonymousGuideSubtitle =>
+      'Menya kurushaho ku bijyanye no kurindwa kw’ibanga';
+
+  @override
+  String get languagePreferencesTitle => 'Igenamiterere ry’ururimi';
+
+  @override
+  String languageChangedTo(String language) {
+    return 'Ururimi rwahindutse rukaba $language';
+  }
+
+  @override
+  String get accessibilitySettingsLinkTitle => 'Igenamiterere ry’ubushobozi';
+
+  @override
+  String get accessibilitySettingsLinkSubtitle =>
+      'Hindura ingano y’inyuguti, itandukaniro n’amasomo asomwa';
+
+  @override
+  String get saveAllSettings => 'Bika igenamiterere ryose';
+
+  @override
+  String get settingsSavedSuccess => 'Igenamiterere ribitswe neza';
+
+  @override
+  String get anonymousReportingTitle => 'Gutangira raporo mu ibanga';
+
+  @override
+  String get reportSafely => 'Tanga raporo mu mutekano';
+
+  @override
+  String get identityProtected => 'Umwirondoro wawe urarinzwe rwose';
+
+  @override
+  String get whatsHiddenTitle => 'Ibihishwe';
+
+  @override
+  String get hiddenName => 'Izina ryawe n’umwirondoro';
+
+  @override
+  String get hiddenEmail => 'Aderesi email';
+
+  @override
+  String get hiddenPhone => 'Numero ya telefoni';
+
+  @override
+  String get hiddenAccountId => 'ID ya konti';
+
+  @override
+  String get hiddenPersonalIdentifiers => 'Ibiranga umuntu';
+
+  @override
+  String get whatsSharedTitle => 'Ibisangiwe bikomeza';
+
+  @override
+  String get sharedLocation => 'Aho ibyabaye honyine';
+
+  @override
+  String get sharedTime => 'Igihe cya raporo';
+
+  @override
+  String get sharedDescription => 'Ibisobanuro bya raporo';
+
+  @override
+  String get sharedEvidence => 'Ibimenyetso (niba byatanzwe)';
+
+  @override
+  String get helpsPolice =>
+      'Aya makuru afasha polisi kugenza neza itagaragaje uwo uri we';
+
+  @override
+  String get benefitsAnonymousTitle => 'Inyungu zo gutanga raporo mu ibanga';
+
+  @override
+  String get benefit1 => 'Tanga raporo utikanga kwihimura';
+
+  @override
+  String get benefit2 => 'Rinda umutekano wawe';
+
+  @override
+  String get benefit3 => 'Fasha umuryango wawe utagaragaye';
+
+  @override
+  String get benefit4 => 'Nta gukurikirana keretse ubishatse';
+
+  @override
+  String get legalProtectionTitle => 'Uburinzi bw’amategeko';
+
+  @override
+  String get legalProtectionText =>
+      'Raporo zitangwa mu ibanga zirindwa n’amategeko. Umwirondoro wawe ntushobora gutangazwa utabyemeye n’iyo haba mu nkiko.';
+
+  @override
+  String get faqTitle => 'Ibibazo bikunze kubazwa';
+
+  @override
+  String get faqQ1 =>
+      'Polisi ishobora gukurikirana raporo ikamenya ko ari iyanjye?';
+
+  @override
+  String get faqA1 =>
+      'Oya. Raporo zitangwa mu ibanga zikorwaho ubwirinzi (encryption) kandi ntizirimo ibikuranga.';
+
+  @override
+  String get faqQ2 =>
+      'Nshobora guhindura hagati yo gutanga mu ibanga no kutabikora?';
+
+  @override
+  String get faqA2 =>
+      'Yego, ushobora guhitamo kuri buri raporo niba uyitanga mu ibanga cyangwa ugaragaza amakuru yawe.';
+
+  @override
+  String get faqQ3 => 'Raporo yanjye ishobora kudafatwa nk’iy’ingenzi?';
+
+  @override
+  String get faqA3 =>
+      'Oya. Raporo zose ziragenzurwa kimwe n’iyo zatanzwe mu ibanga cyangwa zidatanzwe mu ibanga.';
+
+  @override
+  String get orText => 'cyangwa';
+
+  @override
+  String get continueWithGoogle => 'Komeza ukoreshe Google';
+
+  @override
+  String get usernameOptionalLabel => 'Izina ry’umukoresha (si ngombwa)';
+
+  @override
+  String get usernameOptionalHint =>
+      'Bireke ubusa, rizikora riturutse kuri email';
+
+  @override
+  String get phoneNumberLabel => 'Numero ya telefoni';
+
+  @override
+  String get passwordsDoNotMatch => 'Amagambo y’ibanga ntahura';
+
+  @override
+  String get phoneRequired => 'Numero ya telefoni irakenewe';
+
+  @override
+  String get createAccount => 'Hanga konti';
+
+  @override
+  String get alreadyHaveAccount => 'Usanzwe ufite konti?';
+
+  @override
+  String get signUpTitle => 'Iyandikishe';
+
+  @override
+  String get easyReporting => 'Gutangira raporo byoroshye';
+
+  @override
+  String get communityWatch => 'Kongera ubumwe mu gucunga umutekano';
+
+  @override
+  String get anonymousSecure => 'Mu ibanga kandi mu mutekano';
+
+  @override
+  String get emergencyReady => 'Witeguye ibihe bidasanzwe';
+
+  @override
+  String get onboardingDescCommon =>
+      'Tanga amakuru ku bikorwa bikekwa mu kanya,\nmu mashyirahamwe make gusa. Umutekano wawe ni wo twitaho.';
+
+  @override
+  String get skipTutorial => 'Simbuka amasomo';
+
+  @override
+  String get profileTitle => 'Umwirondoro wanjye';
+
+  @override
+  String get profileSubtitle => 'Tunganya amakuru yawe bwite';
+
+  @override
+  String get usernameLabel => 'Izina ry’umukoresha';
+
+  @override
+  String get locationLabel => 'Aho byabereye';
+
+  @override
+  String get emergencyContactTitle => 'Uwo wahamagara mu gihe cy’ubutabazi';
+
+  @override
+  String get emergencyContactNameHint => 'Jane Doe';
+
+  @override
+  String get emergencyContactPhoneHint => '+250 7............';
+
+  @override
+  String get saveChanges => 'Bika impinduka';
+
+  @override
+  String get unableToLoadProfile => 'Ntibishoboka gupakurura umwirondoro';
+
+  @override
+  String get retry => 'Ongera ugerageze';
+
+  @override
+  String get goBack => 'Subira inyuma';
+
+  @override
+  String get memberSinceUnknown => 'Umwiyandikisho utazwi';
+
+  @override
+  String get usingAvailableData =>
+      'Ntibishobotse gupakurura umwirondoro wose. Turakoresha ibyo tubonye.';
+
+  @override
+  String get userIdNotFound =>
+      'ID y’umukoresha ntibonetse. Nyamuneka winjire ukundi.';
+
+  @override
+  String get loadProfileError =>
+      'Habaye ikibazo mu gupakurura umwirondoro. Ongera ugerageze.';
+
+  @override
+  String get profileUpdatedSuccess => 'Umwirondoro wavuguruwe neza';
+
+  @override
+  String get failedToUpdateProfile => 'Ntibikunze kuvugurura umwirondoro';
+
+  @override
+  String get logoutConfirmTitle => 'Gusohoka';
+
+  @override
+  String get logoutConfirmMessage => 'Uremeza ko ushaka gusohoka?';
+
+  @override
+  String get learnReportProtect => 'IGA. TANGA RAPORO. IRINDE.';
+
+  @override
+  String get empowerWithKnowledge =>
+      'Iyubakire ubumenyi ku gutanga raporo neza kandi mu mutekano';
+
+  @override
+  String get featuredArticles => 'Ingingo zihariye';
+
+  @override
+  String get howToReportTitle => 'Uko watanga raporo';
+
+  @override
+  String get whatToReportTitle => 'Ibyatangwa muri raporo';
+
+  @override
+  String get videoTutorialsTitle => 'Amasomo ya videwo';
+
+  @override
+  String get quickSafetyTipsTitle => 'Inama zihuse z’umutekano';
+
+  @override
+  String get emergencyStepsTitle => 'Intambwe mu butabazi';
+
+  @override
+  String get closeText => 'Funga';
+
+  @override
+  String get searchFaqHint => 'Shakisha muri FAQ...';
+
+  @override
+  String get noFaqsFound => 'Nta FAQ zabonetse';
+
+  @override
+  String get tryDifferentSearchTerms => 'Gerageza andi magambo yo gushakisha';
+
+  @override
+  String get browseByCategory => 'Sucyura ku gice';
+
+  @override
+  String resultsFound(num count) {
+    return 'Ibisubizo $count byabonetse';
+  }
+
+  @override
+  String get tutorialFaqTitle => 'Amasomo & FAQ';
+
+  @override
+  String get fullNameRequired => 'Amazina yuzuye arakenewe';
+
+  @override
+  String get onboardingDesc1 =>
+      'Tanga amakuru ku bikorwa bikekwa mu kanya, mu nshingano nke gusa. Umutekano wawe ni wo twitaho.';
+
+  @override
+  String get myReportStatusTitle => 'Imiterere y\'ibirego byanjye';
+
+  @override
+  String get suspiciousActivityLabel => 'Igikorwa giteye amakenga';
+
+  @override
+  String get vandalismLabel => 'Kwica ibintu';
+
+  @override
+  String get theftLabel => 'Ubujura';
+
+  @override
+  String get statusPending => 'Bitegereje';
+
+  @override
+  String get statusInReview => 'Biri gusuzumwa';
+
+  @override
+  String get statusResolved => 'Byakemutse';
+
+  @override
+  String get dateLabel => 'Itariki';
+
+  @override
+  String get detailsCta => 'Ibisobanuro';
+
+  @override
+  String get reportSubmittedTitle => 'Raporo yoherejwe!';
+
+  @override
+  String get reportSubmittedSubtitle =>
+      'Urakoze kudufasha kugira umutekano w’aho utuye. Inzego zishinzwe umutekano zabimenyeshejwe.';
+
+  @override
+  String get reportIdLabel => 'ID ya raporo:';
+
+  @override
+  String get saveIdForReference => 'Bika iyi ID ku nyandiko';
+
+  @override
+  String get viewMyReportsCta => 'Reba raporo zanjye';
+
+  @override
+  String get returnToHomeCta => 'Subira ku rubuga rw’itangira';
+
+  @override
+  String get estimatedResponseTime =>
+      'Igihe cyo gusubiza giteganyijwe: iminota 5-10';
+
+  @override
+  String get reportDetailsTitle => 'Ibisobanuro bya raporo';
+
+  @override
+  String get unableToLoadReportDetails =>
+      'Ntibyashobotse kubona ibisobanuro bya raporo';
+
+  @override
+  String get notAvailable => 'Ntibyabonetse';
+
+  @override
+  String updatedTimeAgo(Object timeAgo) {
+    return 'Byavuguruwe $timeAgo';
+  }
+
+  @override
+  String get updatedUnknown => 'Byavuguruwe: ntibizwi';
+
+  @override
+  String get untitledReport => 'Raporo itagira umutwe';
+
+  @override
+  String get noDescriptionProvided => 'Nta bisobanuro byatanzwe';
+
+  @override
+  String get locationNotSpecified => 'Aho byabereye ntihavuzwe';
+
+  @override
+  String get incidentInformation => 'Amakuru y’icyabaye';
+
+  @override
+  String get typeLabel => 'Ubwoko';
+
+  @override
+  String get timeLabel => 'Igihe';
+
+  @override
+  String get descriptionLabel => 'Ibisobanuro';
+
+  @override
+  String get statusUpdates => 'Amakuru y’aho bigeze';
+
+  @override
+  String get reportUnderReview => 'Raporo iri gusuzumwa';
+
+  @override
+  String minutesAgo(Object minutes) {
+    return 'Iminota $minutes ishize';
+  }
+
+  @override
+  String get officerAssigned => 'Ofisiye yashyizweho kugira ngo asuzume';
+
+  @override
+  String get reportReceived => 'Raporo yakiriwe';
+
+  @override
+  String get reportLogged =>
+      'Raporo yawe yashyizwe mu gitabo kandi ihabwa umwanya';
+
+  @override
+  String get anonymousReportLabel => 'Raporo idafite uwayitangiye';
+
+  @override
+  String get protectedLabel => 'Birinze';
+
+  @override
+  String get reviewReportTitle => 'Subiramo raporo';
+
+  @override
+  String get confirmSubmission => 'Emeza kohereza';
+
+  @override
+  String get reportSummaryTitle => 'Inshamake ya raporo';
+
+  @override
+  String get evidenceLabel => 'Ibimenyetso';
+
+  @override
+  String get noEvidenceAttached => 'Nta kimenyetso cyashyizweho';
+
+  @override
+  String get yesLabel => 'Yego';
+
+  @override
+  String get noLabel => 'Oya';
+
+  @override
+  String get emergencyPrompt => 'Ni byihutirwa?';
+
+  @override
+  String get call911Prompt => 'Hamagara 112 mu gihe cy’igihutirwa';
+
+  @override
+  String get submitReportCta => 'Ohereza raporo';
+
+  @override
+  String get saveAsDraftCta => 'Bika nk’inyandiko';
+
+  @override
+  String get reportSubmitFailed => 'Kohereza raporo byanze';
+
+  @override
+  String get draftSavedSuccess => 'Raporo ibikiwe nk’inyandiko neza';
+
+  @override
+  String get draftSaveFailed => 'Kubika inyandiko byanze';
+
+  @override
+  String get reportCrimeTitle => 'Tanga raporo y’icyaha';
+
+  @override
+  String get reportCrimeSubtitle => 'Fasha kurinda umutekano w’aho utuye';
+
+  @override
+  String get selectIncidentTypeTitle => 'Hitamo ubwoko bw’ikibazo';
+
+  @override
+  String get provideDetailsHint => 'Tanga ibisobanuro ku byo wabonye';
+
+  @override
+  String get addEvidenceTitle => 'Ongeramo ibimenyetso';
+
+  @override
+  String get optionalLabel => '(Si ngombwa)';
+
+  @override
+  String get evidenceHelperText => 'Amafoto, amashusho, cyangwa amajwi';
+
+  @override
+  String filesAttachedCount(Object count) {
+    return 'Amadosiye $count yometseho';
+  }
+
+  @override
+  String get savingLabel => 'Irimo kubika...';
+
+  @override
+  String get restoreDraftTitle => 'Gusubiza inyandiko?';
+
+  @override
+  String restoreDraftMessage(Object timeAgo) {
+    return 'Ufite inyandiko itarabitswe kuva $timeAgo.';
+  }
+
+  @override
+  String get incidentLabel => 'Icyabaye';
+
+  @override
+  String get descriptionPlaceholder =>
+      'Sobanura mu buryo burambuye ibyo wabonye...';
+
+  @override
+  String get pleaseSelectIncidentType => 'Hitamo ubwoko bw’ikibazo';
+
+  @override
+  String get pleaseProvideDescription => 'Tanga ibisobanuro';
+
+  @override
+  String filesAddedCount(Object count, Object type) {
+    return '$count $type byongeweho';
+  }
+
+  @override
+  String get submitAnonymouslyTitle => 'Ohereza mu ibanga';
+
+  @override
+  String get identityProtectedSubtitle => 'Umwirondoro wawe urinzwe';
+
+  @override
+  String get anonymousToggleYes => 'Yego';
+
+  @override
+  String get anonymousToggleNo => 'Oya';
+
+  @override
+  String get photoLabel => 'Ifoto';
+
+  @override
+  String get videoLabel => 'Video';
+
+  @override
+  String get audioLabel => 'Ijwi';
+
+  @override
+  String get suspiciousPersonLabel => 'Umuntu uteye amakenga';
+
+  @override
+  String get vehicleActivityLabel => 'Imyitwarire y’imodoka';
+
+  @override
+  String get abandonedItemLabel => 'Ikintu cyasizwe';
+
+  @override
+  String get theftBurglaryLabel => 'Ubujura/Itsembura';
+
+  @override
+  String get vandalismLabelFull => 'Vandalismu';
+
+  @override
+  String get drugActivityLabel => 'Ibiyobyabwenge';
+
+  @override
+  String get assaultLabel => 'Gukubita/Urugomo';
+
+  @override
+  String get noiseDisturbanceLabel => 'Urusaku rwinshi';
+
+  @override
+  String get trespassingLabel => 'Kwivanga/kwinjira binyuranyije n’amategeko';
+
+  @override
+  String get otherIncidentLabel => 'Ibindi';
+
+  @override
+  String get incidentSubtitleDefault => 'Hitamo ubwoko bw’ikibazo';
+
+  @override
+  String get changePasswordTitle => 'Hindura ijambo ry’ibanga';
+
+  @override
+  String get changePasswordResetDesc => 'Injiza ijambo ry’ibanga rishya hepfo.';
+
+  @override
+  String get changePasswordSettingsDesc =>
+      'Injiza ijambo ry’ibanga ryawe ry’ubu n’iryo ushaka hepfo.';
+
+  @override
+  String get currentPasswordLabel => 'Ijambo ry’ibanga ry’ubu';
+
+  @override
+  String get newPasswordLabel => 'Ijambo ry’ibanga rishya';
+
+  @override
+  String get confirmPasswordLabel => 'Emeza ijambo ry’ibanga';
+
+  @override
+  String get passwordChangedSuccess => 'Ijambo ry’ibanga ryahinduwe neza!';
+
+  @override
+  String get enterCurrentPassword => 'Injiza ijambo ry’ibanga ry’ubu';
+
+  @override
+  String passwordChange30DayRule(Object days, Object remaining) {
+    return 'Ijambo ry’ibanga rihindurwa rimwe mu minsi 30. Ryahinduwe iminsi $days ishize. Tegereza indi minsi $remaining.';
+  }
+
+  @override
+  String get failedToChangePassword => 'Byanze guhindura ijambo ry’ibanga';
+
+  @override
+  String get userNotFoundLogin => 'Ukoresha ntabonetse. Injira nanone.';
+
+  @override
+  String get backToSignIn => 'Subira kwinjira';
+
+  @override
+  String get cancelCta => 'Kureka';
+
+  @override
+  String get changePasswordCta => 'Hindura ijambo ry’ibanga';
+
+  @override
+  String get verifyEmailTitle => 'Reba imeyili yawe';
+
+  @override
+  String get verifyEmailSubtitle => 'Twoherereje kode y’igenzura kuri';
+
+  @override
+  String get verifyEmailCta => 'Emeza imeyili';
+
+  @override
+  String get didNotReceiveCode => 'Ntubonye kode?';
+
+  @override
+  String get sendNewCode => 'Ohereza kode nshya';
+
+  @override
+  String get verificationCodeLabel => 'Kode y’igenzura';
+
+  @override
+  String get enter6Digits => 'Injiza imibare 6';
+
+  @override
+  String get enter6DigitCode => 'Injiza kode y’imibare 6';
+
+  @override
+  String get invalidOrExpiredCode => 'Kode siyo cyangwa yararangiye';
+
+  @override
+  String get newCodeSent => 'Kode nshya yoherejwe kuri imeyili yawe.';
+
+  @override
+  String get failedToSendCode => 'Byanze kohereza kode nshya';
+
+  @override
+  String get forgotPasswordTitle => 'Wibagiwe ijambo ry’ibanga?';
+
+  @override
+  String get forgotPasswordDesc =>
+      'Injiza aderesi yawe ya imeyili, twohereze amabwiriza yo kuryikora.';
+
+  @override
+  String get emailLabel => 'Imeyili';
+
+  @override
+  String get enterEmailAddress => 'Injiza aderesi yawe ya imeyili';
+
+  @override
+  String get sendResetLink => 'Ohereza ihuza ryo kuryikora';
+
+  @override
+  String get failedToSendReset => 'Byanze kohereza kode yo kuryikora';
+
+  @override
+  String get emergencyModeTitle => 'Ubwirinzi bw’igihutirwa';
+
+  @override
+  String get emergencyModeSubtitle =>
+      'Ubufasha buri mu nzira.\nAho uri hohererezwa serivisi z’igihutirwa.';
+
+  @override
+  String get policeEtaLabel => 'Igihe cya Polisi';
+
+  @override
+  String etaMinutes(Object max, Object min) {
+    return 'Iminota $min-$max';
+  }
+
+  @override
+  String get emergencyContactsNotified =>
+      'Abari ku rutonde rw’igihe cy’igihutirwa babimenyeshejwe';
 }

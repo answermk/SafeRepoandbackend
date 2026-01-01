@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/report_service.dart';
+import '../utils/theme_helper.dart';
+import '../utils/translation_helper.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final String? reportId;
@@ -97,29 +99,36 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white,
-        body: const Center(
-          child: CircularProgressIndicator(color: Color(0xFF36599F)),
+        backgroundColor: scaffold,
+        body: Center(
+          child: CircularProgressIndicator(color: primary),
         ),
       );
     }
 
     if (_reportData == null) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: scaffold,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+              Icon(Icons.error_outline, size: 64, color: secondary),
               const SizedBox(height: 16),
-              const Text('Unable to load report details'),
+              Text(t.unableToLoadReportDetails, style: TextStyle(color: textColor)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Go Back'),
+                child: Text(t.goBack),
               ),
             ],
           ),
@@ -127,7 +136,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       );
     }
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffold,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -153,8 +162,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
     return Container(
-      color: const Color(0xFF36599F),
+      color: primary,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
       child: Row(
         children: [
@@ -166,18 +178,18 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Report Details',
-                style: TextStyle(
+              Text(
+                t.reportDetailsTitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
               Text(
-                'Report #${widget.reportId ?? _reportData?['id'] ?? 'N/A'}',
-                style: const TextStyle(
-                  color: Colors.white,
+                '${t.reportIdLabel} ${widget.reportId ?? _reportData?['id'] ?? t.notAvailable}',
+                style: TextStyle(
+                  color: secondary,
                   fontSize: 13,
                 ),
               ),
@@ -189,6 +201,10 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   }
 
   Widget _buildStatusRow() {
+    final t = TranslationHelper.of(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+
     final status = _reportData?['status']?.toString().toUpperCase() ?? 'UNKNOWN';
     final updatedAt = _reportData?['updatedAt']?.toString();
     
@@ -222,8 +238,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             ),
             child: Text(
               status.replaceAll('_', ' '),
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: statusColor.computeLuminance() > 0.5 ? Colors.black : Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
               ),
@@ -231,8 +247,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           ),
           const Spacer(),
           Text(
-            updatedAt != null ? 'Updated ${_formatTimeAgo(updatedAt)}' : 'Updated: Unknown',
-            style: const TextStyle(color: Colors.black54, fontSize: 13),
+            updatedAt != null ? t.updatedTimeAgo(_formatTimeAgo(updatedAt)) : t.updatedUnknown,
+            style: TextStyle(color: secondary, fontSize: 13),
           ),
         ],
       ),
@@ -240,14 +256,20 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   }
 
   Widget _buildIncidentInfo() {
-    final title = _reportData?['title']?.toString() ?? 'Untitled Report';
-    final description = _reportData?['description']?.toString() ?? 'No description provided';
+    final t = TranslationHelper.of(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final borderColor = ThemeHelper.getBorderColor(context);
+
+    final title = _reportData?['title']?.toString() ?? t.untitledReport;
+    final description = _reportData?['description']?.toString() ?? t.noDescriptionProvided;
     final location = _reportData?['location'] as Map<String, dynamic>?;
     final address = location?['address']?.toString() ?? 
                    location?['city']?.toString() ?? 
-                   'Location not specified';
+                   t.locationNotSpecified;
     final createdAt = _reportData?['createdAt']?.toString();
-    final dateTime = createdAt != null ? _formatDate(createdAt) : 'Unknown';
+    final dateTime = createdAt != null ? _formatDate(createdAt) : t.unknown;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -255,17 +277,17 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.shade100, width: 1.2),
+          border: Border.all(color: borderColor, width: 1.2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Incident Information',
+            Text(
+              t.incidentInformation,
               style: TextStyle(
-                color: Color(0xFF36599F),
+                color: ThemeHelper.getPrimaryColor(context),
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -274,41 +296,41 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             Text.rich(
               TextSpan(
                 children: [
-                  const TextSpan(text: 'Type: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '${t.typeLabel}: ', style: const TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(text: title),
                 ],
               ),
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: textColor),
             ),
             const SizedBox(height: 4),
             Text.rich(
               TextSpan(
                 children: [
-                  const TextSpan(text: 'Location: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '${t.locationLabel}: ', style: const TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(text: address),
                 ],
               ),
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: textColor),
             ),
             const SizedBox(height: 4),
             Text.rich(
               TextSpan(
                 children: [
-                  const TextSpan(text: 'Time: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '${t.timeLabel}: ', style: const TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(text: dateTime),
                 ],
               ),
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: textColor),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Description',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            Text(
+              t.descriptionLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 4),
             Text(
               description,
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: secondary),
             ),
           ],
         ),
@@ -317,21 +339,25 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   }
 
   Widget _buildEvidenceSection() {
+    final primary = ThemeHelper.getPrimaryColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final borderColor = ThemeHelper.getBorderColor(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.shade100, width: 1.2),
+          border: Border.all(color: borderColor, width: 1.2),
         ),
         child: Row(
-          children: const [
-            Icon(Icons.camera_alt, color: Color(0xFF36599F), size: 28),
-            SizedBox(width: 16),
-            Icon(Icons.videocam, color: Color(0xFF36599F), size: 28),
+          children: [
+            Icon(Icons.camera_alt, color: primary, size: 28),
+            const SizedBox(width: 16),
+            Icon(Icons.videocam, color: primary, size: 28),
           ],
         ),
       ),
@@ -339,48 +365,55 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   }
 
   Widget _buildStatusUpdates() {
+    final t = TranslationHelper.of(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final borderColor = ThemeHelper.getBorderColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.shade100, width: 1.2),
+          border: Border.all(color: borderColor, width: 1.2),
         ),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Status Updates',
+              t.statusUpdates,
               style: TextStyle(
-                color: Color(0xFF36599F),
+                color: primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text.rich(
               TextSpan(
                 children: [
-                  TextSpan(text: 'Report Under Review\n', style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: '30 minutes ago\n'),
-                  TextSpan(text: 'Officer Martinez has been assigned to investigate'),
+                  TextSpan(text: '${t.reportUnderReview}\n', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '${t.minutesAgo(30)}\n'),
+                  TextSpan(text: t.officerAssigned),
                 ],
               ),
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: textColor),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text.rich(
               TextSpan(
                 children: [
-                  TextSpan(text: 'Report Received\n', style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: '2 hours ago\n'),
-                  TextSpan(text: 'Your report has been logged and prioritized'),
+                  TextSpan(text: '${t.reportReceived}\n', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: '${t.hoursAgo(2)}\n'),
+                  TextSpan(text: t.reportLogged),
                 ],
               ),
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: secondary),
             ),
           ],
         ),
@@ -389,6 +422,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   }
 
   Widget _buildAnonymousBadge() {
+    final t = TranslationHelper.of(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final borderColor = ThemeHelper.getBorderColor(context);
+
     final isAnonymous = _reportData?['isAnonymous'] == true;
     
     if (!isAnonymous) {
@@ -400,27 +438,27 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.shade100, width: 1.2),
+          border: Border.all(color: borderColor, width: 1.2),
         ),
-        child: const Row(
+        child: Row(
           children: [
             Text(
-              'Anonymous Report',
+              t.anonymousReportLabel,
               style: TextStyle(
-                color: Color(0xFF36599F),
+                color: primary,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
             ),
             Spacer(),
-            Icon(Icons.verified_user, color: Color(0xFF10B981), size: 20),
+            Icon(Icons.verified_user, color: Colors.green.shade600, size: 20),
             SizedBox(width: 4),
             Text(
-              'Protected',
+              t.protectedLabel,
               style: TextStyle(
-                color: Color(0xFF10B981),
+                color: Colors.green.shade600,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),

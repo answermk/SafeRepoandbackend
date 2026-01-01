@@ -180,6 +180,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterFullName => 'Enter Full Name';
 
   @override
+  String get usernameMustBeAtLeast3Characters =>
+      'Username must be at least 3 characters';
+
+  @override
+  String get usernameMustBeLessThan50Characters =>
+      'Username must be less than 50 characters';
+
+  @override
   String get youremailGmailCom => 'youremail@gmail.com';
 
   @override
@@ -205,6 +213,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String goodEvening(String userName) {
     return 'Good Evening, $userName';
   }
+
+  @override
+  String get accessibilitySettingsTitle => 'Accessibility Settings';
+
+  @override
+  String get accessibilityCustomize =>
+      'Customize the app to make it easier to use';
+
+  @override
+  String get fontSizeLabel => 'Font Size';
+
+  @override
+  String get fontSizeSmall => 'Small (12px)';
+
+  @override
+  String get fontSizeLarge => 'Large (28px)';
+
+  @override
+  String get fontSizePreview => 'Preview: This is how text will appear';
+
+  @override
+  String get darkModeTitle => 'Dark Mode';
+
+  @override
+  String get darkModeSubtitle =>
+      'Switch to dark theme for better visibility in low light';
+
+  @override
+  String get ttsTitle => 'Enable Text-to-Speech';
+
+  @override
+  String get ttsSubtitle => 'Reads text aloud when enabled';
+
+  @override
+  String get ttsEnabledToast => 'Text-to-speech enabled';
+
+  @override
+  String get settingsSavedAutomatically => 'Settings are saved automatically';
 
   @override
   String get reportNow => 'Report Now';
@@ -770,7 +816,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hoursAgo(int hours) {
-    return '$hours hrs ago';
+    return '$hours hours ago';
   }
 
   @override
@@ -1031,4 +1077,748 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
+
+  @override
+  String get managePreferencesSubtitle => 'Manage your preferences';
+
+  @override
+  String get quickAccess => 'Quick Access';
+
+  @override
+  String get pendingReports => 'Pending reports';
+
+  @override
+  String get viewStats => 'View stats';
+
+  @override
+  String get accessibilityCardTitle => 'Accessibility';
+
+  @override
+  String get fontDisplay => 'Font & display';
+
+  @override
+  String get securitySettingsTitle => 'Security Settings';
+
+  @override
+  String lastChangedDaysAgo(int days) {
+    return 'Last changed $days days ago';
+  }
+
+  @override
+  String get neverChanged => 'Never changed';
+
+  @override
+  String get twoFactorAuth => 'Two-Factor Authentication';
+
+  @override
+  String get addExtraSecurity => 'Add extra security to your account';
+
+  @override
+  String get useFingerprint => 'Use fingerprint or face ID';
+
+  @override
+  String get notificationsPreferencesTitle => 'Notifications Preferences';
+
+  @override
+  String get pushNotificationsLabel => 'Push Notifications';
+
+  @override
+  String get pushNotificationsSubtitle => 'Report updates and alerts';
+
+  @override
+  String get emailUpdatesLabel => 'Email Updates';
+
+  @override
+  String get emailUpdatesSubtitle => 'Weekly community summary';
+
+  @override
+  String get watchGroupAlertsLabel => 'Watch Group Alerts';
+
+  @override
+  String get watchGroupAlertsSubtitle => 'Messages from your groups';
+
+  @override
+  String get privacySettingsTitle => 'Privacy Settings';
+
+  @override
+  String get defaultAnonymousModeLabel => 'Default Anonymous Mode';
+
+  @override
+  String get defaultAnonymousModeSubtitle =>
+      'Always submit reports anonymously';
+
+  @override
+  String get locationSharingLabel => 'Location Sharing';
+
+  @override
+  String get locationSharingSubtitle =>
+      'Share precise location with reports (Always enabled)';
+
+  @override
+  String get anonymousGuideTitle => 'Anonymous Reporting Guide';
+
+  @override
+  String get anonymousGuideSubtitle => 'Learn about privacy protections';
+
+  @override
+  String get languagePreferencesTitle => 'Language Preferences';
+
+  @override
+  String languageChangedTo(String language) {
+    return 'Language changed to $language';
+  }
+
+  @override
+  String get accessibilitySettingsLinkTitle => 'Accessibility Settings';
+
+  @override
+  String get accessibilitySettingsLinkSubtitle =>
+      'Adjust font size, contrast, and text-to-speech';
+
+  @override
+  String get saveAllSettings => 'Save All Settings';
+
+  @override
+  String get settingsSavedSuccess => 'Settings saved successfully';
+
+  @override
+  String get anonymousReportingTitle => 'Anonymous Reporting';
+
+  @override
+  String get reportSafely => 'Report Safely';
+
+  @override
+  String get identityProtected => 'Your identity is fully protected';
+
+  @override
+  String get whatsHiddenTitle => 'What\'s Hidden';
+
+  @override
+  String get hiddenName => 'Your name and identity';
+
+  @override
+  String get hiddenEmail => 'Email address';
+
+  @override
+  String get hiddenPhone => 'Phone number';
+
+  @override
+  String get hiddenAccountId => 'Account ID';
+
+  @override
+  String get hiddenPersonalIdentifiers => 'Personal identifiers';
+
+  @override
+  String get whatsSharedTitle => 'What\'s Still Shared';
+
+  @override
+  String get sharedLocation => 'Incident location only';
+
+  @override
+  String get sharedTime => 'Time of report';
+
+  @override
+  String get sharedDescription => 'Report description';
+
+  @override
+  String get sharedEvidence => 'Evidence (if provided)';
+
+  @override
+  String get helpsPolice =>
+      'This information helps police respond effectively without revealing who you are';
+
+  @override
+  String get benefitsAnonymousTitle => 'Benefits of Anonymous Reporting';
+
+  @override
+  String get benefit1 => 'Report without fear of retaliation';
+
+  @override
+  String get benefit2 => 'Protect your personal safety';
+
+  @override
+  String get benefit3 => 'Help your community without exposure';
+
+  @override
+  String get benefit4 => 'No follow-up contact unless you choose';
+
+  @override
+  String get legalProtectionTitle => 'Legal Protection';
+
+  @override
+  String get legalProtectionText =>
+      'Anonymous reports are protected by law. Your identity cannot be disclosed without your explicit consent, even under legal proceedings.';
+
+  @override
+  String get faqTitle => 'Frequently Asked Questions';
+
+  @override
+  String get faqQ1 => 'Can police trace my report back to me?';
+
+  @override
+  String get faqA1 =>
+      'No. Anonymous reports are encrypted and stored without any identifying information.';
+
+  @override
+  String get faqQ2 => 'Can I switch between anonymous and non-anonymous?';
+
+  @override
+  String get faqA2 =>
+      'Yes, you can choose for each report whether to submit anonymously or with your information.';
+
+  @override
+  String get faqQ3 => 'Will my report be taken less seriously?';
+
+  @override
+  String get faqA3 =>
+      'No. All reports are investigated equally regardless of anonymity status.';
+
+  @override
+  String get orText => 'or';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get usernameOptionalLabel => 'Username (Optional)';
+
+  @override
+  String get usernameOptionalHint => 'Leave empty to auto-generate from email';
+
+  @override
+  String get phoneNumberLabel => 'Phone Number';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get phoneRequired => 'Phone number is required';
+
+  @override
+  String get createAccount => 'Create an Account';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an Account?';
+
+  @override
+  String get signUpTitle => 'Sign Up';
+
+  @override
+  String get easyReporting => 'Easy Reporting';
+
+  @override
+  String get communityWatch => 'Community Watch';
+
+  @override
+  String get anonymousSecure => 'Anonymous & Secure';
+
+  @override
+  String get emergencyReady => 'Emergency Ready';
+
+  @override
+  String get onboardingDescCommon =>
+      'Report suspicious activities instantly with\njust a few taps. Your safety is our priority';
+
+  @override
+  String get skipTutorial => 'Skip Tutorial';
+
+  @override
+  String get profileTitle => 'My Profile';
+
+  @override
+  String get profileSubtitle => 'Manage your personal information';
+
+  @override
+  String get usernameLabel => 'Username';
+
+  @override
+  String get locationLabel => 'Location';
+
+  @override
+  String get emergencyContactTitle => 'Emergency Contact';
+
+  @override
+  String get emergencyContactNameHint => 'Jane Doe';
+
+  @override
+  String get emergencyContactPhoneHint => '+250 7............';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get unableToLoadProfile => 'Unable to Load Profile';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get memberSinceUnknown => 'Member since unknown';
+
+  @override
+  String get usingAvailableData =>
+      'Unable to load full profile. Using available data.';
+
+  @override
+  String get userIdNotFound => 'User ID not found. Please login again.';
+
+  @override
+  String get loadProfileError =>
+      'An error occurred while loading your profile. Please try again.';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully';
+
+  @override
+  String get failedToUpdateProfile => 'Failed to update profile';
+
+  @override
+  String get logoutConfirmTitle => 'Logout';
+
+  @override
+  String get logoutConfirmMessage => 'Are you sure you want to logout?';
+
+  @override
+  String get learnReportProtect => 'Learn. Report. Protect.';
+
+  @override
+  String get empowerWithKnowledge =>
+      'Empower yourself with knowledge on responsible reporting';
+
+  @override
+  String get featuredArticles => 'Featured Articles';
+
+  @override
+  String get howToReportTitle => 'How to Report';
+
+  @override
+  String get whatToReportTitle => 'What to Report';
+
+  @override
+  String get videoTutorialsTitle => 'Video Tutorials';
+
+  @override
+  String get quickSafetyTipsTitle => 'Quick Safety Tips';
+
+  @override
+  String get emergencyStepsTitle => 'Emergency Steps';
+
+  @override
+  String get closeText => 'Close';
+
+  @override
+  String get searchFaqHint => 'Search FAQs...';
+
+  @override
+  String get noFaqsFound => 'No FAQs found';
+
+  @override
+  String get tryDifferentSearchTerms => 'Try different search terms';
+
+  @override
+  String get browseByCategory => 'Browse by Category';
+
+  @override
+  String resultsFound(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 's',
+      one: '',
+    );
+    return '$count result$_temp0 found';
+  }
+
+  @override
+  String get tutorialFaqTitle => 'Tutorial & FAQ';
+
+  @override
+  String get fullNameRequired => 'Full Name is required';
+
+  @override
+  String get onboardingDesc1 =>
+      'Report suspicious activities instantly with just a few taps. Your safety is our priority.';
+
+  @override
+  String get myReportStatusTitle => 'My Report Status';
+
+  @override
+  String get suspiciousActivityLabel => 'Suspicious Activity';
+
+  @override
+  String get vandalismLabel => 'Vandalism';
+
+  @override
+  String get theftLabel => 'Theft';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusInReview => 'In Review';
+
+  @override
+  String get statusResolved => 'Resolved';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get detailsCta => 'Details';
+
+  @override
+  String get reportSubmittedTitle => 'Report Submitted!';
+
+  @override
+  String get reportSubmittedSubtitle =>
+      'Thank you for helping keep your community safe. Law enforcement has been notified.';
+
+  @override
+  String get reportIdLabel => 'Report ID:';
+
+  @override
+  String get saveIdForReference => 'Save this ID for reference';
+
+  @override
+  String get viewMyReportsCta => 'View My Reports';
+
+  @override
+  String get returnToHomeCta => 'Return to Home';
+
+  @override
+  String get estimatedResponseTime => 'Estimated response time: 5-10 minutes';
+
+  @override
+  String get reportDetailsTitle => 'Report Details';
+
+  @override
+  String get unableToLoadReportDetails => 'Unable to load report details';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String updatedTimeAgo(Object timeAgo) {
+    return 'Updated $timeAgo';
+  }
+
+  @override
+  String get updatedUnknown => 'Updated: Unknown';
+
+  @override
+  String get untitledReport => 'Untitled Report';
+
+  @override
+  String get noDescriptionProvided => 'No description provided';
+
+  @override
+  String get locationNotSpecified => 'Location not specified';
+
+  @override
+  String get incidentInformation => 'Incident Information';
+
+  @override
+  String get typeLabel => 'Type';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get statusUpdates => 'Status Updates';
+
+  @override
+  String get reportUnderReview => 'Report Under Review';
+
+  @override
+  String minutesAgo(Object minutes) {
+    return '$minutes minutes ago';
+  }
+
+  @override
+  String get officerAssigned => 'An officer has been assigned to investigate';
+
+  @override
+  String get reportReceived => 'Report Received';
+
+  @override
+  String get reportLogged => 'Your report has been logged and prioritized';
+
+  @override
+  String get anonymousReportLabel => 'Anonymous Report';
+
+  @override
+  String get protectedLabel => 'Protected';
+
+  @override
+  String get reviewReportTitle => 'Review Report';
+
+  @override
+  String get confirmSubmission => 'Confirm your submission';
+
+  @override
+  String get reportSummaryTitle => 'Report Summary';
+
+  @override
+  String get evidenceLabel => 'Evidence';
+
+  @override
+  String get noEvidenceAttached => 'No evidence attached';
+
+  @override
+  String get yesLabel => 'Yes';
+
+  @override
+  String get noLabel => 'No';
+
+  @override
+  String get emergencyPrompt => 'Emergency ?';
+
+  @override
+  String get call911Prompt => 'Call 911 for immediate danger';
+
+  @override
+  String get submitReportCta => 'Submit Report';
+
+  @override
+  String get saveAsDraftCta => 'Save as Draft';
+
+  @override
+  String get reportSubmitFailed => 'Failed to submit report';
+
+  @override
+  String get draftSavedSuccess => 'Report saved as draft successfully';
+
+  @override
+  String get draftSaveFailed => 'Failed to save draft';
+
+  @override
+  String get reportCrimeTitle => 'Report Crime';
+
+  @override
+  String get reportCrimeSubtitle => 'Help keep your community safe';
+
+  @override
+  String get selectIncidentTypeTitle => 'Select Incident Type';
+
+  @override
+  String get provideDetailsHint => 'Provide details about what you observed';
+
+  @override
+  String get addEvidenceTitle => 'Add Evidence';
+
+  @override
+  String get optionalLabel => '(Optional)';
+
+  @override
+  String get evidenceHelperText => 'Photos, videos, or audio recordings';
+
+  @override
+  String filesAttachedCount(Object count) {
+    return '$count file(s) attached';
+  }
+
+  @override
+  String get savingLabel => 'Saving...';
+
+  @override
+  String get restoreDraftTitle => 'Restore Draft?';
+
+  @override
+  String restoreDraftMessage(Object timeAgo) {
+    return 'You have an unsaved draft from $timeAgo.';
+  }
+
+  @override
+  String get incidentLabel => 'Incident';
+
+  @override
+  String get descriptionPlaceholder =>
+      'Describe what you observed in detail...';
+
+  @override
+  String get pleaseSelectIncidentType => 'Please select an incident type';
+
+  @override
+  String get pleaseProvideDescription => 'Please provide a description';
+
+  @override
+  String filesAddedCount(Object count, Object type) {
+    return '$count $type(s) added';
+  }
+
+  @override
+  String get submitAnonymouslyTitle => 'Submit Anonymously';
+
+  @override
+  String get identityProtectedSubtitle => 'Your identity will be protected';
+
+  @override
+  String get anonymousToggleYes => 'Yes';
+
+  @override
+  String get anonymousToggleNo => 'No';
+
+  @override
+  String get photoLabel => 'Photo';
+
+  @override
+  String get videoLabel => 'Video';
+
+  @override
+  String get audioLabel => 'Audio';
+
+  @override
+  String get suspiciousPersonLabel => 'Suspicious Person';
+
+  @override
+  String get vehicleActivityLabel => 'Vehicle Activity';
+
+  @override
+  String get abandonedItemLabel => 'Abandoned Item';
+
+  @override
+  String get theftBurglaryLabel => 'Theft/Burglary';
+
+  @override
+  String get vandalismLabelFull => 'Vandalism';
+
+  @override
+  String get drugActivityLabel => 'Drug Activity';
+
+  @override
+  String get assaultLabel => 'Assault/Violence';
+
+  @override
+  String get noiseDisturbanceLabel => 'Noise Disturbance';
+
+  @override
+  String get trespassingLabel => 'Trespassing';
+
+  @override
+  String get otherIncidentLabel => 'Other';
+
+  @override
+  String get incidentSubtitleDefault => 'Select the incident type';
+
+  @override
+  String get changePasswordTitle => 'Change Your Password';
+
+  @override
+  String get changePasswordResetDesc => 'Enter your new password below.';
+
+  @override
+  String get changePasswordSettingsDesc =>
+      'Enter your current password and new password below.';
+
+  @override
+  String get currentPasswordLabel => 'Current Password';
+
+  @override
+  String get newPasswordLabel => 'New Password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get passwordChangedSuccess => 'Password changed successfully!';
+
+  @override
+  String get enterCurrentPassword => 'Please enter your current password';
+
+  @override
+  String passwordChange30DayRule(Object days, Object remaining) {
+    return 'Password can only be changed once every 30 days. Last changed $days days ago. Please wait $remaining more days.';
+  }
+
+  @override
+  String get failedToChangePassword => 'Failed to change password';
+
+  @override
+  String get userNotFoundLogin => 'User not found. Please login again.';
+
+  @override
+  String get backToSignIn => 'Back to Sign In';
+
+  @override
+  String get cancelCta => 'Cancel';
+
+  @override
+  String get changePasswordCta => 'Change Password';
+
+  @override
+  String get verifyEmailTitle => 'Check Your Email';
+
+  @override
+  String get verifyEmailSubtitle => 'We\'ve sent a verification code to';
+
+  @override
+  String get verifyEmailCta => 'Verify Email';
+
+  @override
+  String get didNotReceiveCode => 'Didn\'t receive code?';
+
+  @override
+  String get sendNewCode => 'Send new code';
+
+  @override
+  String get verificationCodeLabel => 'Verification Code';
+
+  @override
+  String get enter6Digits => 'Enter 6 Digits';
+
+  @override
+  String get enter6DigitCode => 'Please enter the 6-digit code';
+
+  @override
+  String get invalidOrExpiredCode => 'Invalid or expired code';
+
+  @override
+  String get newCodeSent => 'New verification code sent to your email.';
+
+  @override
+  String get failedToSendCode => 'Failed to send new code';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Your Password?';
+
+  @override
+  String get forgotPasswordDesc =>
+      'Enter your email address and we\'ll send you instructions to reset your password.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get enterEmailAddress => 'Please enter your email address';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get failedToSendReset => 'Failed to send reset code';
+
+  @override
+  String get emergencyModeTitle => 'Emergency Mode';
+
+  @override
+  String get emergencyModeSubtitle =>
+      'Help is on the way.\nYour location is being shared with emergency services.';
+
+  @override
+  String get policeEtaLabel => 'Police ETA';
+
+  @override
+  String etaMinutes(Object max, Object min) {
+    return '$min-$max minutes';
+  }
+
+  @override
+  String get emergencyContactsNotified =>
+      'Your emergency contacts have been notified';
 }

@@ -5,6 +5,9 @@ import 'dashboard_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/auth_service.dart';
 import '../services/token_manager.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -123,6 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
             token: result['token'],
             email: result['email'] ?? email,
             username: result['username'] ?? email.split('@')[0],
+            userId: result['userId']?.toString(),
           );
 
           print('✓ Login successful (backend): $email');
@@ -181,8 +185,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final card = ThemeHelper.getCardColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffold,
       body: Stack(
         children: [
           // Background with curved waves
@@ -198,12 +209,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 60),
 
                   // Title
-                  const Text(
-                    'Sign In',
+                  Text(
+                    t.signIn,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: textColor,
                     ),
                   ),
 
@@ -211,9 +222,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Email field
                   _buildInputField(
-                    label: 'Email',
+                    label: t.email,
                     controller: _emailController,
-                    hintText: 'youremail@gmail.com',
+                    hintText: t.youremailGmailCom,
                     keyboardType: TextInputType.emailAddress,
                   ),
 
@@ -245,11 +256,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const Text(
-                            'Remember me?',
+                          Text(
+                            t.rememberMe,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF36599F),
+                              color: primary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -264,9 +275,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(
+                        child: Text(
+                          t.forgotPassword,
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Colors.red,
                             fontWeight: FontWeight.w500,
@@ -302,9 +313,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Log Into your account',
-                              style: TextStyle(
+                          : Text(
+                              t.logIntoYourAccount,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -318,11 +329,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'No Account?',
+                      Text(
+                        t.noAccount,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: textColor,
                         ),
                       ),
                       SizedBox(
@@ -344,9 +355,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                           ),
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
+                          child: Text(
+                            t.signup,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -370,10 +381,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Text(
-                          'or',
+                          t.orText,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: secondary,
                           ),
                         ),
                       ),
@@ -395,10 +406,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         GestureDetector(
                           onTap: _launchGoogleSignIn,
                           child: Text(
-                            'continue with Google',
+                            t.continueWithGoogle,
                             style: TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF36599F),
+                              color: primary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -496,10 +507,10 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: ThemeHelper.getTextColor(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -508,7 +519,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: ThemeHelper.getShadowColor(context),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 1),
@@ -521,22 +532,22 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
-                color: Colors.grey[400],
+                color: ThemeHelper.getSecondaryTextColor(context),
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: ThemeHelper.getCardColor(context),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF36599F)),
+                borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context)),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -553,12 +564,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Password',
+        Text(
+          TranslationHelper.of(context).password,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: ThemeHelper.getTextColor(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -567,7 +578,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: ThemeHelper.getShadowColor(context),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 1),
@@ -580,22 +591,22 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: InputDecoration(
               hintText: '**********',
               hintStyle: TextStyle(
-                color: Colors.grey[400],
+                color: ThemeHelper.getSecondaryTextColor(context),
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: ThemeHelper.getCardColor(context),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF36599F)),
+                borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context)),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,

@@ -1,7 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'report_success_screen.dart';
 import '../services/report_service.dart';
 import '../controllers/report_controller.dart';
+import '../utils/theme_helper.dart';
+import '../utils/translation_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class ReviewReportScreen extends StatefulWidget {
   final Map<String, dynamic> reportData;
@@ -37,6 +41,31 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
                       widget.reportData['manualAddress'] as String?;
       final isAnonymous = widget.reportData['submitAnonymously'] as bool? ?? false;
       
+      // Extract and convert media files from reportData
+      List<File>? mediaFiles;
+      if (widget.reportData['mediaPaths'] != null) {
+        final mediaPaths = widget.reportData['mediaPaths'] as List<dynamic>?;
+        if (mediaPaths != null && mediaPaths.isNotEmpty) {
+          // Convert string paths to File objects and filter out non-existent files
+          mediaFiles = mediaPaths
+              .map((path) => path.toString())
+              .where((path) => path.isNotEmpty)
+              .map((path) => File(path))
+              .where((file) => file.existsSync())
+              .toList();
+          
+          // If all files were invalid, set to null
+          if (mediaFiles.isEmpty) {
+            mediaFiles = null;
+          } else {
+            print('📎 Uploading ${mediaFiles.length} media file(s)');
+            for (var file in mediaFiles) {
+              print('  - ${file.path} (${(file.lengthSync() / 1024).toStringAsFixed(2)} KB)');
+            }
+          }
+        }
+      }
+      
       // Call the actual backend API
       final result = await ReportService.createReport(
         incidentType: incidentType,
@@ -45,7 +74,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
         longitude: longitude,
         address: address,
         isAnonymous: isAnonymous,
-        mediaFiles: null, // TODO: Handle media files if needed
+        mediaFiles: mediaFiles,
       );
 
       setState(() {
@@ -67,14 +96,39 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
           ),
         );
       } else {
-        // Show error message
-        final errorMsg = result['error'] as String? ?? 'Failed to submit report';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to submit report: $errorMsg'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // Check if report was queued for offline sync
+        final wasQueued = result['queued'] == true;
+        
+        if (wasQueued) {
+          // Show success message that report was queued
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Report saved offline. It will be submitted when connection is restored.'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 4),
+              action: SnackBarAction(
+                label: 'View Queue',
+                textColor: Colors.white,
+                onPressed: () {
+                  // Navigate to offline queue screen
+                  Navigator.pushNamed(context, '/offline-queue');
+                },
+              ),
+            ),
+          );
+          
+          // Navigate back or to queue screen
+          Navigator.pop(context);
+        } else {
+          // Show error message
+          final errorMsg = result['error'] as String? ?? 'Failed to submit report';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${TranslationHelper.of(context).reportSubmitFailed}: $errorMsg'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (error) {
       setState(() {
@@ -84,7 +138,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to submit report: $error'),
+          content: Text('${TranslationHelper.of(context).reportSubmitFailed}: $error'),
           backgroundColor: Colors.red,
         ),
       );
@@ -121,8 +175,8 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
 
       // Show success message and go back
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Report saved as draft successfully'),
+        SnackBar(
+          content: Text(TranslationHelper.of(context).draftSavedSuccess),
           backgroundColor: Colors.green,
         ),
       );
@@ -136,7 +190,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save draft: $error'),
+          content: Text('${TranslationHelper.of(context).draftSaveFailed}: $error'),
           backgroundColor: Colors.red,
         ),
       );
@@ -145,38 +199,45 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: scaffold,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(t, primary),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
                   children: [
                     const SizedBox(height: 25),
-                    _buildReportSummaryCard(),
+                    _buildReportSummaryCard(t, cardColor, textColor, secondary, primary),
                     const SizedBox(height: 20),
-                    _buildEmergencyWarning(),
+                    _buildEmergencyWarning(t),
                     const SizedBox(height: 30),
                   ],
                 ),
               ),
             ),
-            _buildActionButtons(),
+            _buildActionButtons(t, primary),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations t, Color primary) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF36599F),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: primary,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(25),
           bottomRight: Radius.circular(25),
         ),
@@ -189,11 +250,11 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Column(
               children: [
                 Text(
-                  'Review Report',
+                  t.reviewReportTitle,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -202,7 +263,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  'Confirm your submission',
+                  t.confirmSubmission,
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -217,16 +278,16 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
     );
   }
 
-  Widget _buildReportSummaryCard() {
+  Widget _buildReportSummaryCard(AppLocalizations t, Color cardColor, Color textColor, Color secondary, Color primary) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: ThemeHelper.getShadowColor(context),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -235,35 +296,35 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Report Summary',
+          Text(
+            t.reportSummaryTitle,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF36599F),
+              color: primary,
             ),
           ),
           const SizedBox(height: 20),
 
-          _buildSummaryField('TYPE', widget.reportData['incidentType'] ?? 'Suspicious Person'),
+          _buildSummaryField(t.typeLabel.toUpperCase(), widget.reportData['incidentType'] ?? t.suspiciousActivityLabel, textColor, primary, t),
           const SizedBox(height: 18),
 
-          _buildSummaryField('Description', widget.reportData['description'] ?? 'Individual loitering around school entrance for extended period...'),
+          _buildSummaryField(t.descriptionLabel, widget.reportData['description'] ?? t.noDescriptionProvided, textColor, primary, t),
           const SizedBox(height: 18),
 
-          _buildSummaryField('Location', widget.reportData['detectedLocation'] ?? widget.reportData['manualAddress'] ?? '123 Main Street, Downtown'),
+          _buildSummaryField(t.locationLabel, widget.reportData['detectedLocation'] ?? widget.reportData['manualAddress'] ?? t.locationNotSpecified, textColor, primary, t),
           const SizedBox(height: 18),
 
-          _buildEvidenceSection(),
+          _buildEvidenceSection(t, textColor, secondary, primary),
           const SizedBox(height: 18),
 
-          _buildAnonymousSection(),
+          _buildAnonymousSection(t, textColor),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryField(String label, String value) {
+  Widget _buildSummaryField(String label, String value, Color textColor, Color primary, AppLocalizations t) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,16 +342,18 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
           value,
           style: TextStyle(
             fontSize: 15,
-            color: label == 'TYPE' ? const Color(0xFF36599F) : Colors.black87,
-            fontWeight: label == 'TYPE' ? FontWeight.w600 : FontWeight.w400,
+            color: label.toUpperCase() == t.typeLabel.toUpperCase() ? primary : textColor,
+            fontWeight: label.toUpperCase() == t.typeLabel.toUpperCase() ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEvidenceSection() {
+  Widget _buildEvidenceSection(AppLocalizations t, Color textColor, Color secondary, Color primary) {
     final evidenceList = widget.reportData['evidence'] as List<String>? ?? [];
+    final mediaPaths = widget.reportData['mediaPaths'] as List<dynamic>? ?? [];
+    final mediaCount = mediaPaths.length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,7 +400,35 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
                   size: 24,
                 ),
               ),
-            if (evidenceList.isEmpty)
+            if (mediaCount > 0)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.attach_file,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$mediaCount file${mediaCount > 1 ? 's' : ''}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (evidenceList.isEmpty && mediaCount == 0)
               Text(
                 'No evidence attached',
                 style: TextStyle(
@@ -352,17 +443,17 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
     );
   }
 
-  Widget _buildAnonymousSection() {
+  Widget _buildAnonymousSection(AppLocalizations t, Color textColor) {
     final isAnonymous = widget.reportData['submitAnonymously'] ?? true;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'Anonymous Report',
+        Text(
+          t.anonymousReportLabel,
           style: TextStyle(
             fontSize: 15,
-            color: Colors.black87,
+            color: textColor,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -375,7 +466,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
             ),
             const SizedBox(width: 6),
             Text(
-              isAnonymous ? 'Yes' : 'No',
+              isAnonymous ? t.yesLabel : t.noLabel,
               style: TextStyle(
                 fontSize: 15,
                 color: isAnonymous ? const Color(0xFF10B981) : Colors.grey,
@@ -388,7 +479,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
     );
   }
 
-  Widget _buildEmergencyWarning() {
+  Widget _buildEmergencyWarning(AppLocalizations t) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -413,12 +504,12 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
             ),
           ),
           const SizedBox(width: 15),
-          const Expanded(
+        Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Emergency ?',
+                t.emergencyPrompt,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -427,7 +518,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  'Call 911 for immediate danger',
+                t.call911Prompt,
                   style: TextStyle(
                     fontSize: 14,
                     color: Color(0xFFB45309),
@@ -442,7 +533,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(AppLocalizations t, Color primary) {
     return Container(
       padding: const EdgeInsets.all(30),
       child: Column(
@@ -454,7 +545,7 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
             child: ElevatedButton(
               onPressed: isSubmitting ? null : _submitReport,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF36599F),
+                backgroundColor: primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -470,9 +561,9 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
                   strokeWidth: 2,
                 ),
               )
-                  : const Text(
-                'Submit Report',
-                style: TextStyle(
+                  : Text(
+                t.submitReportCta,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -489,24 +580,24 @@ class _ReviewReportScreenState extends State<ReviewReportScreen> {
             child: OutlinedButton(
               onPressed: isSavingDraft ? null : _saveAsDraft,
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF36599F),
-                side: const BorderSide(color: Color(0xFF36599F), width: 1.5),
+                foregroundColor: primary,
+                side: BorderSide(color: primary, width: 1.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: isSavingDraft
-                  ? const SizedBox(
+                  ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
-                  color: Color(0xFF36599F),
+                  color: primary,
                   strokeWidth: 2,
                 ),
               )
-                  : const Text(
-                'Save As Draft',
-                style: TextStyle(
+                  : Text(
+                t.saveAsDraftCta,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),

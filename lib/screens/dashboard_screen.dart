@@ -4,6 +4,7 @@ import 'package:safereport_mobo/l10n/app_localizations.dart';
 import '../services/token_manager.dart';
 import '../services/community_service.dart';
 import '../services/map_service.dart';
+import '../services/watch_group_service.dart';
 import '../utils/theme_helper.dart';
 import 'emergency_mode_screen.dart';
 import 'report_crime_screen.dart';
@@ -23,7 +24,7 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with AutomaticKeepAliveClientMixin {
   int _selectedIndex = 0;
 
   // These will be populated from backend
@@ -31,15 +32,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String thisWeekReports = "Loading...";
   String avgResponse = "Loading...";
   String safetyLevel = "Loading...";
-  String watchGroupInfo = "Oak Street Watch • 2 new alerts";
+  String watchGroupInfo = "Loading watch groups...";
   int nearbyIncidentsCount = 0; // populated from backend
   bool isLoadingCommunityStatus = true;
+  List<Map<String, dynamic>> _watchGroups = [];
+  bool _isLoadingWatchGroups = true;
+
+  @override
+  bool get wantKeepAlive => true; // Keep screen alive to prevent freezing
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _loadCommunityStatus();
+    _loadWatchGroups();
   }
 
   Future<void> _loadUserData() async {
@@ -49,6 +56,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (username != null && username.isNotEmpty) {
       setState(() {
         userName = username;
+      });
+    }
+  }
+
+  Future<void> _loadWatchGroups() async {
+    setState(() {
+      _isLoadingWatchGroups = true;
+    });
+
+    try {
+      final result = await WatchGroupService.getMyWatchGroups(page: 0, size: 3);
+      
+      if (result['success'] == true) {
+        final groups = result['data'] as List<dynamic>? ?? [];
+        setState(() {
+          _watchGroups = groups.map((g) {
+            final members = g['members'] as List<dynamic>? ?? [];
+            return {
+              'id': g['id']?.toString(),
+              'name': g['name'] ?? 'Watch Group',
+              'description': g['description'] ?? '',
+              'location': g['location'] ?? 'Unknown',
+              'memberCount': members.length,
+              'status': g['status'] ?? 'ACTIVE',
+            };
+          }).toList();
+          
+          // Update watchGroupInfo based on actual data
+          if (_watchGroups.isEmpty) {
+            watchGroupInfo = "No watch groups yet. Join one to get started!";
+          } else if (_watchGroups.length == 1) {
+            final group = _watchGroups[0];
+            watchGroupInfo = "${group['name']} • ${group['memberCount']} member${group['memberCount'] != 1 ? 's' : ''}";
+          } else {
+            watchGroupInfo = "${_watchGroups.length} watch groups • ${_watchGroups.fold<int>(0, (sum, g) => sum + (g['memberCount'] as int? ?? 0))} total members";
+          }
+          
+          _isLoadingWatchGroups = false;
+        });
+      } else {
+        setState(() {
+          watchGroupInfo = "Unable to load watch groups";
+          _isLoadingWatchGroups = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        watchGroupInfo = "Error loading watch groups";
+        _isLoadingWatchGroups = false;
       });
     }
   }
@@ -184,6 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
       backgroundColor: ThemeHelper.getScaffoldBackgroundColor(context),
       body: SafeArea(

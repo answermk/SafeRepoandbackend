@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:safereport_mobo/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,6 @@ import 'screens/forum_post_screen.dart';
 import 'screens/report_status_tracking_screen.dart';
 import 'screens/media_gallery_screen.dart';
 import 'screens/feedback_rating_screen.dart';
-import 'screens/multi_language_screen.dart';
 import 'screens/accessibility_settings_screen.dart';
 import 'screens/tutorial_faq_screen.dart';
 import 'screens/incident_map_view_screen.dart';
@@ -155,7 +155,6 @@ class _SafeReportAppState extends State<SafeReportApp> {
         '/account-settings': (context) => const AccountSettingsScreen(),
         '/profile-edit': (context) => const ProfileEditScreen(),
         '/accessibility': (context) => const AccessibilitySettingsScreen(),
-        '/multi-language': (context) => const MultiLanguageScreen(),
 
         // Community Features
         '/community-forum': (context) => const CommunityForumScreen(),

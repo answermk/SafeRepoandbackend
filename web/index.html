@@ -39,9 +39,53 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Two+Tone">
   
   <!-- Google Maps API -->
-  <!-- TODO: Replace YOUR_GOOGLE_MAPS_API_KEY with your actual API key -->
-  <!-- Get your API key from: https://console.cloud.google.com/google/maps-apis/credentials -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0Q-Ye7iOfPJmszXhkEy8l9tKC6qbXSi4&libraries=places"></script>
+  <!-- Keep-alive script to prevent app from freezing -->
+  <script>
+    // Prevent app from freezing by keeping it active
+    let keepAliveInterval;
+    let visibilityChangeHandler;
+    
+    function startKeepAlive() {
+      // Periodic heartbeat to keep app active (every 30 seconds)
+      keepAliveInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          // Trigger a minimal event to keep the app active
+          window.dispatchEvent(new Event('keepalive'));
+        }
+      }, 30000);
+      
+      // Handle visibility changes
+      visibilityChangeHandler = () => {
+        if (document.visibilityState === 'visible') {
+          // App became visible again, refresh if needed
+          console.log('App became visible');
+        }
+      };
+      
+      document.addEventListener('visibilitychange', visibilityChangeHandler);
+      
+      // Prevent page from going to sleep (if supported)
+      if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').catch(() => {
+          // Wake lock not supported or denied
+        });
+      }
+    }
+    
+    // Start keep-alive when page loads
+    window.addEventListener('load', startKeepAlive);
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (keepAliveInterval) {
+        clearInterval(keepAliveInterval);
+      }
+      if (visibilityChangeHandler) {
+        document.removeEventListener('visibilitychange', visibilityChangeHandler);
+      }
+    });
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

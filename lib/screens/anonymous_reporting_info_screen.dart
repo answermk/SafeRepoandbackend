@@ -1,26 +1,38 @@
 import 'package:flutter/material.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class AnonymousReportingInfoScreen extends StatelessWidget {
   const AnonymousReportingInfoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final card = ThemeHelper.getCardColor(context);
+    final shadow = ThemeHelper.getShadowColor(context);
+    final divider = ThemeHelper.getDividerColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: scaffold,
       appBar: AppBar(
-        title: const Text('Anonymous Reporting', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF36599F),
+        title: Text(t.anonymousReportingTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: primary,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeroSection(),
-            _buildWhatIsHiddenSection(),
-            _buildWhatIsSharedSection(),
-            _buildBenefitsSection(),
-            _buildLegalProtectionSection(),
-            _buildFAQSection(),
+            _buildHeroSection(t),
+            _buildWhatIsHiddenSection(t, card, shadow, textColor),
+            _buildWhatIsSharedSection(t, card, shadow, divider, textColor),
+            _buildBenefitsSection(t, card, shadow, primary),
+            _buildLegalProtectionSection(t, primary, secondary),
+            _buildFAQSection(t, card, shadow, textColor, secondary, primary),
             const SizedBox(height: 30),
           ],
         ),
@@ -28,7 +40,7 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(AppLocalizations t) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
@@ -50,22 +62,22 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
             child: const Icon(Icons.privacy_tip, color: Color(0xFF8B5CF6), size: 32),
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Report Safely',
-                  style: TextStyle(
+                  t.reportSafely,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Your identity is fully protected',
-                  style: TextStyle(
+                  t.identityProtected,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.white,
                   ),
@@ -78,16 +90,16 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWhatIsHiddenSection() {
+  Widget _buildWhatIsHiddenSection(AppLocalizations t, Color card, Color shadow, Color textColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: card,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadow,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -101,7 +113,7 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
               Icon(Icons.visibility_off, color: Colors.green[700]),
               const SizedBox(width: 8),
               Text(
-                'What\'s Hidden',
+                t.whatsHiddenTitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -111,26 +123,26 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildInfoItem(Icons.person_off, 'Your name and identity', Colors.green),
-          _buildInfoItem(Icons.email_outlined, 'Email address', Colors.green),
-          _buildInfoItem(Icons.phone_disabled, 'Phone number', Colors.green),
-          _buildInfoItem(Icons.account_circle_outlined, 'Account ID', Colors.green),
-          _buildInfoItem(Icons.fingerprint, 'Personal identifiers', Colors.green),
+          _buildInfoItem(Icons.person_off, t.hiddenName, Colors.green, textColor),
+          _buildInfoItem(Icons.email_outlined, t.hiddenEmail, Colors.green, textColor),
+          _buildInfoItem(Icons.phone_disabled, t.hiddenPhone, Colors.green, textColor),
+          _buildInfoItem(Icons.account_circle_outlined, t.hiddenAccountId, Colors.green, textColor),
+          _buildInfoItem(Icons.fingerprint, t.hiddenPersonalIdentifiers, Colors.green, textColor),
         ],
       ),
     );
   }
 
-  Widget _buildWhatIsSharedSection() {
+  Widget _buildWhatIsSharedSection(AppLocalizations t, Color card, Color shadow, Color divider, Color textColor) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: card,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadow,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -144,7 +156,7 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
               Icon(Icons.visibility, color: Colors.orange[700]),
               const SizedBox(width: 8),
               Text(
-                'What\'s Still Shared',
+                t.whatsSharedTitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -154,25 +166,26 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildInfoItem(Icons.location_on, 'Incident location only', Colors.orange),
-          _buildInfoItem(Icons.access_time, 'Time of report', Colors.orange),
-          _buildInfoItem(Icons.description, 'Report description', Colors.orange),
-          _buildInfoItem(Icons.camera_alt, 'Evidence (if provided)', Colors.orange),
+          _buildInfoItem(Icons.location_on, t.sharedLocation, Colors.orange, textColor),
+          _buildInfoItem(Icons.access_time, t.sharedTime, Colors.orange, textColor),
+          _buildInfoItem(Icons.description, t.sharedDescription, Colors.orange, textColor),
+          _buildInfoItem(Icons.camera_alt, t.sharedEvidence, Colors.orange, textColor),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.orange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: divider),
             ),
             child: Row(
               children: [
                 Icon(Icons.info_outline, size: 20, color: Colors.orange[700]),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'This information helps police respond effectively without revealing who you are',
-                    style: TextStyle(fontSize: 13),
+                    t.helpsPolice,
+                    style: TextStyle(fontSize: 13, color: textColor),
                   ),
                 ),
               ],
@@ -183,16 +196,16 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBenefitsSection() {
+  Widget _buildBenefitsSection(AppLocalizations t, Color card, Color shadow, Color primary) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: card,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadow,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -201,76 +214,76 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.check_circle, color: Color(0xFF36599F)),
-              SizedBox(width: 8),
+              Icon(Icons.check_circle, color: primary),
+              const SizedBox(width: 8),
               Text(
-                'Benefits of Anonymous Reporting',
+                t.benefitsAnonymousTitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF36599F),
+                  color: primary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          _buildBenefitItem('Report without fear of retaliation'),
-          _buildBenefitItem('Protect your personal safety'),
-          _buildBenefitItem('Help your community without exposure'),
-          _buildBenefitItem('No follow-up contact unless you choose'),
+          _buildBenefitItem(t.benefit1),
+          _buildBenefitItem(t.benefit2),
+          _buildBenefitItem(t.benefit3),
+          _buildBenefitItem(t.benefit4),
         ],
       ),
     );
   }
 
-  Widget _buildLegalProtectionSection() {
+  Widget _buildLegalProtectionSection(AppLocalizations t, Color primary, Color secondary) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFFF0F9FF),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: const Color(0xFF36599F).withOpacity(0.3)),
+        border: Border.all(color: primary.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.gavel, color: Color(0xFF36599F)),
-              SizedBox(width: 8),
+              Icon(Icons.gavel, color: primary),
+              const SizedBox(width: 8),
               Text(
-                'Legal Protection',
+                t.legalProtectionTitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF36599F),
+                  color: primary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Anonymous reports are protected by law. Your identity cannot be disclosed without your explicit consent, even under legal proceedings.',
-            style: TextStyle(fontSize: 14, height: 1.5),
+          Text(
+            t.legalProtectionText,
+            style: TextStyle(fontSize: 14, height: 1.5, color: secondary),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFAQSection() {
+  Widget _buildFAQSection(AppLocalizations t, Color card, Color shadow, Color textColor, Color secondary, Color primary) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: card,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: shadow,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -279,39 +292,30 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.help_outline, color: Color(0xFF36599F)),
-              SizedBox(width: 8),
+              Icon(Icons.help_outline, color: primary),
+              const SizedBox(width: 8),
               Text(
-                'Frequently Asked Questions',
+                t.faqTitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF36599F),
+                  color: primary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          _buildFAQItem(
-            'Can police trace my report back to me?',
-            'No. Anonymous reports are encrypted and stored without any identifying information.',
-          ),
-          _buildFAQItem(
-            'Can I switch between anonymous and non-anonymous?',
-            'Yes, you can choose for each report whether to submit anonymously or with your information.',
-          ),
-          _buildFAQItem(
-            'Will my report be taken less seriously?',
-            'No. All reports are investigated equally regardless of anonymity status.',
-          ),
+          _buildFAQItem(t.faqQ1, t.faqA1, textColor, secondary),
+          _buildFAQItem(t.faqQ2, t.faqA2, textColor, secondary),
+          _buildFAQItem(t.faqQ3, t.faqA3, textColor, secondary),
         ],
       ),
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String text, Color color) {
+  Widget _buildInfoItem(IconData icon, String text, Color color, Color textColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -319,7 +323,7 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
           Icon(icon, size: 20, color: color),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(text, style: const TextStyle(fontSize: 14)),
+            child: Text(text, style: TextStyle(fontSize: 14, color: textColor)),
           ),
         ],
       ),
@@ -342,7 +346,7 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFAQItem(String question, String answer) {
+  Widget _buildFAQItem(String question, String answer, Color textColor, Color secondary) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -350,9 +354,10 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
         children: [
           Text(
             question,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
+              color: textColor,
             ),
           ),
           const SizedBox(height: 6),
@@ -360,7 +365,7 @@ class AnonymousReportingInfoScreen extends StatelessWidget {
             answer,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[700],
+              color: secondary,
               height: 1.4,
             ),
           ),

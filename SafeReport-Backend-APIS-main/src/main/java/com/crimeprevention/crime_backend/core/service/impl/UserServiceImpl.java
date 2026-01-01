@@ -4,23 +4,32 @@ import com.crimeprevention.crime_backend.core.dto.user.*;
 import com.crimeprevention.crime_backend.core.mapper.UserMapper;
 import com.crimeprevention.crime_backend.core.model.user.User;
 import com.crimeprevention.crime_backend.core.model.enums.UserRole;
+import com.crimeprevention.crime_backend.core.model.enums.ReportStatus;
 import com.crimeprevention.crime_backend.core.repo.user.UserRepository;
+import com.crimeprevention.crime_backend.core.repo.report.ReportRepository;
 import com.crimeprevention.crime_backend.core.service.interfaces.UserService;
 import com.crimeprevention.crime_backend.core.service.interfaces.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
@@ -187,6 +196,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public AdminContactInfoDTO getAdminContactInfo() {
+        // Get the first active admin user
+        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
+        
+        if (admins.isEmpty()) {
+            // Return default contact info if no admin found
+            return AdminContactInfoDTO.builder()
+                .email("support@saferreport.com")
+                .phoneNumber("18007233776")
+                .fullName("System Admin")
+                .build();
+        }
+        
+        // Get the first active admin, or first admin if none are active
+        User admin = admins.stream()
+            .filter(User::isActive)
+            .findFirst()
+            .orElse(admins.get(0));
+        
+        return AdminContactInfoDTO.builder()
+            .email(admin.getEmail())
+            .phoneNumber(admin.getPhoneNumber())
+            .fullName(admin.getFullName())
+            .build();
+    }
+
+    @Override
     @Transactional
     public UserDTO registerCivilian(SignupRequest request) {
         // Check if email already exists
@@ -313,5 +350,151 @@ public class UserServiceImpl implements UserService {
             log.warn("Failed to send password change email: {}", e.getMessage());
             // Continue anyway - password was changed successfully
         }
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public UserImpactDTO getUserImpact(UUID userId) {
+        log.info("Calculating user impact for user {}", userId);
+        
+        // Verify user exists
+        userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        
+        // Count reports by status
+        long totalReports = reportRepository.countByReporterId(userId);
+        long resolvedReports = reportRepository.countByReporterIdAndStatus(userId, ReportStatus.RESOLVED);
+        long closedReports = reportRepository.countByReporterIdAndStatus(userId, ReportStatus.CLOSED);
+        long inProgressReports = reportRepository.countByReporterIdAndStatus(userId, ReportStatus.IN_PROGRESS);
+        long underInvestigationReports = reportRepository.countByReporterIdAndStatus(userId, ReportStatus.UNDER_INVESTIGATION);
+        long pendingReports = reportRepository.countByReporterIdAndStatus(userId, ReportStatus.PENDING);
+        
+        // Calculate metrics
+        int reportsSubmitted = (int) totalReports;
+        int actionsTaken = (int) (resolvedReports + closedReports + inProgressReports + underInvestigationReports);
+        int crimesPrevented = (int) (resolvedReports + closedReports);
+        
+        // Calculate reputation points based on performance
+        // Points system: 10 points per report, 20 points per resolved, 15 points per in-progress
+        int reputationPoints = (int) (
+            totalReports * 10 +
+            (resolvedReports + closedReports) * 20 +
+            (inProgressReports + underInvestigationReports) * 15
+        );
+        
+        // Determine reputation level
+        String reputationLevel = mapPointsToLevel(reputationPoints);
+        
+        // Calculate progress to next level
+        int[] levelThresholds = {0, 400, 700, 1000}; // Bronze, Silver, Gold, Platinum
+        int currentLevelIndex = getLevelIndex(reputationPoints);
+        int nextLevelThreshold = currentLevelIndex < levelThresholds.length - 1 
+            ? levelThresholds[currentLevelIndex + 1] 
+            : levelThresholds[levelThresholds.length - 1];
+        int pointsToNextLevel = Math.max(0, nextLevelThreshold - reputationPoints);
+        double progressToNextLevel = currentLevelIndex < levelThresholds.length - 1
+            ? (double)(reputationPoints - levelThresholds[currentLevelIndex]) / 
+              (nextLevelThreshold - levelThresholds[currentLevelIndex])
+            : 1.0;
+        
+        // Get recent activity timeline (last 20 reports)
+        List<com.crimeprevention.crime_backend.core.model.report.Report> recentReports = 
+            reportRepository.findRecentByReporterId(userId, PageRequest.of(0, 20));
+        
+        List<UserImpactDTO.ActivityItem> recentActivity = recentReports.stream()
+            .map(report -> {
+                String action = "Report " + report.getStatus().toString().toLowerCase();
+                String detail = report.getTitle() != null ? report.getTitle() : "Untitled Report";
+                LocalDateTime timestamp = report.getCreatedAt() != null 
+                    ? LocalDateTime.ofInstant(report.getCreatedAt(), ZoneId.systemDefault())
+                    : LocalDateTime.now();
+                String time = formatTimeAgo(timestamp);
+                
+                return UserImpactDTO.ActivityItem.builder()
+                    .action(action)
+                    .detail(detail)
+                    .time(time)
+                    .timestamp(timestamp)
+                    .build();
+            })
+            .collect(Collectors.toList());
+        
+        // Build badges based on achievements
+        List<UserImpactDTO.BadgeInfo> badges = new ArrayList<>();
+        badges.add(UserImpactDTO.BadgeInfo.builder()
+            .name("First Report")
+            .icon("flag")
+            .color("#2196F3")
+            .earned(totalReports > 0)
+            .description("Submit your first report")
+            .build());
+        badges.add(UserImpactDTO.BadgeInfo.builder()
+            .name("Active Reporter")
+            .icon("calendar_today")
+            .color("#4CAF50")
+            .earned(totalReports >= 5)
+            .description("Submit 5 or more reports")
+            .build());
+        badges.add(UserImpactDTO.BadgeInfo.builder()
+            .name("Resolution Star")
+            .icon("check_circle")
+            .color("#009688")
+            .earned(crimesPrevented >= 3)
+            .description("Have 3 or more reports resolved")
+            .build());
+        badges.add(UserImpactDTO.BadgeInfo.builder()
+            .name("Community Hero")
+            .icon("star")
+            .color("#FF9800")
+            .earned(crimesPrevented >= 5)
+            .description("Have 5 or more reports resolved")
+            .build());
+        
+        return UserImpactDTO.builder()
+            .reportsSubmitted(reportsSubmitted)
+            .actionsTaken(actionsTaken)
+            .crimesPrevented(crimesPrevented)
+            .reputationPoints(reputationPoints)
+            .reputationLevel(reputationLevel)
+            .pointsToNextLevel(pointsToNextLevel)
+            .progressToNextLevel(progressToNextLevel)
+            .totalReports(totalReports)
+            .resolvedReports(resolvedReports)
+            .inProgressReports(inProgressReports)
+            .pendingReports(pendingReports)
+            .closedReports(closedReports)
+            .recentActivity(recentActivity)
+            .badges(badges)
+            .build();
+    }
+    
+    private String mapPointsToLevel(int points) {
+        if (points >= 1000) return "Platinum";
+        if (points >= 700) return "Gold";
+        if (points >= 400) return "Silver";
+        return "Bronze";
+    }
+    
+    private int getLevelIndex(int points) {
+        if (points >= 1000) return 3;
+        if (points >= 700) return 2;
+        if (points >= 400) return 1;
+        return 0;
+    }
+    
+    private String formatTimeAgo(LocalDateTime timestamp) {
+        LocalDateTime now = LocalDateTime.now();
+        long minutes = ChronoUnit.MINUTES.between(timestamp, now);
+        long hours = ChronoUnit.HOURS.between(timestamp, now);
+        long days = ChronoUnit.DAYS.between(timestamp, now);
+        
+        if (minutes < 1) return "Just now";
+        if (minutes < 60) return minutes + "m ago";
+        if (hours < 24) return hours + "h ago";
+        if (days < 7) return days + "d ago";
+        long weeks = days / 7;
+        if (weeks < 5) return weeks + "w ago";
+        long months = days / 30;
+        return months + "mo ago";
     }
 }

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'location_screen.dart';
 import 'media_capture_screen.dart';
 import '../services/draft_service.dart';
+import '../utils/theme_helper.dart';
+import '../utils/translation_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class ReportCrimeScreen extends StatefulWidget {
   const ReportCrimeScreen({Key? key}) : super(key: key);
@@ -363,12 +366,20 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+    final cardColor = ThemeHelper.getCardColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final borderColor = ThemeHelper.getBorderColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: scaffold,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context),
+            _buildHeader(context, t, primary, secondary),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -381,10 +392,10 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                       // Section Title with count
                       Row(
                         children: [
-                          const Text(
-                            'Select Incident Type',
+                          Text(
+                            t.selectIncidentTypeTitle,
                             style: TextStyle(
-                              color: Colors.black87,
+                              color: textColor,
                               fontWeight: FontWeight.w700,
                               fontSize: 20,
                             ),
@@ -396,13 +407,13 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF36599F).withOpacity(0.1),
+                              color: primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${_incidentCategories.length}',
-                              style: const TextStyle(
-                                color: Color(0xFF36599F),
+                              style: TextStyle(
+                                color: primary,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
@@ -427,43 +438,50 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                       const SizedBox(height: 30),
 
                       // Description Section
-                      const Text(
-                        'Description',
+                      Text(
+                        t.descriptionLabel,
                         style: TextStyle(
-                          color: Color(0xFF36599F),
+                          color: primary,
                           fontWeight: FontWeight.w700,
                           fontSize: 18,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Provide details about what you observed',
+                        t.provideDetailsHint,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: secondary,
                           fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 15),
-                      _buildDescriptionField(),
+                      _buildDescriptionField(
+                        t,
+                        primary,
+                        secondary,
+                        cardColor,
+                        borderColor,
+                        textColor,
+                      ),
 
                       const SizedBox(height: 30),
 
                       // Evidence Section
                       Row(
                         children: [
-                          const Text(
-                            'Add Evidence',
+                          Text(
+                            t.addEvidenceTitle,
                             style: TextStyle(
-                              color: Color(0xFF36599F),
+                              color: primary,
                               fontWeight: FontWeight.w700,
                               fontSize: 18,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '(Optional)',
+                            t.optionalLabel,
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: secondary,
                               fontSize: 14,
                               fontStyle: FontStyle.italic,
                             ),
@@ -472,14 +490,14 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Photos, videos, or audio recordings',
+                        t.evidenceHelperText,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: secondary,
                           fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 15),
-                      _buildEvidenceRow(),
+                      _buildEvidenceRow(primary, t, secondary),
 
                       // Show uploaded media count
                       if (_uploadedMediaPaths.isNotEmpty) ...[
@@ -502,7 +520,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                '${_uploadedMediaPaths.length} file(s) attached',
+                                t.filesAttachedCount(_uploadedMediaPaths.length),
                                 style: const TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.w600,
@@ -517,10 +535,17 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                       const SizedBox(height: 30),
 
                       // Anonymous Toggle Section
-                      _buildAnonymousSection(),
+                      _buildAnonymousSection(
+                        primary,
+                        secondary,
+                        textColor,
+                        t,
+                        cardColor,
+                        borderColor,
+                      ),
 
                       const SizedBox(height: 40),
-                      _buildContinueButton(),
+                      _buildContinueButton(primary, textColor, t),
                       const SizedBox(height: 30),
                     ],
                   ),
@@ -533,11 +558,11 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, AppLocalizations t, Color primary, Color secondary) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF36599F),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: primary,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
         ),
@@ -552,23 +577,23 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 10),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Report Crime',
-                      style: TextStyle(
+                      t.reportCrimeTitle,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                         fontSize: 22,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Help keep your community safe',
+                      t.reportCrimeSubtitle,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: secondary,
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                       ),
@@ -584,7 +609,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: const EdgeInsets.only(left: 50),
-              child: _buildDraftStatusIndicator(),
+              child: _buildDraftStatusIndicator(primary),
             ),
           ),
         ],
@@ -593,12 +618,12 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
   }
 
   /// Build draft save status indicator
-  Widget _buildDraftStatusIndicator() {
+  Widget _buildDraftStatusIndicator(Color primary) {
     if (_isSavingDraft) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.1),
+          color: primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -609,14 +634,14 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
               height: 12,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[700]!),
+                valueColor: AlwaysStoppedAnimation<Color>(primary),
               ),
             ),
             const SizedBox(width: 6),
             Text(
-              'Saving...',
+              TranslationHelper.of(context).savingLabel,
               style: TextStyle(
-                color: Colors.blue[700],
+                color: primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -637,7 +662,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
             const Icon(Icons.check_circle, color: Colors.green, size: 14),
             const SizedBox(width: 6),
             Text(
-              'Draft saved',
+              TranslationHelper.of(context).draftSavedSuccess,
               style: TextStyle(
                 color: Colors.green[700],
                 fontSize: 12,
@@ -771,13 +796,22 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
     );
   }
 
-  Widget _buildDescriptionField() {
+  Widget _buildDescriptionField(
+    AppLocalizations t,
+    Color primary,
+    Color secondary,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+  ) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
+        color: cardColor,
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: ThemeHelper.getShadowColor(context),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -788,46 +822,52 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
         maxLines: 5,
         maxLength: 500,
         decoration: InputDecoration(
-          hintText: 'Describe what you observed in detail...',
+          hintText: t.descriptionPlaceholder,
           hintStyle: TextStyle(
-            color: Colors.grey[400],
+            color: secondary,
             fontSize: 15,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: cardColor,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey[200]!),
+            borderSide: BorderSide(color: borderColor),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey[200]!),
+            borderSide: BorderSide(color: borderColor),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF36599F), width: 2),
+            borderSide: BorderSide(color: primary, width: 2),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          counterStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
+          counterStyle: TextStyle(color: secondary, fontSize: 12),
         ),
-        // Auto-save is handled by _onDescriptionChanged listener
+        style: TextStyle(color: textColor),
       ),
     );
   }
 
-  Widget _buildEvidenceRow() {
+  Widget _buildEvidenceRow(Color primary, AppLocalizations t, Color secondary) {
     return Row(
       children: [
-        _buildEvidenceIcon(Icons.camera_alt, 'Photo', 'photo'),
+        _buildEvidenceIcon(Icons.camera_alt, t.photoLabel, 'photo', primary, secondary),
         const SizedBox(width: 20),
-        _buildEvidenceIcon(Icons.videocam, 'Video', 'video'),
+        _buildEvidenceIcon(Icons.videocam, t.videoLabel, 'video', primary, secondary),
         const SizedBox(width: 20),
-        _buildEvidenceIcon(Icons.mic, 'Audio', 'audio'),
+        _buildEvidenceIcon(Icons.mic, t.audioLabel, 'audio', primary, secondary),
       ],
     );
   }
 
-  Widget _buildEvidenceIcon(IconData icon, String label, String type) {
+  Widget _buildEvidenceIcon(
+    IconData icon,
+    String label,
+    String type,
+    Color primary,
+    Color secondary,
+  ) {
     final isSelected = _selectedEvidence.contains(type);
 
     return GestureDetector(
@@ -839,8 +879,8 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
             height: 70,
             decoration: BoxDecoration(
               color: isSelected
-                  ? const Color(0xFF36599F)
-                  : const Color(0xFF93C5FD),
+                  ? primary
+                  : primary.withOpacity(0.35),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Icon(
@@ -854,7 +894,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: isSelected ? const Color(0xFF36599F) : Colors.grey[600],
+              color: isSelected ? primary : secondary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -863,16 +903,23 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
     );
   }
 
-  Widget _buildAnonymousSection() {
+  Widget _buildAnonymousSection(
+    Color primary,
+    Color secondary,
+    Color textColor,
+    AppLocalizations t,
+    Color cardColor,
+    Color borderColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
+            color: ThemeHelper.getShadowColor(context),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -886,8 +933,8 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
               Icon(
                 Icons.privacy_tip,
                 color: _submitAnonymously
-                    ? const Color(0xFF36599F)
-                    : Colors.grey[400],
+                    ? primary
+                    : secondary,
                 size: 24,
               ),
               const SizedBox(width: 12),
@@ -895,19 +942,19 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Submit Anonymously',
+                    Text(
+                      t.submitAnonymouslyTitle,
                       style: TextStyle(
-                        color: Color(0xFF36599F),
+                        color: primary,
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Your identity will be protected',
+                      t.identityProtectedSubtitle,
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: secondary,
                         fontSize: 13,
                       ),
                     ),
@@ -935,7 +982,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
     );
   }
 
-  Widget _buildContinueButton() {
+  Widget _buildContinueButton(Color primary, Color textColor, AppLocalizations t) {
     final bool isValid = _selectedIncidentType != null &&
         _descriptionController.text.trim().isNotEmpty;
 
@@ -945,7 +992,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
       child: ElevatedButton(
         onPressed: isValid ? _handleContinueToLocation : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF36599F),
+          backgroundColor: primary,
           disabledBackgroundColor: Colors.grey[300],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -953,7 +1000,7 @@ class _ReportCrimeScreenState extends State<ReportCrimeScreen> {
           elevation: isValid ? 2 : 0,
         ),
         child: Text(
-          'Continue to Location',
+          t.continueToLocation,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

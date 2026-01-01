@@ -71,6 +71,10 @@ public class FileController {
                 else if (filename.endsWith(".pdf")) contentType = "application/pdf";
                 else if (filename.endsWith(".doc")) contentType = "application/msword";
                 else if (filename.endsWith(".docx")) contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                else if (filename.endsWith(".mp4")) contentType = "video/mp4";
+                else if (filename.endsWith(".webm")) contentType = "video/webm";
+                else if (filename.endsWith(".mov")) contentType = "video/quicktime";
+                else if (filename.endsWith(".avi")) contentType = "video/x-msvideo";
                 else contentType = "application/octet-stream";
             }
             

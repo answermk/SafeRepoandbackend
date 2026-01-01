@@ -1,55 +1,156 @@
 import 'package:flutter/material.dart';
+import '../services/watch_group_service.dart';
+import '../services/token_manager.dart';
 import 'watch_group_messages_screen.dart';
 import 'watch_group_details_screen.dart';
 import 'browse_watch_groups_screen.dart';
 import 'dashboard_screen.dart';
 
-class MyWatchGroupsScreen extends StatelessWidget {
+class MyWatchGroupsScreen extends StatefulWidget {
   const MyWatchGroupsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MyWatchGroupsScreen> createState() => _MyWatchGroupsScreenState();
+}
+
+class _MyWatchGroupsScreenState extends State<MyWatchGroupsScreen> {
+  List<Map<String, dynamic>> _watchGroups = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWatchGroups();
+  }
+
+  Future<void> _loadWatchGroups() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final result = await WatchGroupService.getMyWatchGroups();
+
+      if (result['success'] == true) {
+        final groups = result['data'] as List<dynamic>? ?? [];
+        setState(() {
+          _watchGroups = groups.map((g) {
+            final members = g['members'] as List<dynamic>? ?? [];
+            return {
+              'id': g['id']?.toString(),
+              'name': g['name'] ?? 'Watch Group',
+              'description': g['description'] ?? '',
+              'location': g['location'] ?? 'Unknown',
+              'memberCount': members.length,
+              'status': g['status'] ?? 'ACTIVE',
+              'createdAt': g['createdAt'],
+            };
+          }).toList();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = result['error']?.toString() ?? 'Failed to load watch groups';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Error loading watch groups: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 18),
-                _buildWatchGroupCard(
-                  context: context,
-                  icon: Icons.apartment,
-                  title: 'Oak Street Residential',
-                  subtitle: 'Oak Street Neighborhood',
-                  members: 15,
-                  alerts: 2,
-                  status: 'Active',
-                ),
-                const SizedBox(height: 16),
-                _buildWatchGroupCard(
-                  context: context,
-                  icon: Icons.business,
-                  title: 'Downtown Business',
-                  subtitle: 'Business District',
-                  members: 8,
-                  alerts: 1,
-                  status: 'Active',
-                  coverage: 'Mon-Fri 9AM-5PM',
-                  schedule: 'Business hours',
-                ),
-                const SizedBox(height: 24),
-                _buildFindMoreGroups(context),
-                const SizedBox(height: 24),
-                _buildYourImpact(),
-                const SizedBox(height: 24),
-              ],
+        child: RefreshIndicator(
+          onRefresh: _loadWatchGroups,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 18),
+                  if (_isLoading)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else if (_error != null)
+                    _buildErrorState()
+                  else if (_watchGroups.isEmpty)
+                    _buildEmptyState()
+                  else
+                    ..._watchGroups.map((group) => Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildWatchGroupCard(
+                            context: context,
+                            groupData: group,
+                          ),
+                        )),
+                  const SizedBox(height: 24),
+                  _buildFindMoreGroups(context),
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+          const SizedBox(height: 16),
+          Text(
+            _error ?? 'Failed to load watch groups',
+            style: TextStyle(color: Colors.red[600]),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _loadWatchGroups,
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          Icon(Icons.group_outlined, size: 48, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No watch groups yet',
+            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Join or create a watch group to get started',
+            style: TextStyle(color: Colors.grey[500], fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -111,15 +212,21 @@ class MyWatchGroupsScreen extends StatelessWidget {
 
   Widget _buildWatchGroupCard({
     required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required int members,
-    required int alerts,
-    required String status,
-    String? coverage,
-    String? schedule,
+    required Map<String, dynamic> groupData,
   }) {
+    final title = groupData['name'] ?? 'Watch Group';
+    final subtitle = groupData['description'] ?? groupData['location'] ?? '';
+    final members = groupData['memberCount'] ?? 0;
+    final status = groupData['status'] ?? 'ACTIVE';
+    final groupId = groupData['id'];
+    
+    // Determine icon based on group name or type
+    IconData icon = Icons.location_city;
+    if (title.toLowerCase().contains('business') || title.toLowerCase().contains('downtown')) {
+      icon = Icons.business;
+    } else if (title.toLowerCase().contains('residential') || title.toLowerCase().contains('street')) {
+      icon = Icons.apartment;
+    }
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -149,7 +256,7 @@ class MyWatchGroupsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  status,
+                  status == 'ACTIVE' ? 'Active' : status,
                   style: const TextStyle(
                     color: Color(0xFF039855),
                     fontWeight: FontWeight.bold,
@@ -164,25 +271,26 @@ class MyWatchGroupsScreen extends StatelessWidget {
             children: [
               const Icon(Icons.location_on, color: Colors.red, size: 18),
               const SizedBox(width: 4),
-              Text('$members members • $alerts new alert${alerts > 1 ? 's' : ''}', style: const TextStyle(fontSize: 13, color: Colors.black54)),
+              Text('$members member${members != 1 ? 's' : ''}', style: const TextStyle(fontSize: 13, color: Colors.black54)),
+              if (subtitle.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Text('• $subtitle', style: const TextStyle(fontSize: 13, color: Colors.black54)),
+              ],
             ],
           ),
-          if (coverage != null && schedule != null) ...[
-            const SizedBox(height: 8),
-            Text('Coverage: $coverage', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-            Text('Your schedule: $schedule', style: const TextStyle(fontSize: 13)),
-          ],
           const SizedBox(height: 12),
           Row(
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WatchGroupDetailsScreen(),
-                    ),
-                  );
+                  if (groupId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WatchGroupDetailsScreen(groupId: groupId),
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF36599F),
@@ -194,21 +302,22 @@ class MyWatchGroupsScreen extends StatelessWidget {
               const SizedBox(width: 12),
               OutlinedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WatchGroupMessagesScreen(
-                        groupData: {
-                          'title': title,
-                          'subtitle': subtitle,
-                          'members': members,
-                          'alerts': alerts,
-                          'status': status,
-                          'icon': icon,
-                        },
+                  if (groupId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WatchGroupMessagesScreen(
+                          groupData: {
+                            'id': groupId,
+                            'name': title,
+                            'description': subtitle,
+                            'memberCount': members,
+                            'status': status,
+                          },
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF36599F)),
@@ -266,51 +375,6 @@ class MyWatchGroupsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildYourImpact() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.shade100, width: 1.2),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Your Impact', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF36599F), fontSize: 15)),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Reports Submitted'),
-              Text('12', style: TextStyle(color: Color(0xFF36599F), fontWeight: FontWeight.bold)),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Patrol Hours'),
-              Text('24', style: TextStyle(color: Color(0xFF36599F), fontWeight: FontWeight.bold)),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Community'),
-              Text('Gold', style: TextStyle(color: Color(0xFFFFC107), fontWeight: FontWeight.bold)),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Rank'),
-              Text('Member', style: TextStyle(color: Color(0xFF36599F), fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class CurvedBottomClipper extends CustomClipper<Path> {

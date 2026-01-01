@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/forum_service.dart';
 
 class ForumPostScreen extends StatefulWidget {
   final Map<String, dynamic> postData;
@@ -11,40 +12,15 @@ class ForumPostScreen extends StatefulWidget {
 
 class _ForumPostScreenState extends State<ForumPostScreen> {
   final TextEditingController _commentController = TextEditingController();
-  final List<Map<String, dynamic>> _comments = [
-    {
-      'initials': 'JD',
-      'name': 'Jane Doe',
-      'location': 'Oak Street',
-      'time': '5 hrs ago',
-      'content': 'Great tips Mike! We also found it helpful to have a standardized checklist and log all observations via documented consistency.',
-      'helpful': 3,
-    },
-    {
-      'initials': 'PD',
-      'name': 'Police Dept',
-      'location': 'Police Dept',
-      'time': '2 hrs ago',
-      'content': 'Excellent suggestions. The police department appreciates organized neighborhood watches and encourages reporting suspicious activity.',
-      'helpful': 8,
-    },
-    {
-      'initials': 'AJ',
-      'name': 'Alex Johnson',
-      'location': 'Maple Ave',
-      'time': '1 hr ago',
-      'content': 'We\'ve been using walkie-talkies during patrols, which help with communication, especially in areas with spotty cell service.',
-      'helpful': 5,
-    },
-    {
-      'initials': 'SM',
-      'name': 'Sarah Miller',
-      'location': 'Elm Street',
-      'time': '45 min ago',
-      'content': 'Does anyone have recommendations for good reflective vests that are comfortable for longer patrols?',
-      'helpful': 2,
-    },
-  ];
+  List<Map<String, dynamic>> _comments = [];
+  bool _isLoadingReplies = true;
+  bool _isPostingComment = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadReplies();
+  }
 
   @override
   void dispose() {
@@ -52,7 +28,114 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
     super.dispose();
   }
 
-  void _postComment() {
+  Future<void> _loadReplies() async {
+    setState(() {
+      _isLoadingReplies = true;
+    });
+
+    try {
+      final postId = widget.postData['id']?.toString() ?? 
+                     widget.postData['postId']?.toString();
+      
+      if (postId == null) {
+        setState(() {
+          _isLoadingReplies = false;
+          _comments = [];
+        });
+        return;
+      }
+
+      final result = await ForumService.getPostReplies(postId: postId);
+
+      if (result['success'] == true) {
+        final replies = result['data'] as List<dynamic>? ?? [];
+        setState(() {
+          _comments = replies.map((reply) {
+            // Map backend reply structure to UI format
+            final author = reply['author'] ?? {};
+            final authorName = author['name'] ?? author['username'] ?? 'Unknown';
+            final initials = _getInitials(authorName);
+            
+            // Format date
+            final createdAt = reply['createdAt'] ?? '';
+            final timeAgo = _formatTimeAgo(createdAt);
+
+            return {
+              'id': reply['id'],
+              'initials': initials,
+              'name': authorName,
+              'location': author['location'] ?? 'Unknown',
+              'time': timeAgo,
+              'content': reply['content'] ?? '',
+              'helpful': reply['helpfulCount'] ?? 0,
+              'isOfficial': reply['isOfficial'] ?? false,
+            };
+          }).toList();
+          _isLoadingReplies = false;
+        });
+      } else {
+        setState(() {
+          _isLoadingReplies = false;
+          _comments = [];
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to load replies: ${result['error'] ?? 'Unknown error'}'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingReplies = false;
+        _comments = [];
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading replies: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return 'U';
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
+  }
+
+  String _formatTimeAgo(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'Unknown';
+    try {
+      final date = DateTime.parse(dateString);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+
+      if (difference.inDays > 0) {
+        return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+      } else if (difference.inHours > 0) {
+        return '${difference.inHours} ${difference.inHours == 1 ? 'hr' : 'hrs'} ago';
+      } else if (difference.inMinutes > 0) {
+        return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'min' : 'mins'} ago';
+      } else {
+        return 'Just now';
+      }
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+
+  Future<void> _postComment() async {
     if (_commentController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -64,25 +147,73 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
       return;
     }
 
+    final postId = widget.postData['id']?.toString() ?? 
+                   widget.postData['postId']?.toString();
+
+    if (postId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Post ID not found'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     setState(() {
-      _comments.insert(0, {
-        'initials': 'ME', // Current user initials
-        'name': 'You',
-        'location': 'Your Location',
-        'time': 'Just now',
-        'content': _commentController.text.trim(),
-        'helpful': 0,
-      });
-      _commentController.clear();
+      _isPostingComment = true;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Comment posted successfully!'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
+    try {
+      final result = await ForumService.addReply(
+        postId: postId,
+        content: _commentController.text.trim(),
+      );
+
+      if (result['success'] == true) {
+        _commentController.clear();
+        
+        // Reload replies to get the updated list
+        await _loadReplies();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Comment posted successfully!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to post comment: ${result['error'] ?? 'Unknown error'}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPostingComment = false;
+        });
+      }
+    }
   }
 
   @override
@@ -121,14 +252,33 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
-                ..._comments.map((comment) => _buildComment(
-                  initials: comment['initials'],
-                  name: comment['name'],
-                  location: comment['location'],
-                  time: comment['time'],
-                  content: comment['content'],
-                  helpful: comment['helpful'],
-                )),
+                if (_isLoadingReplies)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (_comments.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Center(
+                      child: Text(
+                        'No comments yet. Be the first to comment!',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  )
+                else
+                  ..._comments.map((comment) => _buildComment(
+                    initials: comment['initials'],
+                    name: comment['name'],
+                    location: comment['location'],
+                    time: comment['time'],
+                    content: comment['content'],
+                    helpful: comment['helpful'],
+                    isOfficial: comment['isOfficial'] ?? false,
+                  )),
               ],
             ),
           ),
@@ -148,10 +298,20 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: _postComment,
-                  child: const Text('Post Comment', style: TextStyle(color: Colors.white)),
+                  onPressed: _isPostingComment ? null : _postComment,
+                  child: _isPostingComment
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text('Post Comment', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF36599F),
+                    backgroundColor: const Color(0xFF36599F),
+                    disabledBackgroundColor: Colors.grey,
                   ),
                 ),
               ],
@@ -238,6 +398,7 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
     required String time,
     required String content,
     required int helpful,
+    bool isOfficial = false,
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -255,12 +416,36 @@ class _ForumPostScreenState extends State<ForumPostScreen> {
                   foregroundColor: Colors.blue.shade900,
                 ),
                 const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    Text('$location • $time', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          if (isOfficial) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                'OFFICIAL',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Text('$location • $time', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
                 ),
               ],
             ),

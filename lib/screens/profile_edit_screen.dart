@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../services/user_service.dart';
 import '../services/token_manager.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   const ProfileEditScreen({Key? key}) : super(key: key);
@@ -56,10 +59,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Unable to load full profile. Using available data.'),
+              SnackBar(
+                content: Text(TranslationHelper.of(context).usingAvailableData),
                 backgroundColor: Colors.orange,
-                duration: Duration(seconds: 3),
+                duration: const Duration(seconds: 3),
               ),
             );
           }
@@ -69,7 +72,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           setState(() {
             _isLoading = false;
             _hasError = true;
-            _errorMessage = 'User ID not found. Please login again.';
+            _errorMessage = TranslationHelper.of(context).userIdNotFound;
           });
           return;
         }
@@ -158,8 +161,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final card = ThemeHelper.getCardColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffold,
       body: SafeArea(
         child: _isLoading
             ? const Center(
@@ -180,30 +190,30 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildTextField(
-                                'Full Name',
-                                'Enter your Full Name',
+                                t.fullName,
+                                t.enterFullName,
                                 _nameController,
                                 isRequired: true,
                               ),
                               const SizedBox(height: 16),
                               _buildTextField(
-                                'Email Address',
-                                'youremail@gmail.com',
+                                t.emailAddress,
+                                t.youremailGmailCom,
                                 _emailController,
                                 isEmail: true,
                                 isReadOnly: true, // Email usually shouldn't be changed
                               ),
                               const SizedBox(height: 16),
                               _buildTextField(
-                                'Phone Number',
+                                t.phoneNumberLabel,
                                 '+250 7............',
                                 _phoneController,
                                 keyboardType: TextInputType.phone,
                               ),
                               const SizedBox(height: 16),
                               _buildTextField(
-                                'Location',
-                                'Enter your location',
+                                t.locationLabel,
+                                t.locationLabel,
                                 _locationController,
                               ),
                               const SizedBox(height: 24),
@@ -224,6 +234,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final t = TranslationHelper.of(context);
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         bottomLeft: Radius.circular(30),
@@ -231,7 +242,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       ),
       child: Container(
         width: double.infinity,
-        color: const Color(0xFF36599F),
+        color: ThemeHelper.getPrimaryColor(context),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: SafeArea(
           bottom: false,
@@ -245,18 +256,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'My Profile',
-                      style: TextStyle(
+                    Text(
+                      t.profileTitle,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Manage your personal information',
-                      style: TextStyle(
+                    Text(
+                      t.profileSubtitle,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -301,10 +312,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         if (label.isNotEmpty) ...[
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: ThemeHelper.getTextColor(context),
             ),
           ),
           const SizedBox(height: 8),
@@ -329,22 +340,22 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           decoration: InputDecoration(
             hintText: hint,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: ThemeHelper.getCardColor(context),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF36599F), width: 2),
+              borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context), width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             hintStyle: TextStyle(
-              color: Colors.grey.shade500,
+              color: ThemeHelper.getSecondaryTextColor(context),
               fontSize: 15,
             ),
             suffixIcon: isReadOnly
@@ -353,7 +364,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           ),
           style: TextStyle(
             fontSize: 15,
-            color: isReadOnly ? Colors.grey[600] : Colors.black87,
+            color: isReadOnly ? ThemeHelper.getSecondaryTextColor(context) : ThemeHelper.getTextColor(context),
           ),
         ),
       ],
@@ -361,20 +372,21 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   Widget _buildEmergencyContactSection() {
+    final t = TranslationHelper.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: ThemeHelper.getCardColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: ThemeHelper.getDividerColor(context)),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Emergency Contact',
+          Text(
+            t.emergencyContactTitle,
             style: TextStyle(
-              color: Color(0xFF36599F),
+              color: ThemeHelper.getPrimaryColor(context),
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
@@ -383,24 +395,24 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           TextField(
             controller: _emergencyNameController,
             decoration: InputDecoration(
-              hintText: 'Jane Doe',
+              hintText: t.emergencyContactNameHint,
               filled: true,
-              fillColor: Colors.white,
+              fillColor: ThemeHelper.getCardColor(context),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF36599F), width: 2),
+                borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               hintStyle: TextStyle(
-                color: Colors.grey.shade500,
+                color: ThemeHelper.getSecondaryTextColor(context),
                 fontSize: 15,
               ),
             ),
@@ -413,24 +425,24 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           TextField(
             controller: _emergencyPhoneController,
             decoration: InputDecoration(
-              hintText: '+250 7............',
+              hintText: t.emergencyContactPhoneHint,
               filled: true,
-              fillColor: Colors.white,
+              fillColor: ThemeHelper.getCardColor(context),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF36599F), width: 2),
+                borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               hintStyle: TextStyle(
-                color: Colors.grey.shade500,
+                color: ThemeHelper.getSecondaryTextColor(context),
                 fontSize: 15,
               ),
             ),
@@ -457,10 +469,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       if (_userId == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User ID not found. Please login again.'),
+            SnackBar(
+              content: Text(TranslationHelper.of(context).userIdNotFound),
               backgroundColor: Colors.red,
-              duration: Duration(seconds: 3),
+              duration: const Duration(seconds: 3),
             ),
           );
           // Navigate back after showing error
@@ -477,10 +489,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     // Validate required fields
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Full Name is required'),
+        SnackBar(
+          content: Text(TranslationHelper.of(context).fullNameRequired),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -491,10 +503,34 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     });
 
     try {
+      // Prepare update data
+      final fullName = _nameController.text.trim();
+      final phoneNumber = _phoneController.text.trim();
+      
+      // Validate that at least fullName is provided
+      if (fullName.isEmpty) {
+        setState(() {
+          _isSaving = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(TranslationHelper.of(context).fullNameRequired),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
+      print('💾 Saving profile update for user: $_userId');
+      print('💾 Full Name: $fullName');
+      print('💾 Phone: ${phoneNumber.isNotEmpty ? phoneNumber : "Not provided"}');
+
+      // Call backend to update profile
       final result = await UserService.updateUserProfile(
         userId: _userId!,
-        fullName: _nameController.text.trim(),
-        phone: _phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : null,
+        fullName: fullName,
+        phone: phoneNumber.isNotEmpty ? phoneNumber : null,
         // Note: location, emergencyContactName, emergencyContactPhone are not in backend DTO yet
         // They will be ignored by the backend
       );
@@ -506,18 +542,41 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       if (!mounted) return;
 
       if (result['success'] == true) {
+        print('✅ Profile updated successfully');
+        final updatedData = result['data'];
+        if (updatedData != null) {
+          print('✅ Updated user data: $updatedData');
+        }
+
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
+          SnackBar(
+            content: Text(TranslationHelper.of(context).profileUpdatedSuccess),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
-        Navigator.pop(context, true); // Return true to indicate refresh needed
+
+        // Update token manager with new username if changed
+        final token = await TokenManager.getToken();
+        final email = await TokenManager.getEmail();
+        if (fullName.isNotEmpty && token != null && email != null) {
+          await TokenManager.saveToken(
+            token: token,
+            email: email,
+            username: fullName,
+            userId: _userId,
+          );
+        }
+
+        // Return true to indicate refresh needed and navigate back
+        Navigator.pop(context, true);
       } else {
         // Parse error message from backend
-        String errorMessage = 'Failed to update profile';
+        String errorMessage = TranslationHelper.of(context).failedToUpdateProfile;
         final error = result['error'];
+        
+        print('❌ Profile update failed: $error');
         
         if (error != null) {
           try {
@@ -544,17 +603,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         );
       }
     } catch (e) {
+      print('❌ Exception during profile update: $e');
       setState(() {
         _isSaving = false;
       });
       
       if (!mounted) return;
       
-      String errorMessage = 'An error occurred while updating profile';
+      String errorMessage = TranslationHelper.of(context).failedToUpdateProfile;
       if (e.toString().contains('SocketException') || e.toString().contains('Failed host lookup')) {
-        errorMessage = 'No internet connection. Please check your network and try again.';
+        errorMessage = TranslationHelper.of(context).loadProfileError;
       } else if (e.toString().contains('TimeoutException')) {
-        errorMessage = 'Request timed out. Please try again.';
+        errorMessage = TranslationHelper.of(context).loadProfileError;
       } else {
         errorMessage = 'Error: ${e.toString()}';
       }

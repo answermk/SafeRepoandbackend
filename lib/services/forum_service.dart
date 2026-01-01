@@ -144,15 +144,27 @@ class ForumService {
         body: jsonEncode(requestBody),
       );
       
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         return {
           'success': true,
           'data': jsonDecode(response.body),
         };
       } else {
+        // Try to parse error message
+        String errorMessage = 'Failed to create post';
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['error'] ?? 
+                        errorData['message'] ?? 
+                        errorData.toString();
+        } catch (e) {
+          errorMessage = response.body.isNotEmpty 
+              ? response.body 
+              : 'Server error: ${response.statusCode}';
+        }
         return {
           'success': false,
-          'error': response.body,
+          'error': errorMessage,
         };
       }
     } catch (e) {
@@ -186,15 +198,27 @@ class ForumService {
         }),
       );
       
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         return {
           'success': true,
           'data': jsonDecode(response.body),
         };
       } else {
+        // Try to parse error message
+        String errorMessage = 'Failed to add reply';
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['error'] ?? 
+                        errorData['message'] ?? 
+                        errorData.toString();
+        } catch (e) {
+          errorMessage = response.body.isNotEmpty 
+              ? response.body 
+              : 'Server error: ${response.statusCode}';
+        }
         return {
           'success': false,
-          'error': response.body,
+          'error': errorMessage,
         };
       }
     } catch (e) {

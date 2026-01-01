@@ -25,12 +25,13 @@ class AuthService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // Response: { "token": "...", "email": "...", "username": "..." }
+        // Response: { "token": "...", "email": "...", "username": "...", "userId": "..." }
         return {
           'success': true,
           'token': data['token'],
           'email': data['email'],
           'username': data['username'],
+          'userId': data['userId'] ?? data['id'], // Support both userId and id fields
         };
       } else {
         return {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/forum_service.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   String? _mediaFileName;
+  bool _isSubmitting = false;
 
   void _pickMedia() async {
     // Placeholder for media picker
@@ -19,23 +21,77 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     });
   }
 
-  void _submitPost() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Post Submitted!'),
-        content: const Text('Your post has been submitted to the community forum.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+  Future<void> _submitPost() async {
+    if (_titleController.text.trim().isEmpty || _contentController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in both title and content'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      final result = await ForumService.createPost(
+        title: _titleController.text.trim(),
+        content: _contentController.text.trim(),
+      );
+
+      if (result['success'] == true) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Post submitted successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
-        ],
-      ),
-    );
-    _titleController.clear();
-    _contentController.clear();
-    setState(() => _mediaFileName = null);
+        );
+
+        // Clear form
+        _titleController.clear();
+        _contentController.clear();
+        setState(() => _mediaFileName = null);
+
+        // Navigate back
+        if (mounted) {
+          Navigator.pop(context, true); // Return true to indicate success
+        }
+      } else {
+        // Show error message
+        final errorMessage = result['error'] ?? 'Failed to submit post';
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $errorMessage'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   @override
@@ -97,16 +153,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {
-                if (_titleController.text.isNotEmpty && _contentController.text.isNotEmpty) {
-                  _submitPost();
-                }
-              },
+              onPressed: _isSubmitting ? null : _submitPost,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF36599F),
                 minimumSize: const Size.fromHeight(48),
+                disabledBackgroundColor: Colors.grey,
               ),
-              child: const Text('Submit Post', style: TextStyle(color: Colors.white)),
+              child: _isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Text('Submit Post', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

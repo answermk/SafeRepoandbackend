@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/feedback_service.dart';
+import '../services/contact_service.dart';
 import 'support_chat_screen.dart';
 import 'tutorial_faq_screen.dart';
 
@@ -14,6 +15,54 @@ class HelpSupportScreen extends StatefulWidget {
 class _HelpSupportScreenState extends State<HelpSupportScreen> {
   final TextEditingController _feedbackController = TextEditingController();
   bool _isSubmitting = false;
+  
+  // Admin contact info
+  String _adminEmail = 'support@saferreport.com';
+  String _adminPhone = '1-800-SAFERPORT';
+  String _adminPhoneNumber = '18007233776';
+  bool _isLoadingContact = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminContactInfo();
+  }
+
+  Future<void> _loadAdminContactInfo() async {
+    setState(() {
+      _isLoadingContact = true;
+    });
+
+    try {
+      final result = await ContactService.getAdminContactInfo();
+      
+      if (result['success'] == true && result['data'] != null) {
+        final data = result['data'] as Map<String, dynamic>;
+        setState(() {
+          _adminEmail = data['email']?.toString() ?? 'support@saferreport.com';
+          final phone = data['phoneNumber']?.toString() ?? '18007233776';
+          _adminPhoneNumber = phone;
+          // Format phone for display
+          if (phone.length == 10) {
+            _adminPhone = '${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6)}';
+          } else if (phone.length == 11 && phone.startsWith('1')) {
+            _adminPhone = '1-${phone.substring(1, 4)}-${phone.substring(4, 7)}-${phone.substring(7)}';
+          } else {
+            _adminPhone = phone;
+          }
+          _isLoadingContact = false;
+        });
+      } else {
+        setState(() {
+          _isLoadingContact = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingContact = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,16 +203,21 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           child: ListTile(
             leading: const Icon(Icons.email_rounded, color: Colors.red),
             title: const Text('Email Support'),
-            subtitle: const Text('support@saferreport.com'),
+            subtitle: _isLoadingContact
+                ? const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(_adminEmail),
             trailing: ElevatedButton(
-              onPressed: () async {
-                final email = 'support@saferreport.com';
+              onPressed: _isLoadingContact ? null : () async {
                 final subject = 'Support Request - Safe Report App';
                 final body = 'Hello Safe Report Support Team,\n\n';
                 
                 final Uri emailUri = Uri(
                   scheme: 'mailto',
-                  path: email,
+                  path: _adminEmail,
                   query: 'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}',
                 );
                 
@@ -198,13 +252,16 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           child: ListTile(
             leading: const Icon(Icons.phone, color: Colors.blue),
             title: const Text('Phone Support'),
-            subtitle: const Text('1-800-SAFERPORT'),
+            subtitle: _isLoadingContact
+                ? const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(_adminPhone),
             trailing: ElevatedButton(
-              onPressed: () async {
-                // Support phone number - convert 1-800-SAFERPORT to actual number
-                // 1-800-SAFERPORT = 1-800-723-3776
-                const phoneNumber = '18007233776';
-                final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+              onPressed: _isLoadingContact ? null : () async {
+                final Uri phoneUri = Uri(scheme: 'tel', path: _adminPhoneNumber);
                 
                 try {
                   if (await canLaunchUrl(phoneUri)) {

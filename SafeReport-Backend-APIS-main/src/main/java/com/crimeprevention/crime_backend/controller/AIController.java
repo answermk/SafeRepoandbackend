@@ -260,6 +260,81 @@ public class AIController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * AI Chat endpoint for support conversations
+     * Accessible to all authenticated users
+     */
+    @PostMapping("/chat")
+    @PreAuthorize("hasAnyRole('CIVILIAN', 'POLICE_OFFICER', 'OFFICER', 'ADMIN')")
+    public ResponseEntity<Map<String, Object>> chat(@RequestBody Map<String, Object> chatRequest) {
+        try {
+            String message = (String) chatRequest.get("message");
+            if (message == null || message.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Message is required"));
+            }
+
+            log.info("AI chat request received: {}", message.substring(0, Math.min(50, message.length())));
+
+            // Build a chat-friendly prompt
+            String chatPrompt = String.format(
+                "You are a helpful Safe Report support assistant. A user is asking: \"%s\"\n\n" +
+                "Please provide a helpful, concise, and professional response. Safe Report is a crime prevention " +
+                "and reporting app that helps users report incidents, connect with watch groups, and stay safe " +
+                "in their communities. Be friendly, informative, and focus on helping the user with their question.",
+                message
+            );
+
+            String aiResponse;
+            String serviceUsed = "fallback";
+            
+            try {
+                // Try to use AI service
+                aiResponse = aiService.testGeminiService(chatPrompt);
+                serviceUsed = aiService.getCurrentService();
+            } catch (Exception aiException) {
+                log.warn("AI service unavailable: {}. Using fallback response.", aiException.getMessage());
+                
+                // Provide helpful fallback responses based on common questions
+                String lowerMessage = message.toLowerCase();
+                if (lowerMessage.contains("report") || lowerMessage.contains("incident")) {
+                    aiResponse = "To report an incident, tap the 'Report Crime' button on the dashboard. " +
+                                "You can provide details, add photos/videos, and choose to report anonymously. " +
+                                "Your report will be sent to local authorities for review.";
+                } else if (lowerMessage.contains("watch group") || lowerMessage.contains("group")) {
+                    aiResponse = "Watch Groups help neighbors stay connected and share safety information. " +
+                                "You can join existing groups or create your own from the 'Watch Groups' section. " +
+                                "Members can share updates and coordinate neighborhood safety efforts.";
+                } else if (lowerMessage.contains("profile") || lowerMessage.contains("account")) {
+                    aiResponse = "You can manage your profile from the Profile screen. Update your information, " +
+                                "change settings, and view your impact on community safety. Tap 'Edit Profile' to make changes.";
+                } else if (lowerMessage.contains("help") || lowerMessage.contains("support")) {
+                    aiResponse = "I'm here to help! Safe Report allows you to report incidents, join watch groups, " +
+                                "and stay informed about community safety. You can also contact support via email or phone " +
+                                "from the Help & Support section.";
+                } else {
+                    aiResponse = "Thank you for contacting Safe Report support. " +
+                                "For assistance with reporting incidents, managing your profile, or using watch groups, " +
+                                "please visit the Help & Support section. You can also contact us via email or phone for direct support.";
+                }
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            result.put("response", aiResponse);
+            result.put("service", serviceUsed);
+            result.put("timestamp", LocalDateTime.now());
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error in AI chat: {}", e.getMessage(), e);
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("error", "I apologize, but I'm having trouble responding right now. Please try again later or contact support directly.");
+            errorResult.put("timestamp", LocalDateTime.now());
+            return ResponseEntity.badRequest().body(errorResult);
+        }
+    }
+
     // ==================== CRUD OPERATIONS FOR AI SUMMARIES ====================
 
     /**

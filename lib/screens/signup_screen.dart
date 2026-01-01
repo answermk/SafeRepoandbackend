@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'login_screen.dart';
 import '../services/auth_service.dart';
 import '../utils/validators.dart';
+import '../utils/translation_helper.dart';
+import '../utils/theme_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -134,8 +137,15 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = TranslationHelper.of(context);
+    final scaffold = ThemeHelper.getScaffoldBackgroundColor(context);
+    final card = ThemeHelper.getCardColor(context);
+    final textColor = ThemeHelper.getTextColor(context);
+    final secondary = ThemeHelper.getSecondaryTextColor(context);
+    final primary = ThemeHelper.getPrimaryColor(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffold,
       body: Stack(
         children: [
           // Background with curved waves
@@ -153,32 +163,32 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 60),
 
                   // Title
-                  const Text(
-                    'Sign Up',
+                  Text(
+                    t.signUpTitle,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 40),
 
                   // Full Name field
                   _buildInputField(
-                    label: 'Full Name',
+                    label: t.fullName,
                     controller: _fullNameController,
-                    hintText: 'Enter Full Name',
+                    hintText: t.enterFullName,
                     keyboardType: TextInputType.name,
-                    validator: (value) => Validators.required(value, fieldName: 'Full Name'),
+                    validator: (value) => Validators.required(value, fieldName: t.fullName),
                   ),
 
                   const SizedBox(height: 20),
 
                   // Email field
                   _buildInputField(
-                    label: 'Email Address',
+                    label: t.emailAddress,
                     controller: _emailController,
-                    hintText: 'youremail@gmail.com',
+                    hintText: t.youremailGmailCom,
                     keyboardType: TextInputType.emailAddress,
                     validator: Validators.email,
                   ),
@@ -187,13 +197,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   // Phone Number field
                   _buildInputField(
-                    label: 'Phone Number',
+                    label: t.phoneNumberLabel,
                     controller: _phoneNumberController,
                     hintText: '+250 788 123 456',
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Phone number is required';
+                        return t.phoneRequired;
                       }
                       return Validators.phone(value);
                     },
@@ -203,17 +213,17 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   // Username field (optional)
                   _buildInputField(
-                    label: 'Username (Optional)',
+                    label: t.usernameOptionalLabel,
                     controller: _usernameController,
-                    hintText: 'Leave empty to auto-generate from email',
+                    hintText: t.usernameOptionalHint,
                     keyboardType: TextInputType.text,
                     validator: (value) {
                       if (value != null && value.trim().isNotEmpty) {
                         if (value.length < 3) {
-                          return 'Username must be at least 3 characters';
+                          return t.usernameMustBeAtLeast3Characters;
                         }
                         if (value.length > 50) {
-                          return 'Username must be less than 50 characters';
+                          return t.usernameMustBeLessThan50Characters;
                         }
                       }
                       return null;
@@ -224,7 +234,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   // Password field
                   _buildPasswordField(
-                    label: 'Password',
+                    label: t.password,
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     onToggleVisibility: () {
@@ -238,7 +248,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   // Confirm Password field
                   _buildPasswordField(
-                    label: 'Confirm Password',
+                    label: t.confirmPassword,
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     onToggleVisibility: () {
@@ -254,11 +264,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Register Anonymously',
+                      Text(
+                        t.registerAnonymously,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Color(0xFF4CAF50),
+                          color: const Color(0xFF4CAF50),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -303,9 +313,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Create an Account',
-                              style: TextStyle(
+                          : Text(
+                              t.createAccount,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -319,11 +329,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Already have an Account?',
+                      Text(
+                        t.alreadyHaveAccount,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: textColor,
                         ),
                       ),
                       SizedBox(
@@ -345,9 +355,9 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                           ),
-                          child: const Text(
-                            'Sign In',
-                            style: TextStyle(
+                          child: Text(
+                            t.signIn,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -414,10 +424,10 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: ThemeHelper.getTextColor(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -440,22 +450,22 @@ class _SignupScreenState extends State<SignupScreen> {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
-                color: Colors.grey[400],
+                color: ThemeHelper.getSecondaryTextColor(context),
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: ThemeHelper.getCardColor(context),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF36599F)),
+                borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context)),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -479,10 +489,10 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: ThemeHelper.getTextColor(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -504,22 +514,22 @@ class _SignupScreenState extends State<SignupScreen> {
             decoration: InputDecoration(
               hintText: '***********',
               hintStyle: TextStyle(
-                color: Colors.grey[400],
+                color: ThemeHelper.getSecondaryTextColor(context),
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: ThemeHelper.getCardColor(context),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[200]!),
+                borderSide: BorderSide(color: ThemeHelper.getDividerColor(context)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF36599F)),
+                borderSide: BorderSide(color: ThemeHelper.getPrimaryColor(context)),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
